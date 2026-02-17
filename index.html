@@ -1527,8 +1527,8 @@
             currentUser = data.user;
             localStorage.setItem('pv_token', authToken);
             closeAuth();
-            activateSimulator();
-            showToast('Bienvenue, ' + data.user.first_name + ' !');
+            localStorage.setItem('pv_token', authToken);
+            window.location.href = '/devis';
 
         } catch (err) {
             showAuthError('loginError', 'Impossible de contacter le serveur. Réessayez.');
@@ -1896,7 +1896,10 @@
             if (res.ok) {
                 const data = await res.json();
                 currentUser = data.user;
-                activateSimulator();
+                // Update nav with user name
+                const navCta = document.querySelector('.nav-cta');
+                navCta.innerHTML = '<i class="fas fa-user" style="margin-right:6px"></i> ' + data.user.first_name;
+                navCta.onclick = () => window.location.href = '/devis';
             } else {
                 // Token expiré ou invalide
                 localStorage.removeItem('pv_token');
