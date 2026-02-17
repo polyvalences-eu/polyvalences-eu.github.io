@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devis instantané | PolyValences — Convoyage automobile</title>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta name="description" content="Obtenez votre devis de convoyage automobile instantanément. Tarification transparente, calcul en temps réel.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7W30WDQNB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z7W30WDQNB');
+    </script>
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1a2e;
+            --navy-light: #132743;
+            --navy-mid: #0f2035;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --blue-pale: #dbeafe;
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --emerald: #059669;
+            --amber: #d97706;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --radius: 12px;
+            --radius-lg: 20px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--navy);
+            color: var(--slate-800);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ===== NAV ===== */
+        .nav {
+            background: rgba(11,26,46,0.6);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-left {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .nav-logo {
+            text-decoration: none; display: flex; align-items: center; gap: 10px;
+        }
+        .nav-logo img { height: 40px; width: auto; }
+        .nav-sep-v {
+            width: 1px; height: 28px; background: rgba(255,255,255,0.1);
+            margin: 0 8px;
+        }
+        .nav-page-title {
+            font-size: 14px; font-weight: 600; color: var(--slate-400);
+            letter-spacing: 0.02em;
+        }
+        .nav-right {
+            display: flex; align-items: center; gap: 16px;
+        }
+        .nav-home {
+            font-size: 13px; color: var(--slate-400); text-decoration: none;
+            display: flex; align-items: center; gap: 6px;
+            transition: color 0.2s;
+        }
+        .nav-home:hover { color: white; }
+        .nav-user {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 8px 16px; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s;
+            position: relative;
+        }
+        .nav-user:hover { background: rgba(255,255,255,0.1); }
+        .nav-user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--blue); display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 13px;
+        }
+        .nav-user-name {
+            font-size: 14px; font-weight: 600; color: white;
+        }
+        .nav-user-chevron {
+            font-size: 10px; color: var(--slate-400);
+        }
+
+        /* User dropdown */
+        .user-dropdown {
+            display: none; position: absolute; top: calc(100% + 8px); right: 0;
+            background: white; border-radius: var(--radius);
+            padding: 8px; min-width: 200px; z-index: 50;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+            animation: drop-in 0.15s ease-out;
+        }
+        .user-dropdown.show { display: block; }
+        @keyframes drop-in {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-dropdown-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 8px;
+            font-size: 13px; font-weight: 500; color: var(--slate-600);
+            cursor: pointer; transition: all 0.15s;
+            border: none; background: none; width: 100%;
+            font-family: 'DM Sans', sans-serif; text-decoration: none;
+        }
+        .user-dropdown-item:hover { background: var(--slate-50); color: var(--slate-900); }
+        .user-dropdown-item.danger { color: #dc2626; }
+        .user-dropdown-item.danger:hover { background: #fef2f2; }
+        .user-dropdown-sep { height: 1px; background: var(--slate-100); margin: 4px 0; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 40px 24px 60px;
+            position: relative;
+        }
+
+        /* Subtle background pattern */
+        .bg-pattern {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37,99,235,0.08) 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, rgba(37,99,235,0.04) 0%, transparent 40%),
+                radial-gradient(circle at 80% 60%, rgba(59,130,246,0.03) 0%, transparent 40%);
+        }
+
+        /* ===== HEADER ===== */
+        .page-header {
+            text-align: center; margin-bottom: 36px;
+            position: relative; z-index: 1;
+        }
+        .page-header h1 {
+            font-size: clamp(28px, 4vw, 42px); font-weight: 800;
+            color: white; margin-bottom: 10px;
+        }
+        .page-header h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .page-header p {
+            font-size: 16px; color: var(--slate-400); max-width: 480px;
+            margin: 0 auto; line-height: 1.6;
+        }
+
+        /* ===== SIMULATOR CARD ===== */
+        .sim-card {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 580px;
+        }
+        .sim-panel {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.06),
+                0 25px 80px rgba(0,0,0,0.4),
+                0 0 120px rgba(37,99,235,0.08);
+        }
+        .sim-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 28px;
+        }
+        .sim-header h3 {
+            font-size: 24px; font-weight: 700; color: var(--slate-900);
+        }
+        .sim-badge {
+            font-size: 11px; font-weight: 700;
+            background: #dcfce7; color: #166534;
+            padding: 5px 12px; border-radius: 6px;
+        }
+
+        /* Fields */
+        .sim-field {
+            position: relative; margin-bottom: 14px;
+        }
+        .sim-field-label {
+            font-size: 12px; font-weight: 700; color: var(--slate-500);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 6px; display: block;
+        }
+        .sim-field-wrap {
+            position: relative;
+        }
+        .sim-field-wrap i {
+            position: absolute; left: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate-400); font-size: 14px;
+        }
+        .sim-field-wrap input {
+            width: 100%; padding: 14px 16px 14px 44px;
+            border: 2px solid var(--slate-200);
+            border-radius: var(--radius); font-size: 15px;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--slate-50); outline: none;
+            transition: all 0.2s; color: var(--slate-800);
+        }
+        .sim-field-wrap input:focus {
+            border-color: var(--blue);
+            background: white;
+            box-shadow: 0 0 0 4px var(--blue-glow);
+        }
+        .sim-field-wrap input::placeholder { color: var(--slate-400); }
+
+        /* Route indicator between fields */
+        .sim-route-line {
+            display: flex; align-items: center; justify-content: center;
+            padding: 2px 0; position: relative;
+        }
+        .sim-route-line::before {
+            content: ''; position: absolute;
+            left: 29px; top: 0; bottom: 0; width: 2px;
+            background: var(--slate-200);
+            border-radius: 2px;
+        }
+        .sim-route-dots {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: white; border: 2px solid var(--slate-200);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--blue); font-size: 10px; z-index: 1;
+        }
+
+        /* Options */
+        .sim-options {
+            background: var(--slate-50); padding: 18px;
+            border-radius: var(--radius);
+            border: 1px solid var(--slate-100);
+            margin: 20px 0;
+        }
+        .sim-option {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 0; cursor: pointer;
+        }
+        .sim-option + .sim-option {
+            border-top: 1px solid var(--slate-100);
+            padding-top: 14px; margin-top: 8px;
+        }
+        .sim-option-left {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .sim-option-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: white; border: 1px solid var(--slate-200);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--blue); font-size: 13px;
+        }
+        .sim-option-text span {
+            font-size: 14px; font-weight: 600; color: var(--slate-700);
+            display: block;
+        }
+        .sim-option-text small {
+            font-size: 12px; color: var(--slate-400);
+        }
+        .sim-checkbox {
+            width: 22px; height: 22px; border-radius: 6px;
+            border: 2px solid var(--slate-300);
+            appearance: none; cursor: pointer;
+            background: white; transition: all 0.2s;
+            position: relative; flex-shrink: 0;
+        }
+        .sim-checkbox:checked {
+            background: var(--blue); border-color: var(--blue);
+        }
+        .sim-checkbox:checked::after {
+            content: '✓'; position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: white; font-size: 14px; font-weight: 700;
+        }
+
+        /* CTA Button */
+        .sim-btn {
+            width: 100%; padding: 18px;
+            background: var(--navy); color: white;
+            border: none; border-radius: var(--radius);
+            font-size: 16px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: all 0.25s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 8px;
+        }
+        .sim-btn:hover {
+            background: var(--blue);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 30px rgba(37,99,235,0.3);
+        }
+        .sim-footnote {
+            text-align: center; font-size: 12px;
+            color: var(--slate-400); margin-top: 14px;
+        }
+        .sim-footnote span { color: var(--blue); font-weight: 600; }
+
+        /* ===== AUTOCOMPLETE DROPDOWN ===== */
+        .ac-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 2px solid var(--blue);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            z-index: 50; display: none;
+            max-height: 240px; overflow-y: auto;
+        }
+        .ac-dropdown.show { display: block; }
+        .ac-item {
+            padding: 12px 16px 12px 44px;
+            font-size: 14px; color: var(--slate-700);
+            cursor: pointer; transition: background 0.15s;
+            border-bottom: 1px solid var(--slate-50);
+            position: relative;
+        }
+        .ac-item::before {
+            content: '\f3c5'; font-family: 'Font Awesome 6 Free';
+            font-weight: 900; position: absolute; left: 16px;
+            color: var(--slate-300); font-size: 12px;
+        }
+        .ac-item:hover { background: var(--blue-pale); }
+        .ac-item:last-child { border-bottom: none; }
+
+        /* ===== QUOTE RESULT ===== */
+        .sim-result {
+            display: none; margin-top: 28px;
+            position: relative; z-index: 1;
+            width: 100%; max-width: 580px;
+            animation: result-in 0.4s ease-out;
+        }
+        .sim-result.show { display: block; }
+        @keyframes result-in {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .sim-result-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 36px 40px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            border-top: 4px solid #16a34a;
+        }
+        .sim-result-header {
+            display: flex; justify-content: space-between;
+            align-items: flex-start; margin-bottom: 20px;
+        }
+        .sim-result-route {
+            font-size: 14px; color: var(--slate-500);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .sim-result-route i { color: var(--blue); }
+        .sim-result-grid-tag {
+            font-size: 11px; font-weight: 700; padding: 4px 10px;
+            border-radius: 6px; background: var(--blue-pale);
+            color: var(--blue);
+        }
+        .sim-result-price-wrap {
+            text-align: center; padding: 20px 0;
+            border-bottom: 1px solid var(--slate-100);
+            margin-bottom: 20px;
+        }
+        .sim-result-price {
+            font-size: 52px; font-weight: 800;
+            color: #16a34a; font-family: 'Playfair Display', serif;
+            line-height: 1;
+        }
+        .sim-result-price-note {
+            font-size: 13px; color: var(--slate-400); margin-top: 6px;
+        }
+
+        .sim-result-details {
+            list-style: none; margin-bottom: 24px;
+        }
+        .sim-result-details li {
+            font-size: 14px; color: var(--slate-600);
+            padding: 10px 0;
+            display: flex; justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--slate-50);
+        }
+        .sim-result-details li:last-child { border-bottom: none; }
+        .sim-result-details li .label {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .sim-result-details li .label i {
+            color: var(--slate-400); font-size: 12px;
+            width: 18px; text-align: center;
+        }
+        .sim-result-details li .price { font-weight: 700; color: var(--slate-800); }
+
+        .sim-result-cta {
+            width: 100%; padding: 16px;
+            background: #16a34a; color: white; border: none;
+            border-radius: var(--radius); font-size: 15px;
+            font-weight: 700; font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: all 0.25s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .sim-result-cta:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(22,163,74,0.3);
+        }
+        .sim-result-secondary {
+            width: 100%; padding: 12px; margin-top: 8px;
+            background: transparent; color: var(--slate-500);
+            border: 1px solid var(--slate-200); border-radius: var(--radius);
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+        }
+        .sim-result-secondary:hover {
+            border-color: var(--blue); color: var(--blue);
+        }
+
+        /* Contact required */
+        .sim-result-contact {
+            padding: 24px; text-align: center;
+            font-size: 15px; color: var(--slate-600); line-height: 1.7;
+        }
+        .sim-result-contact-icon {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: #fef3c7; display: flex;
+            align-items: center; justify-content: center;
+            margin: 0 auto 16px; font-size: 24px; color: #d97706;
+        }
+        .sim-result-contact a {
+            color: var(--blue); font-weight: 700;
+            text-decoration: none;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 32px; right: 32px;
+            background: var(--navy-light); color: white;
+            padding: 16px 24px; border-radius: var(--radius);
+            font-size: 14px; font-weight: 600;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            z-index: 300; display: flex; align-items: center; gap: 10px;
+            animation: toast-in 0.3s ease-out;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .toast i { color: #4ade80; }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center; padding: 24px;
+            font-size: 12px; color: rgba(148,163,184,0.4);
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+        .footer a { color: rgba(148,163,184,0.6); text-decoration: none; }
+        .footer a:hover { color: var(--slate-400); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .nav { padding: 0 16px; }
+            .nav-page-title { display: none; }
+            .main { padding: 24px 16px 40px; }
+            .sim-panel { padding: 28px 20px; }
+            .sim-result-card { padding: 28px 20px; }
+            .sim-result-price { font-size: 42px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background pattern -->
+<div class="bg-pattern"></div>
+
+<!-- ===== NAV ===== -->
+<nav class="nav">
+    <div class="nav-left">
+        <a href="../" class="nav-logo">
+            <img src="../images/logo-polyvalences.png" alt="PolyValences">
+        </a>
+        <div class="nav-sep-v"></div>
+        <span class="nav-page-title">Devis instantané</span>
+    </div>
+    <div class="nav-right">
+        <a href="../" class="nav-home"><i class="fas fa-arrow-left"></i> Accueil</a>
+        <div class="nav-user" id="navUser" onclick="toggleUserDropdown()">
+            <div class="nav-user-avatar" id="navAvatar">?</div>
+            <span class="nav-user-name" id="navName">...</span>
+            <i class="fas fa-chevron-down nav-user-chevron"></i>
+            <div class="user-dropdown" id="userDropdown">
+                <div class="user-dropdown-item" id="dropdownInfo" style="pointer-events:none;color:var(--slate-400);font-size:12px"></div>
+                <div class="user-dropdown-sep"></div>
+                <a href="../" class="user-dropdown-item"><i class="fas fa-home" style="width:16px"></i> Accueil</a>
+                <button class="user-dropdown-item danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt" style="width:16px"></i> Déconnexion</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+    <div class="page-header">
+        <h1>Votre devis en <em>quelques secondes</em></h1>
+        <p>Saisissez vos adresses, obtenez un tarif transparent et détaillé instantanément.</p>
+    </div>
+
+    <div class="sim-card">
+        <div class="sim-panel">
+            <div class="sim-header">
+                <h3>Simuler un trajet</h3>
+                <span class="sim-badge"><i class="fas fa-bolt" style="margin-right:4px"></i> Instantané</span>
+            </div>
+
+            <div class="sim-field">
+                <label class="sim-field-label">Point de départ</label>
+                <div class="sim-field-wrap">
+                    <i class="fas fa-circle" style="font-size:10px; color:var(--blue)"></i>
+                    <input type="text" id="inputOrigin" placeholder="Ex : 15 rue de Rivoli, Paris" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="sim-route-line">
+                <div class="sim-route-dots"><i class="fas fa-arrow-down"></i></div>
+            </div>
+
+            <div class="sim-field">
+                <label class="sim-field-label">Point d'arrivée</label>
+                <div class="sim-field-wrap">
+                    <i class="fas fa-map-marker-alt" style="color:#dc2626"></i>
+                    <input type="text" id="inputDest" placeholder="Ex : 20 avenue Foch, Lyon" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="sim-options">
+                <div class="sim-option" onclick="toggleCheckbox('cbRestitution')">
+                    <div class="sim-option-left">
+                        <div class="sim-option-icon"><i class="fas fa-sync-alt"></i></div>
+                        <div class="sim-option-text">
+                            <span>Restitution (aller-retour)</span>
+                            <small>Coefficient ×1.7 sur le tarif de base</small>
+                        </div>
+                    </div>
+                    <input type="checkbox" class="sim-checkbox" id="cbRestitution" onclick="event.stopPropagation()">
+                </div>
+                <div class="sim-option" onclick="toggleCheckbox('cbPeage')">
+                    <div class="sim-option-left">
+                        <div class="sim-option-icon"><i class="fas fa-truck-pickup"></i></div>
+                        <div class="sim-option-text">
+                            <span>Péage Classe 2 / &gt;8CV</span>
+                            <small>+0.18 € par km de trajet</small>
+                        </div>
+                    </div>
+                    <input type="checkbox" class="sim-checkbox" id="cbPeage" onclick="event.stopPropagation()">
+                </div>
+            </div>
+
+            <button class="sim-btn" id="btnQuote" onclick="handleQuote()">
+                <i class="fas fa-calculator"></i> Calculer mon devis
+            </button>
+            <p class="sim-footnote">
+                Calcul via HERE Maps &bull; <span>Gratuit et sans engagement</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- QUOTE RESULT -->
+    <div class="sim-result" id="quoteResult"></div>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    &copy; 2026 PolyValences SAS &bull;
+    <a href="../mentions-legales">Mentions légales</a> &bull;
+    <a href="../cgv">CGV</a>
+</footer>
+
+<script>
+    // ===== CONFIG =====
+    const API = 'https://api.polyvalences.eu';
+    let authToken = localStorage.getItem('pv_token');
+    let currentUser = null;
+    let originData = null;
+    let destData = null;
+    let acTimeout = null;
+
+    // ===== AUTH CHECK =====
+    async function checkSession() {
+        if (!authToken) {
+            window.location.href = '../';
+            return;
+        }
+        try {
+            const res = await fetch(API + '/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                currentUser = data.user;
+                updateNav();
+                initAutocomplete();
+            } else {
+                localStorage.removeItem('pv_token');
+                window.location.href = '../';
+            }
+        } catch (err) {
+            console.error('Session check failed:', err);
+            window.location.href = '../';
+        }
+    }
+
+    function updateNav() {
+        const initials = (currentUser.first_name[0] + currentUser.last_name[0]).toUpperCase();
+        document.getElementById('navAvatar').textContent = initials;
+        document.getElementById('navName').textContent = currentUser.first_name;
+        document.getElementById('dropdownInfo').textContent = currentUser.email;
+    }
+
+    // ===== USER DROPDOWN =====
+    function toggleUserDropdown() {
+        document.getElementById('userDropdown').classList.toggle('show');
+    }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-user')) {
+            document.getElementById('userDropdown').classList.remove('show');
+        }
+    });
+
+    function handleLogout() {
+        localStorage.removeItem('pv_token');
+        window.location.href = '../';
+    }
+
+    // ===== CHECKBOX TOGGLE =====
+    function toggleCheckbox(id) {
+        const cb = document.getElementById(id);
+        cb.checked = !cb.checked;
+    }
+
+    // ===== AUTOCOMPLETE =====
+    function initAutocomplete() {
+        const originInput = document.getElementById('inputOrigin');
+        const destInput = document.getElementById('inputDest');
+
+        [originInput, destInput].forEach(input => {
+            const dropdown = document.createElement('div');
+            dropdown.className = 'ac-dropdown';
+            input.parentElement.appendChild(dropdown);
+        });
+
+        originInput.addEventListener('input', () => handleAutocomplete(originInput, 'origin'));
+        destInput.addEventListener('input', () => handleAutocomplete(destInput, 'destination'));
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.sim-field-wrap')) {
+                document.querySelectorAll('.ac-dropdown').forEach(d => d.classList.remove('show'));
+            }
+        });
+    }
+
+    async function handleAutocomplete(input, type) {
+        const q = input.value.trim();
+        const dropdown = input.parentElement.querySelector('.ac-dropdown');
+
+        if (q.length < 2) { dropdown.classList.remove('show'); return; }
+
+        clearTimeout(acTimeout);
+        acTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+                const data = await res.json();
+
+                if (!data.items || data.items.length === 0) {
+                    dropdown.classList.remove('show'); return;
+                }
+
+                dropdown.innerHTML = data.items.map(item =>
+                    `<div class="ac-item" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
+                ).join('');
+                dropdown.classList.add('show');
+
+                dropdown.querySelectorAll('.ac-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        input.value = el.dataset.address;
+                        const selected = { lat: parseFloat(el.dataset.lat), lng: parseFloat(el.dataset.lng), address: el.dataset.address };
+                        if (type === 'origin') originData = selected;
+                        else destData = selected;
+                        dropdown.classList.remove('show');
+                    });
+                });
+            } catch (err) {
+                console.error('Autocomplete error:', err);
+            }
+        }, 300);
+    }
+
+    // ===== QUOTE =====
+    async function handleQuote() {
+        if (!originData || !destData) {
+            showToast('Sélectionnez une adresse de départ et d\'arrivée dans les suggestions.');
+            return;
+        }
+
+        const restitution = document.getElementById('cbRestitution').checked;
+        const peage = document.getElementById('cbPeage').checked;
+        const btn = document.getElementById('btnQuote');
+        const resultDiv = document.getElementById('quoteResult');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calcul en cours...';
+        resultDiv.classList.remove('show');
+
+        try {
+            const res = await fetch(API + '/api/quote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify({
+                    origin: { lat: originData.lat, lng: originData.lng },
+                    destination: { lat: destData.lat, lng: destData.lng },
+                    restitution,
+                    peage
+                })
+            });
+            const data = await res.json();
+
+            if (res.status === 401) {
+                localStorage.removeItem('pv_token');
+                window.location.href = '../';
+                return;
+            }
+            if (!res.ok) {
+                showToast(data.error || 'Erreur lors du calcul');
+                return;
+            }
+
+            displayQuoteResult(data);
+
+        } catch (err) {
+            showToast('Impossible de contacter le serveur. Réessayez.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-calculator"></i> Calculer mon devis';
+        }
+    }
+
+    function displayQuoteResult(data) {
+        const resultDiv = document.getElementById('quoteResult');
+
+        if (data.contact_required) {
+            resultDiv.innerHTML = `
+                <div class="sim-result-card">
+                    <div class="sim-result-contact">
+                        <div class="sim-result-contact-icon"><i class="fas fa-phone-alt"></i></div>
+                        <strong>${data.message}</strong><br><br>
+                        <a href="tel:+33XXXXXXXXX"><i class="fas fa-phone"></i> 01 XX XX XX XX</a>
+                        &nbsp;&bull;&nbsp;
+                        <a href="mailto:contact@polyvalences.eu"><i class="fas fa-envelope"></i> contact@polyvalences.eu</a>
+                    </div>
+                </div>`;
+            resultDiv.classList.add('show');
+            return;
+        }
+
+        const h = Math.floor(data.duration_minutes / 60);
+        const m = data.duration_minutes % 60;
+        const durationStr = h > 0 ? h + 'h' + (m > 0 ? m.toString().padStart(2, '0') : '') : m + ' min';
+
+        let detailsHtml = '';
+        data.details.forEach((line, i) => {
+            const icon = i === 0 ? 'fa-road' :
+                         line.includes('Restitution') ? 'fa-sync-alt' :
+                         line.includes('péage') ? 'fa-truck-pickup' :
+                         line.includes('départ') || line.includes('arrivée') ? 'fa-train' : 'fa-tag';
+
+            const parts = line.split(' : ');
+            const label = parts[0];
+            const price = parts[1] || '';
+
+            detailsHtml += `<li><span class="label"><i class="fas ${icon}"></i> ${label}</span><span class="price">${price}</span></li>`;
+        });
+
+        resultDiv.innerHTML = `
+            <div class="sim-result-card">
+                <div class="sim-result-header">
+                    <div class="sim-result-route">
+                        <i class="fas fa-route"></i> ${data.distance_km} km &bull; ~${durationStr}
+                    </div>
+                    <span class="sim-result-grid-tag">Grille ${data.grid}</span>
+                </div>
+                <div class="sim-result-price-wrap">
+                    <div class="sim-result-price">${data.amount.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</div>
+                    <div class="sim-result-price-note">TTC — Devis valable 30 jours</div>
+                </div>
+                <ul class="sim-result-details">
+                    ${detailsHtml}
+                </ul>
+                <button class="sim-result-cta" onclick="alert('Fonctionnalité disponible prochainement. Contactez-nous pour confirmer ce devis.')">
+                    <i class="fas fa-check-circle"></i> Confirmer ce devis
+                </button>
+                <button class="sim-result-secondary" onclick="resetSimulator()">
+                    <i class="fas fa-redo"></i> Nouveau calcul
+                </button>
+            </div>`;
+
+        resultDiv.classList.add('show');
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function resetSimulator() {
+        document.getElementById('inputOrigin').value = '';
+        document.getElementById('inputDest').value = '';
+        document.getElementById('cbRestitution').checked = false;
+        document.getElementById('cbPeage').checked = false;
+        originData = null;
+        destData = null;
+        document.getElementById('quoteResult').classList.remove('show');
+        document.getElementById('inputOrigin').focus();
+    }
+
+    // ===== TOAST =====
+    function showToast(message) {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = '<i class="fas fa-info-circle"></i> ' + message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            toast.style.transition = 'all 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    // ===== INIT =====
+    checkSession();
+</script>
+
+</body>
+</html>
