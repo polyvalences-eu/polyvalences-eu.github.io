@@ -3,342 +3,1345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PolyValences | La Logistique Automobile Intelligente</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            600: '#2563eb', // Bleu institutionnel
-                            800: '#1e40af',
-                            900: '#0f172a', // Dark Navy pour le côté "Premium"
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
+    <title>PolyValences | Convoyage automobile, conciergerie & gestion de flotte — France & Europe</title>
+    <meta name="description" content="Convoyage automobile professionnel en France et Europe. Devis instantané en ligne. Conciergerie véhicule, stockage temporaire et gestion de flotte gratuite. Depuis 2009.">
+    
+    <!-- Schema.org LocalBusiness -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "PolyValences",
+        "description": "Service de convoyage automobile, conciergerie et gestion de flotte en France et Europe",
+        "url": "https://polyvalences.eu",
+        "telephone": "+33-1-XX-XX-XX-XX",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "1 Place Paul Verlaine",
+            "addressLocality": "Boulogne-Billancourt",
+            "postalCode": "92100",
+            "addressCountry": "FR"
+        },
+        "foundingDate": "2009",
+        "areaServed": ["France", "Europe"],
+        "serviceType": ["Convoyage automobile", "Conciergerie automobile", "Stockage de véhicules", "Gestion de flotte"]
+    }
+    </script>
+
+    <!-- Schema.org FAQ -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Combien coûte un convoyage automobile ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Le tarif dépend de la distance et du type de trajet (Paris/Province). À partir de 80€ pour un trajet court en Île-de-France. Obtenez un devis instantané en ligne sur notre simulateur."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Qu'est-ce que la conciergerie automobile ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Nous récupérons votre véhicule, l'acheminons chez nos partenaires agréés (contrôle technique, vidange, réparations) et vous le restituons. Zéro déplacement pour vous."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Comment fonctionne la gestion de flotte PolyValences ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Créez un espace gratuit pour centraliser tous vos véhicules. Simulez des réaffectations, suivez les coûts, consultez les états des lieux et carnets d'entretien numériques."
                 }
             }
-        }
+        ]
+    }
     </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1a2e;
+            --navy-light: #132743;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --blue-pale: #dbeafe;
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --emerald: #059669;
+            --amber: #d97706;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --radius: 12px;
+            --radius-lg: 20px;
         }
-        .hero-gradient {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.8) 100%);
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ===== NAV ===== */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--slate-200);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0 24px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+        }
+        .nav-logo-icon {
+            width: 40px; height: 40px;
+            background: var(--navy);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 800; font-size: 18px;
+            font-family: 'Playfair Display', serif;
+        }
+        .nav-logo-text {
+            font-size: 22px; font-weight: 700; color: var(--slate-900);
+            font-family: 'Playfair Display', serif;
+        }
+        .nav-logo-text span { color: var(--blue); }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-link {
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            color: var(--slate-600); transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--blue); }
+        .nav-phone {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 14px; font-weight: 700; color: var(--navy);
+            text-decoration: none;
+        }
+        .nav-phone i { color: var(--blue); }
+        .nav-cta {
+            background: var(--navy); color: white;
+            padding: 10px 22px; border-radius: 10px;
+            font-size: 14px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+            border: none; cursor: pointer;
+        }
+        .nav-cta:hover { background: var(--blue); }
+        .nav-sep { width: 1px; height: 24px; background: var(--slate-200); }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative; padding: 140px 24px 80px;
+            overflow: hidden; min-height: 100vh;
+            display: flex; align-items: center;
+        }
+        .hero-bg {
+            position: absolute; inset: 0; z-index: 0;
+        }
+        .hero-bg img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .hero-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(11,26,46,0.94) 0%, rgba(19,39,67,0.88) 50%, rgba(37,99,235,0.6) 100%);
+        }
+        .hero-inner {
+            position: relative; z-index: 1;
+            max-width: 1200px; margin: 0 auto; width: 100%;
+            display: flex; gap: 64px; align-items: center;
+        }
+        .hero-content { flex: 1; color: white; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 14px; border-radius: 999px;
+            background: rgba(59,130,246,0.15);
+            border: 1px solid rgba(59,130,246,0.3);
+            color: #93c5fd; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 24px;
+        }
+        .hero-badge-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #60a5fa;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 800; line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub {
+            font-size: 18px; color: #94a3b8;
+            margin-bottom: 12px; max-width: 520px; line-height: 1.7;
+        }
+        .hero-services-line {
+            font-size: 14px; color: #60a5fa; font-weight: 600;
+            margin-bottom: 36px; letter-spacing: 0.02em;
+        }
+        .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+        .btn-primary {
+            background: var(--blue); color: white;
+            padding: 16px 32px; border-radius: var(--radius);
+            font-size: 15px; font-weight: 700; border: none; cursor: pointer;
+            transition: all 0.25s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(37,99,235,0.35); }
+        .btn-outline {
+            background: transparent; color: white;
+            padding: 16px 32px; border-radius: var(--radius);
+            font-size: 15px; font-weight: 600; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.25);
+            transition: all 0.25s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-outline:hover { border-color: white; background: rgba(255,255,255,0.08); }
+
+        /* ===== SIMULATOR CARD ===== */
+        .sim-card {
+            flex: 0 0 440px; position: relative;
+        }
+        .sim-panel {
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative; overflow: hidden;
+        }
+        .sim-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px;
+        }
+        .sim-header h3 {
+            font-size: 22px; font-weight: 700; color: var(--slate-900);
+            font-family: 'Playfair Display', serif;
+        }
+        .sim-badge {
+            font-size: 11px; font-weight: 700;
+            background: #dcfce7; color: #166534;
+            padding: 4px 10px; border-radius: 6px;
+        }
+        .sim-field {
+            position: relative; margin-bottom: 12px;
+        }
+        .sim-field i {
+            position: absolute; left: 14px; top: 14px;
+            color: var(--slate-400); font-size: 14px;
+        }
+        .sim-field input {
+            width: 100%; padding: 12px 14px 12px 40px;
+            border: 1px solid var(--slate-200);
+            border-radius: 10px; font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            background: white; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: var(--slate-400);
+        }
+        .sim-options {
+            background: var(--slate-50); padding: 16px;
+            border-radius: 10px; border: 1px solid var(--slate-100);
+            margin: 16px 0;
+        }
+        .sim-option {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 6px 0; cursor: default;
+        }
+        .sim-option + .sim-option { border-top: 1px solid var(--slate-100); padding-top: 12px; margin-top: 6px; }
+        .sim-option-left {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .sim-option-icon {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: white; border: 1px solid var(--slate-200);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--blue); font-size: 12px;
+        }
+        .sim-option span {
+            font-size: 13px; font-weight: 500; color: var(--slate-600);
+        }
+        .sim-checkbox {
+            width: 20px; height: 20px; border-radius: 5px;
+            border: 2px solid var(--slate-300);
+            appearance: none; cursor: default;
+            background: white;
+        }
+        .sim-btn-placeholder {
+            width: 100%; padding: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: var(--radius);
+            font-size: 15px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .sim-btn-placeholder:hover { background: var(--blue); }
+        .sim-footnote {
+            text-align: center; font-size: 12px;
+            color: var(--slate-400); margin-top: 12px;
+        }
+        .sim-footnote span { color: var(--blue); font-weight: 600; }
+
+        /* ===== AUTH OVERLAY ===== */
+        .auth-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(11,26,46,0.7);
+            backdrop-filter: blur(6px);
+            align-items: center; justify-content: center;
+            padding: 24px;
+        }
+        .auth-overlay.active { display: flex; }
+        .auth-modal {
+            background: white; border-radius: var(--radius-lg);
+            padding: 48px 40px; max-width: 480px; width: 100%;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            position: relative;
+            animation: modal-in 0.3s ease-out;
+        }
+        @keyframes modal-in {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .auth-close {
+            position: absolute; top: 16px; right: 16px;
+            width: 36px; height: 36px; border-radius: 50%;
+            border: none; background: var(--slate-100);
+            color: var(--slate-500); font-size: 16px;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .auth-close:hover { background: var(--slate-200); }
+        .auth-icon-wrap {
+            width: 64px; height: 64px; border-radius: 16px;
+            background: var(--blue-pale);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 24px;
+        }
+        .auth-icon-wrap i { font-size: 28px; color: var(--blue); }
+        .auth-modal h2 {
+            font-size: 26px; font-weight: 800; color: var(--slate-900);
+            margin-bottom: 8px;
+        }
+        .auth-modal p {
+            font-size: 15px; color: var(--slate-500); margin-bottom: 28px;
+            line-height: 1.6;
+        }
+        .auth-tabs {
+            display: flex; gap: 4px; background: var(--slate-100);
+            border-radius: 10px; padding: 4px; margin-bottom: 24px;
+        }
+        .auth-tab {
+            flex: 1; padding: 10px; text-align: center;
+            font-size: 14px; font-weight: 600;
+            border-radius: 8px; border: none;
+            cursor: pointer; transition: all 0.2s;
+            background: transparent; color: var(--slate-500);
+            font-family: 'DM Sans', sans-serif;
+        }
+        .auth-tab.active {
+            background: white; color: var(--slate-900);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Login form */
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        .auth-input-group { margin-bottom: 14px; }
+        .auth-input-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: var(--slate-700); margin-bottom: 6px;
+        }
+        .auth-input-group input, .auth-input-group select {
+            width: 100%; padding: 12px 14px;
+            border: 1px solid var(--slate-200);
+            border-radius: 10px; font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            outline: none; transition: border-color 0.2s;
+            background: white; color: var(--slate-800);
+        }
+        .auth-input-group input:focus, .auth-input-group select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px var(--blue-glow);
+        }
+        .auth-row { display: flex; gap: 12px; }
+        .auth-row > * { flex: 1; }
+        .auth-submit {
+            width: 100%; padding: 14px;
+            background: var(--navy); color: white;
+            border: none; border-radius: var(--radius);
+            font-size: 15px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: all 0.2s;
+            margin-top: 8px;
+        }
+        .auth-submit:hover { background: var(--blue); }
+        .auth-note {
+            text-align: center; font-size: 12px;
+            color: var(--slate-400); margin-top: 16px;
+            line-height: 1.5;
+        }
+        .auth-note i { color: var(--emerald); margin-right: 4px; }
+
+        /* ===== TRUST BAR ===== */
+        .trust-bar {
+            background: white; border-bottom: 1px solid var(--slate-100);
+            padding: 32px 24px;
+        }
+        .trust-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 32px; text-align: center;
+        }
+        .trust-item { position: relative; }
+        .trust-item + .trust-item::before {
+            content: ''; position: absolute; left: -16px; top: 10%;
+            height: 80%; width: 1px; background: var(--slate-100);
+        }
+        .trust-number {
+            font-size: 36px; font-weight: 800; color: var(--navy);
+            font-family: 'Playfair Display', serif;
+        }
+        .trust-label {
+            font-size: 12px; font-weight: 700;
+            color: var(--slate-400); text-transform: uppercase;
+            letter-spacing: 0.06em; margin-top: 4px;
+        }
+
+        /* ===== COMPARISON BLOCK ===== */
+        .comparison {
+            padding: 80px 24px; background: white;
+        }
+        .comparison-inner {
+            max-width: 1000px; margin: 0 auto; text-align: center;
+        }
+        .comparison h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .comparison-sub {
+            font-size: 17px; color: var(--slate-500);
+            margin-bottom: 48px; max-width: 600px; margin-inline: auto;
+        }
+        .comparison-cards {
+            display: flex; gap: 24px; justify-content: center;
+            flex-wrap: wrap;
+        }
+        .comp-card {
+            flex: 0 0 340px; padding: 36px;
+            border-radius: var(--radius-lg);
+            text-align: left; position: relative;
+        }
+        .comp-card.bad {
+            background: #fef2f2; border: 2px solid #fecaca;
+        }
+        .comp-card.good {
+            background: #f0fdf4; border: 2px solid #bbf7d0;
+        }
+        .comp-card-label {
+            font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 12px;
+        }
+        .comp-card.bad .comp-card-label { color: #dc2626; }
+        .comp-card.good .comp-card-label { color: #16a34a; }
+        .comp-card-title {
+            font-size: 18px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 8px; font-family: 'DM Sans', sans-serif;
+        }
+        .comp-card-price {
+            font-size: 42px; font-weight: 800; margin-bottom: 4px;
+            font-family: 'Playfair Display', serif;
+        }
+        .comp-card.bad .comp-card-price { color: #dc2626; }
+        .comp-card.good .comp-card-price { color: #16a34a; }
+        .comp-card-freq {
+            font-size: 14px; color: var(--slate-500); margin-bottom: 16px;
+        }
+        .comp-card-detail {
+            font-size: 13px; color: var(--slate-600);
+            line-height: 1.7;
+        }
+        .comp-vs {
+            display: flex; align-items: center; justify-content: center;
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--navy); color: white;
+            font-weight: 800; font-size: 14px;
+            align-self: center; flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        /* ===== SOLUTIONS ===== */
+        .solutions {
+            padding: 100px 24px; background: var(--slate-50);
+        }
+        .solutions-inner {
+            max-width: 1200px; margin: 0 auto;
+        }
+        .solutions-header {
+            text-align: center; margin-bottom: 56px;
+        }
+        .solutions-header h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .solutions-header p {
+            font-size: 17px; color: var(--slate-500);
+        }
+        .solutions-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .sol-card {
+            background: white; border-radius: var(--radius-lg);
+            padding: 36px; border: 1px solid var(--slate-100);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .sol-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 4px; transition: all 0.3s;
+        }
+        .sol-card:hover {
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+        }
+        .sol-card.blue::before { background: var(--blue); }
+        .sol-card.green::before { background: var(--emerald); }
+        .sol-card.amber::before { background: var(--amber); }
+        .sol-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin-bottom: 20px;
+        }
+        .sol-card.blue .sol-icon { background: var(--blue-pale); color: var(--blue); }
+        .sol-card.green .sol-icon { background: #d1fae5; color: var(--emerald); }
+        .sol-card.amber .sol-icon { background: #fef3c7; color: var(--amber); }
+        .sol-card h3 {
+            font-size: 20px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 4px;
+        }
+        .sol-card .sol-subtitle {
+            font-size: 13px; color: var(--slate-400);
+            font-weight: 600; margin-bottom: 12px; font-style: italic;
+        }
+        .sol-card p {
+            font-size: 14px; color: var(--slate-600);
+            line-height: 1.7; margin-bottom: 20px;
+        }
+        .sol-features {
+            list-style: none; margin-bottom: 24px;
+        }
+        .sol-features li {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; color: var(--slate-500);
+            padding: 4px 0;
+        }
+        .sol-features li i { color: var(--emerald); font-size: 12px; }
+        .sol-link {
+            font-size: 14px; font-weight: 700;
+            text-decoration: none; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .sol-card.blue .sol-link { color: var(--blue); }
+        .sol-card.green .sol-link { color: var(--emerald); }
+        .sol-card.amber .sol-link { color: var(--amber); }
+        .sol-link:hover { gap: 10px; }
+
+        /* ===== FLEET DASHBOARD PREVIEW ===== */
+        .fleet {
+            padding: 100px 24px; background: white; overflow: hidden;
+        }
+        .fleet-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; gap: 64px;
+        }
+        .fleet-visual { flex: 1; position: relative; }
+        .fleet-visual-glow {
+            position: absolute; inset: -40px;
+            background: radial-gradient(circle, var(--blue-glow) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(40px);
+        }
+        .fleet-mockup {
+            position: relative;
+            background: var(--slate-900); border-radius: 16px;
+            border: 1px solid var(--slate-700);
+            padding: 8px; box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+            transform: rotate(-1deg); transition: transform 0.5s;
+        }
+        .fleet-mockup:hover { transform: rotate(0deg); }
+        .fleet-mockup-bar {
+            background: var(--slate-800); padding: 10px 16px;
+            border-radius: 10px 10px 0 0;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .fleet-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .fleet-dot.red { background: #ef4444; }
+        .fleet-dot.yellow { background: #eab308; }
+        .fleet-dot.green { background: #22c55e; }
+        .fleet-url {
+            margin-left: 12px; background: var(--slate-700);
+            padding: 4px 12px; border-radius: 6px;
+            font-size: 11px; color: var(--slate-400);
+            font-family: monospace; flex: 1;
+        }
+        .fleet-mockup-body { padding: 24px; }
+        .fleet-mockup-header {
+            display: flex; justify-content: space-between;
+            align-items: flex-end; margin-bottom: 24px;
+        }
+        .fleet-mockup-header h4 {
+            color: white; font-size: 16px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .fleet-mockup-header .sub {
+            color: var(--slate-400); font-size: 13px;
+        }
+        .fleet-mockup-btn {
+            background: var(--blue); color: white;
+            font-size: 11px; padding: 8px 14px;
+            border-radius: 8px; border: none; font-weight: 600;
+        }
+        .fleet-vehicle {
+            background: var(--slate-800); padding: 14px 16px;
+            border-radius: 10px; display: flex;
+            align-items: center; justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .fleet-vehicle-name { color: white; font-size: 14px; font-weight: 700; }
+        .fleet-vehicle-info { color: var(--slate-400); font-size: 12px; }
+        .fleet-vehicle-status {
+            font-size: 11px; font-weight: 700;
+            padding: 4px 10px; border-radius: 6px;
+        }
+        .fleet-vehicle-status.ok { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .fleet-vehicle-status.transit { background: rgba(234,179,8,0.15); color: #facc15; }
+        .fleet-vehicle-status.stock { background: rgba(100,116,139,0.15); color: var(--slate-400); }
+        .fleet-vehicle-loc { color: var(--slate-500); font-size: 11px; margin-top: 2px; }
+        .fleet-vehicle-left-border {
+            border-left: 3px solid; border-radius: 10px;
+        }
+        .fleet-vehicle-left-border.green { border-color: #22c55e; }
+        .fleet-vehicle-left-border.yellow { border-color: #eab308; }
+        .fleet-vehicle-left-border.gray { border-color: var(--slate-500); }
+
+        .fleet-content { flex: 1; }
+        .fleet-tag {
+            font-size: 13px; font-weight: 700; color: var(--blue);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 12px;
+        }
+        .fleet-content h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 16px;
+            line-height: 1.15;
+        }
+        .fleet-content > p {
+            font-size: 17px; color: var(--slate-500);
+            margin-bottom: 36px; line-height: 1.7;
+        }
+        .fleet-features { list-style: none; }
+        .fleet-feature {
+            display: flex; align-items: flex-start; gap: 16px;
+            margin-bottom: 28px;
+        }
+        .fleet-feature-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: var(--blue-pale);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--blue); font-size: 18px; flex-shrink: 0;
+        }
+        .fleet-feature h4 {
+            font-size: 16px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 4px; font-family: 'DM Sans', sans-serif;
+        }
+        .fleet-feature p {
+            font-size: 14px; color: var(--slate-500); line-height: 1.6;
+        }
+
+        /* ===== FAQ ===== */
+        .faq {
+            padding: 100px 24px; background: var(--slate-50);
+        }
+        .faq-inner {
+            max-width: 800px; margin: 0 auto;
+        }
+        .faq h2 {
+            text-align: center;
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 48px;
+        }
+        .faq-item {
+            background: white; border-radius: var(--radius);
+            border: 1px solid var(--slate-100);
+            margin-bottom: 12px; overflow: hidden;
+        }
+        .faq-question {
+            width: 100%; padding: 20px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: none; border: none; cursor: pointer;
+            font-size: 15px; font-weight: 600; color: var(--slate-900);
+            font-family: 'DM Sans', sans-serif; text-align: left;
+        }
+        .faq-question i { color: var(--slate-400); transition: transform 0.3s; font-size: 14px; }
+        .faq-question.open i { transform: rotate(180deg); }
+        .faq-answer {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .faq-answer.open {
+            max-height: 300px;
+        }
+        .faq-answer-inner {
+            padding: 0 24px 20px;
+            font-size: 14px; color: var(--slate-600); line-height: 1.7;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--navy); color: var(--slate-400);
+            padding: 64px 24px 32px;
+        }
+        .footer-inner {
+            max-width: 1200px; margin: 0 auto;
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr;
+            gap: 48px; margin-bottom: 48px;
+        }
+        .footer-brand {
+            font-size: 22px; font-weight: 700; color: white;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 12px;
+        }
+        .footer-brand span { color: var(--blue); }
+        .footer-desc { font-size: 14px; max-width: 320px; line-height: 1.7; }
+        .footer h4 {
+            color: white; font-size: 14px; font-weight: 700;
+            margin-bottom: 16px; font-family: 'DM Sans', sans-serif;
+        }
+        .footer ul { list-style: none; }
+        .footer ul li { margin-bottom: 8px; }
+        .footer ul li a, .footer ul li span {
+            color: var(--slate-400); font-size: 13px;
+            text-decoration: none; transition: color 0.2s;
+        }
+        .footer ul li a:hover { color: white; }
+        .footer-contact-phone {
+            color: var(--blue-light) !important; font-weight: 700 !important;
+        }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 24px;
+            display: flex; justify-content: space-between;
+            font-size: 12px; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-bottom a {
+            color: var(--slate-400); text-decoration: none;
+            margin-left: 16px;
+        }
+        .footer-bottom a:hover { color: white; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero-inner { flex-direction: column; gap: 40px; }
+            .sim-card { flex: auto; width: 100%; max-width: 480px; }
+            .fleet-inner { flex-direction: column; }
+            .solutions-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+            .comparison-cards { flex-direction: column; align-items: center; }
+            .comp-vs { display: none; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .trust-inner { grid-template-columns: repeat(2, 1fr); }
+            .trust-item + .trust-item::before { display: none; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; }
         }
     </style>
 </head>
-<body class="font-sans text-slate-800 antialiased bg-slate-50">
+<body>
 
-    <nav class="fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center">
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">P</div>
-                    <span class="text-2xl font-bold text-slate-900 tracking-tight">Poly<span class="text-brand-600">Valences</span></span>
-                </div>
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#solutions" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition">Solutions</a>
-                    <a href="#flotte" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition">Gestion de Flotte</a>
-                    <a href="#expertise" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition">Réseau & Partenaires</a>
-                    <div class="h-6 w-px bg-slate-300"></div>
-                    <a href="#" class="text-sm font-semibold text-slate-900">Connexion</a>
-                    <a href="#" class="bg-brand-900 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-brand-800 transition shadow-lg shadow-brand-900/20">
-                        Espace Client
-                    </a>
-                </div>
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">P</div>
+            <div class="nav-logo-text">Poly<span>Valences</span></div>
+        </a>
+        <div class="nav-links">
+            <a href="#solutions" class="nav-link">Solutions</a>
+            <a href="#flotte" class="nav-link">Gestion de Flotte</a>
+            <a href="#faq" class="nav-link">FAQ</a>
+            <div class="nav-sep"></div>
+            <a href="tel:+33XXXXXXXXX" class="nav-phone">
+                <i class="fas fa-phone"></i> 01 XX XX XX XX
+            </a>
+            <button class="nav-cta" onclick="openAuth('login')">
+                <i class="fas fa-user" style="margin-right:6px"></i> Espace Client
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-bg">
+        <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop" alt="Autoroute" loading="eager">
+    </div>
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Depuis 2009 — France & Europe
+            </div>
+            <h1>Combien vous coûte l'immobilisation de vos <em>véhicules</em> ?</h1>
+            <p class="hero-sub">
+                Vos véhicules dorment au mauvais endroit. Chaque jour d'immobilisation est un coût caché. Nous les déplaçons, les entretenons et les stockons — vous n'avez rien à faire.
+            </p>
+            <p class="hero-services-line">
+                Relocalisation &bull; Entretien sans déplacement &bull; Stockage &bull; Gestion de flotte
+            </p>
+            <div class="hero-ctas">
+                <a href="#simulateur" class="btn-primary" onclick="event.preventDefault(); openAuth('register')">
+                    <i class="fas fa-calculator"></i> Simuler un convoyage
+                </a>
+                <a href="#comparison" class="btn-outline">
+                    <i class="fas fa-chart-line"></i> Estimer mes économies
+                </a>
             </div>
         </div>
-    </nav>
 
-    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover" alt="Autoroute fluide">
-            <div class="absolute inset-0 hero-gradient"></div>
-        </div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-16 items-center">
-            
-            <div class="lg:w-1/2 text-white">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-bold uppercase tracking-wider mb-6">
-                    <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-                    Leader depuis 2009
+        <div class="sim-card" id="simulateur">
+            <div class="sim-panel">
+                <div class="sim-header">
+                    <h3>Estimer un trajet</h3>
+                    <span class="sim-badge">Devis immédiat</span>
                 </div>
-                <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-                    Pilotez votre logistique automobile.
-                </h1>
-                <p class="text-lg text-slate-300 mb-8 leading-relaxed max-w-xl">
-                    Plus qu'un simple convoyage. Une plateforme complète pour gérer les transferts, l'entretien et le stockage de votre flotte en France et en Europe.
+
+                <div class="sim-field">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" placeholder="Adresse de départ" disabled>
+                </div>
+                <div class="sim-field">
+                    <i class="fas fa-flag-checkered"></i>
+                    <input type="text" placeholder="Adresse d'arrivée" disabled>
+                </div>
+
+                <div class="sim-options">
+                    <div class="sim-option">
+                        <div class="sim-option-left">
+                            <div class="sim-option-icon"><i class="fas fa-sync-alt"></i></div>
+                            <span>Restitution (aller-retour)</span>
+                        </div>
+                        <input type="checkbox" class="sim-checkbox" disabled>
+                    </div>
+                    <div class="sim-option">
+                        <div class="sim-option-left">
+                            <div class="sim-option-icon"><i class="fas fa-truck-pickup"></i></div>
+                            <span>Péage Classe 2 / &gt;8CV</span>
+                        </div>
+                        <input type="checkbox" class="sim-checkbox" disabled>
+                    </div>
+                </div>
+
+                <button class="sim-btn-placeholder" onclick="openAuth('register')">
+                    Recevoir mon devis <i class="fas fa-arrow-right"></i>
+                </button>
+                <p class="sim-footnote">
+                    Calcul instantané via HERE Maps &bull; <span>Gratuit et sans engagement</span>
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button class="bg-brand-600 hover:bg-brand-500 text-white px-8 py-4 rounded-xl font-bold transition flex items-center justify-center gap-2">
-                        Découvrir la gestion de flotte
-                    </button>
-                    <div class="flex items-center gap-4 px-6 text-slate-300 text-sm font-medium">
-                        <i class="fas fa-shield-alt text-brand-400 text-xl"></i> Assuré tous risques
-                    </div>
-                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TRUST BAR ===== -->
+<div class="trust-bar">
+    <div class="trust-inner">
+        <div class="trust-item">
+            <div class="trust-number">15 000+</div>
+            <div class="trust-label">Véhicules convoyés</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">17 ans</div>
+            <div class="trust-label">D'expertise terrain</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">48h</div>
+            <div class="trust-label">Délai moyen</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">100%</div>
+            <div class="trust-label">Assuré tous risques</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== COMPARISON BLOCK ===== -->
+<section class="comparison" id="comparison">
+    <div class="comparison-inner">
+        <h2>Relocalisez au lieu de louer</h2>
+        <p class="comparison-sub">Votre Kangoo dort à Marseille ? Votre technicien à Lille en a besoin ? Faites le calcul.</p>
+        <div class="comparison-cards">
+            <div class="comp-card bad">
+                <div class="comp-card-label">La solution habituelle</div>
+                <div class="comp-card-title">Louer un nouveau véhicule à Lille</div>
+                <div class="comp-card-price">800 €</div>
+                <div class="comp-card-freq">par mois, chaque mois</div>
+                <div class="comp-card-detail">Location longue durée + assurance + franchise + véhicule à Marseille qui reste immobilisé et vous coûte quand même.</div>
+            </div>
+            <div class="comp-vs">VS</div>
+            <div class="comp-card good">
+                <div class="comp-card-label">La solution PolyValences</div>
+                <div class="comp-card-title">Relocaliser le Kangoo Marseille → Lille</div>
+                <div class="comp-card-price">560 €</div>
+                <div class="comp-card-freq">une seule fois</div>
+                <div class="comp-card-detail">Convoyage porte-à-porte avec état des lieux, assuré tous risques. Le véhicule est opérationnel dès le lendemain.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SOLUTIONS ===== -->
+<section class="solutions" id="solutions">
+    <div class="solutions-inner">
+        <div class="solutions-header">
+            <h2>Vos problèmes. Nos solutions.</h2>
+            <p>Une réponse concrète à chaque situation de votre parc automobile.</p>
+        </div>
+        <div class="solutions-grid">
+            <div class="sol-card blue">
+                <div class="sol-icon"><i class="fas fa-route"></i></div>
+                <h3>Relocalisation de véhicules</h3>
+                <div class="sol-subtitle">ex-"convoyage"</div>
+                <p>Votre véhicule est au mauvais endroit ? Nous le déplaçons de point A à point B en France et en Europe, avec état des lieux numérique.</p>
+                <ul class="sol-features">
+                    <li><i class="fas fa-check"></i> Tarification transparente au kilomètre</li>
+                    <li><i class="fas fa-check"></i> État des lieux départ/arrivée sur tablette</li>
+                    <li><i class="fas fa-check"></i> Assuré tous risques</li>
+                </ul>
+                <a href="#" class="sol-link" onclick="event.preventDefault(); openAuth('register')">Simuler un trajet <i class="fas fa-arrow-right"></i></a>
             </div>
 
-            <div class="lg:w-1/2 w-full">
-                <div class="glass-panel p-8 rounded-2xl shadow-2xl transform transition hover:scale-[1.01] duration-300">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-slate-900">Estimer un trajet</h3>
-                        <span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded">Réponse immédiate</span>
+            <div class="sol-card green">
+                <div class="sol-icon"><i class="fas fa-tools"></i></div>
+                <h3>Entretien sans déplacement</h3>
+                <div class="sol-subtitle">ex-"conciergerie"</div>
+                <p>CT, vidange, réparations : nous récupérons votre véhicule, l'emmenons chez nos partenaires agréés et vous le restituons.</p>
+                <ul class="sol-features">
+                    <li><i class="fas fa-check"></i> Zéro déplacement pour vous</li>
+                    <li><i class="fas fa-check"></i> Réseau de garages partenaires</li>
+                    <li><i class="fas fa-check"></i> Suivi en temps réel</li>
+                </ul>
+                <a href="#" class="sol-link">Voir les services <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="sol-card amber">
+                <div class="sol-icon"><i class="fas fa-warehouse"></i></div>
+                <h3>Véhicules immobilisés</h3>
+                <div class="sol-subtitle">ex-"stockage"</div>
+                <p>Entre deux affectations ou en attente de décision ? Nous stockons vos véhicules en sécurité. À partir de ~67€/mois.</p>
+                <ul class="sol-features">
+                    <li><i class="fas fa-check"></i> Forfait trimestriel ~200€</li>
+                    <li><i class="fas fa-check"></i> Sécurisé et assuré</li>
+                    <li><i class="fas fa-check"></i> Enchaînable avec convoyage</li>
+                </ul>
+                <a href="#" class="sol-link">Réserver un emplacement <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FLEET DASHBOARD PREVIEW ===== -->
+<section class="fleet" id="flotte">
+    <div class="fleet-inner">
+        <div class="fleet-visual">
+            <div class="fleet-visual-glow"></div>
+            <div class="fleet-mockup">
+                <div class="fleet-mockup-bar">
+                    <div class="fleet-dot red"></div>
+                    <div class="fleet-dot yellow"></div>
+                    <div class="fleet-dot green"></div>
+                    <div class="fleet-url">polyvalences.eu/espace/flotte</div>
+                </div>
+                <div class="fleet-mockup-body">
+                    <div class="fleet-mockup-header">
+                        <div>
+                            <h4>Mon Parc Automobile</h4>
+                            <div class="sub">5 véhicules en gestion</div>
+                        </div>
+                        <button class="fleet-mockup-btn">+ Ajouter</button>
                     </div>
-                    
-                    <form class="space-y-4">
-                        <div class="grid grid-cols-1 gap-4">
-                            <div class="relative">
-                                <i class="fas fa-map-marker-alt absolute left-4 top-3.5 text-slate-400"></i>
-                                <input type="text" placeholder="Départ (Ville ou Code Postal)" class="w-full pl-10 pr-4 py-3 rounded-lg border-slate-200 border bg-white focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none shadow-sm text-sm">
-                            </div>
-                            <div class="relative">
-                                <i class="fas fa-flag-checkered absolute left-4 top-3.5 text-slate-400"></i>
-                                <input type="text" placeholder="Arrivée (Ville ou Code Postal)" class="w-full pl-10 pr-4 py-3 rounded-lg border-slate-200 border bg-white focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none shadow-sm text-sm">
-                            </div>
+                    <div class="fleet-vehicle fleet-vehicle-left-border green">
+                        <div>
+                            <div class="fleet-vehicle-name">Renault Clio V</div>
+                            <div class="fleet-vehicle-info">AB-123-CD &bull; 45 200 km</div>
                         </div>
-
-                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-3">
-                            <label class="flex items-center justify-between cursor-pointer group">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-white border flex items-center justify-center text-brand-600 shadow-sm"><i class="fas fa-sync-alt text-xs"></i></div>
-                                    <span class="text-sm font-medium text-slate-700">Restitution (Aller-Retour)</span>
-                                </div>
-                                <input type="checkbox" class="w-5 h-5 text-brand-600 rounded focus:ring-brand-600 border-gray-300">
-                            </label>
-                            
-                            <label class="flex items-center justify-between cursor-pointer group">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-white border flex items-center justify-center text-brand-600 shadow-sm"><i class="fas fa-truck-pickup text-xs"></i></div>
-                                    <span class="text-sm font-medium text-slate-700">Péage Classe 2 / >8CV</span>
-                                </div>
-                                <input type="checkbox" class="w-5 h-5 text-brand-600 rounded focus:ring-brand-600 border-gray-300">
-                            </label>
+                        <div style="text-align:right">
+                            <div class="fleet-vehicle-status ok">Disponible</div>
+                            <div class="fleet-vehicle-loc">Paris 16e</div>
                         </div>
-
-                        <button type="button" class="w-full bg-brand-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg transition flex justify-center items-center gap-2 group">
-                            Voir mon tarif
-                            <i class="fas fa-arrow-right transform group-hover:translate-x-1 transition"></i>
-                        </button>
-                        <p class="text-center text-xs text-slate-500 mt-2">
-                            Calcul basé sur API HERE Maps • <span class="text-brand-600">Gratuit et sans engagement</span>
-                        </p>
-                    </form>
+                    </div>
+                    <div class="fleet-vehicle fleet-vehicle-left-border yellow">
+                        <div>
+                            <div class="fleet-vehicle-name">Peugeot 3008</div>
+                            <div class="fleet-vehicle-info">EF-456-GH &bull; 12 100 km</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="fleet-vehicle-status transit">En Transit</div>
+                            <div class="fleet-vehicle-loc">→ Lyon</div>
+                        </div>
+                    </div>
+                    <div class="fleet-vehicle fleet-vehicle-left-border gray" style="opacity:0.7">
+                        <div>
+                            <div class="fleet-vehicle-name">Citroën Berlingo</div>
+                            <div class="fleet-vehicle-info">JK-789-LM &bull; 89 000 km</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="fleet-vehicle-status stock">Stockage</div>
+                            <div class="fleet-vehicle-loc">Entrepôt Sud</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <div class="bg-white border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-slate-100">
-                <div>
-                    <div class="text-3xl font-bold text-brand-900">15k+</div>
-                    <div class="text-xs text-slate-500 uppercase tracking-wide mt-1 font-semibold">Véhicules convoyés</div>
+        <div class="fleet-content">
+            <div class="fleet-tag">Offert avec votre espace</div>
+            <h2>Un gestionnaire de flotte gratuit. Pas juste un service.</h2>
+            <p>Centralisez tous vos véhicules, simulez des réaffectations, suivez vos coûts. Plus vous enrichissez vos données, plus vous optimisez votre parc.</p>
+            <ul class="fleet-features">
+                <li class="fleet-feature">
+                    <div class="fleet-feature-icon"><i class="fas fa-calculator"></i></div>
+                    <div>
+                        <h4>Simulation d'arbitrage</h4>
+                        <p>Comparez le coût de relocalisation d'un véhicule dormant vs une nouvelle location. Décision éclairée, instantanément.</p>
+                    </div>
+                </li>
+                <li class="fleet-feature">
+                    <div class="fleet-feature-icon"><i class="fas fa-history"></i></div>
+                    <div>
+                        <h4>Historique & Carnet d'entretien</h4>
+                        <p>États des lieux PDF, factures, interventions, carnet d'entretien numérique — tout centralisé par véhicule.</p>
+                    </div>
+                </li>
+                <li class="fleet-feature">
+                    <div class="fleet-feature-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div>
+                        <h4>Planification de réaffectations</h4>
+                        <p>Planifiez à l'avance les relocalisations. Sauvegardez en simulation, programmez une date, ou confirmez directement.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq" id="faq">
+    <div class="faq-inner">
+        <h2>Questions fréquentes</h2>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Combien coûte un convoyage automobile ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Le tarif dépend de la distance et du type de trajet. Pour un trajet en Île-de-France (&lt; 65 km), comptez à partir de 80 €. Pour un Paris → Lyon (~465 km), environ 379 €. Obtenez votre tarif exact en quelques secondes sur notre simulateur — c'est gratuit et sans engagement.
                 </div>
-                <div>
-                    <div class="text-3xl font-bold text-brand-900">98%</div>
-                    <div class="text-xs text-slate-500 uppercase tracking-wide mt-1 font-semibold">Clients Satisfaits</div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Qu'est-ce que la conciergerie automobile ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Nous récupérons votre véhicule à votre bureau ou domicile, l'acheminons chez l'un de nos partenaires agréés (contrôle technique, vidange, réparations, pneumatiques) et vous le restituons une fois l'intervention terminée. Vous ne vous déplacez jamais.
                 </div>
-                <div>
-                    <div class="text-3xl font-bold text-brand-900">48h</div>
-                    <div class="text-xs text-slate-500 uppercase tracking-wide mt-1 font-semibold">Délai moyen</div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Comment fonctionne le gestionnaire de flotte ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Créez un espace gratuit et ajoutez vos véhicules librement (plaque, marque, localisation). Vous pouvez simuler des réaffectations pour voir le coût du convoyage instantanément, consulter l'historique complet et le carnet d'entretien numérique de chaque véhicule.
                 </div>
-                <div>
-                    <div class="text-3xl font-bold text-brand-900">100%</div>
-                    <div class="text-xs text-slate-500 uppercase tracking-wide mt-1 font-semibold">Digitalisé</div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Quel est le délai pour un convoyage ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Le délai moyen est de 48h après confirmation du devis. Pour les trajets courts en Île-de-France, une prise en charge sous 24h est souvent possible. Les trajets longue distance ou transfrontaliers peuvent nécessiter un délai supplémentaire.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Les véhicules sont-ils assurés pendant le convoyage ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Oui. Chaque véhicule est couvert par une assurance tous risques pendant toute la durée du transfert. Un état des lieux numérique est réalisé au départ et à l'arrivée, avec signature électronique, pour documenter l'état du véhicule.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Mon compte doit-il être validé pour obtenir un devis ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Oui. Pour garantir la qualité de notre service et la sécurité des données, chaque inscription est vérifiée par notre équipe. La validation est généralement effectuée sous quelques heures. Une fois votre compte activé, vous accédez au devis instantané et à l'ensemble des fonctionnalités de votre espace.
                 </div>
             </div>
         </div>
     </div>
+</section>
 
-    <section id="flotte" class="py-24 bg-white overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col lg:flex-row items-center gap-16">
-                <div class="lg:w-1/2 relative">
-                    <div class="absolute -inset-4 bg-brand-100 rounded-full blur-3xl opacity-30"></div>
-                    <div class="relative bg-slate-900 rounded-xl shadow-2xl border border-slate-700 p-2 overflow-hidden transform -rotate-1 hover:rotate-0 transition duration-500">
-                        <div class="bg-slate-800 px-4 py-3 rounded-t-lg flex items-center gap-2 mb-2">
-                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                            <div class="ml-4 bg-slate-700 px-3 py-1 rounded text-xs text-slate-400 font-mono flex-1">polyvalences.eu/dashboard/flotte</div>
-                        </div>
-                        <div class="bg-slate-900 p-6">
-                            <div class="flex justify-between items-end mb-8">
-                                <div>
-                                    <h4 class="text-white font-bold text-lg">Mon Parc Automobile</h4>
-                                    <p class="text-slate-400 text-sm">5 véhicules en gestion</p>
-                                </div>
-                                <button class="bg-brand-600 text-white text-xs px-3 py-2 rounded hover:bg-brand-500 transition">
-                                    + Ajouter un véhicule
-                                </button>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="bg-slate-800 p-4 rounded-lg flex items-center justify-between border-l-4 border-green-500">
-                                    <div>
-                                        <div class="text-white font-bold text-sm">Renault Clio V</div>
-                                        <div class="text-slate-400 text-xs">AB-123-CD • 45,200 km</div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-green-400 text-xs font-bold bg-green-900/30 px-2 py-1 rounded">Disponible</div>
-                                        <div class="text-slate-500 text-xs mt-1">Paris 16e</div>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-800 p-4 rounded-lg flex items-center justify-between border-l-4 border-yellow-500">
-                                    <div>
-                                        <div class="text-white font-bold text-sm">Peugeot 3008</div>
-                                        <div class="text-slate-400 text-xs">EF-456-GH • 12,100 km</div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-yellow-400 text-xs font-bold bg-yellow-900/30 px-2 py-1 rounded">En Transit</div>
-                                        <div class="text-slate-500 text-xs mt-1">Vers Lyon</div>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-800 p-4 rounded-lg flex items-center justify-between border-l-4 border-slate-500 opacity-75">
-                                    <div>
-                                        <div class="text-white font-bold text-sm">Citroën Berlingo</div>
-                                        <div class="text-slate-400 text-xs">JK-789-LM • 89,000 km</div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-slate-400 text-xs font-bold bg-slate-700/30 px-2 py-1 rounded">Stockage</div>
-                                        <div class="text-slate-500 text-xs mt-1">Entrepôt Sud</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="lg:w-1/2">
-                    <span class="text-brand-600 font-bold tracking-wider text-sm uppercase mb-2 block">Innovation V2</span>
-                    <h2 class="text-4xl font-bold text-slate-900 mb-6">Un gestionnaire de flotte offert, pas juste un service.</h2>
-                    <p class="text-slate-600 text-lg mb-8 leading-relaxed">
-                        Ne naviguez plus à vue. Centralisez gratuitement l'ensemble de vos véhicules. Simulez des réaffectations, suivez vos coûts et anticipez les entretiens depuis une interface unique.
-                    </p>
-                    
-                    <ul class="space-y-6">
-                        <li class="flex items-start">
-                            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-brand-600 mt-1">
-                                <i class="fas fa-calculator"></i>
-                            </div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-bold text-slate-900">Simulation d'arbitrage</h4>
-                                <p class="text-slate-500">Comparez instantanément le coût de relocation d'un véhicule dormant vs une nouvelle location.</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-brand-600 mt-1">
-                                <i class="fas fa-history"></i>
-                            </div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-bold text-slate-900">Historique & Maintenance</h4>
-                                <p class="text-slate-500">Accédez aux factures, états des lieux PDF et carnets d'entretien numériques de chaque véhicule.</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">Poly<span>Valences</span></div>
+                <p class="footer-desc">Simplifiez la vie de votre parc automobile. Une solution technologique pour des besoins logistiques réels. Depuis 2009.</p>
+            </div>
+            <div>
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#solutions">Relocalisation de véhicules</a></li>
+                    <li><a href="#solutions">Entretien sans déplacement</a></li>
+                    <li><a href="#solutions">Stockage temporaire</a></li>
+                    <li><a href="#flotte">Gestion de flotte</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul>
+                    <li><span>1 Place Paul Verlaine</span></li>
+                    <li><span>92100 Boulogne-Billancourt</span></li>
+                    <li style="margin-top:12px"><a href="tel:+33XXXXXXXXX" class="footer-contact-phone"><i class="fas fa-phone" style="margin-right:6px"></i>01 XX XX XX XX</a></li>
+                    <li><a href="mailto:contact@polyvalences.eu" style="color:#3b82f6;font-weight:600">contact@polyvalences.eu</a></li>
+                </ul>
             </div>
         </div>
-    </section>
-
-    <section id="solutions" class="py-24 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-3xl font-bold text-slate-900 mb-4">Nos Solutions Opérationnelles</h2>
-                <p class="text-slate-600 text-lg">Une réponse à chaque étape de la vie du véhicule.</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-slate-100">
-                    <div class="w-14 h-14 bg-brand-50 rounded-xl flex items-center justify-center mb-6">
-                        <i class="fas fa-route text-brand-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-3">Convoyage</h3>
-                    <p class="text-slate-600 mb-6">Transport de véhicules point A vers point B en France et Europe. Tarification au kilomètre précise et transparente.</p>
-                    <ul class="space-y-2 text-sm text-slate-500 mb-6">
-                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Jusqu'à 1200km</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> État des lieux sur tablette</li>
-                    </ul>
-                    <a href="#" class="text-brand-600 font-semibold text-sm hover:underline">Calculer un trajet &rarr;</a>
-                </div>
-
-                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-slate-100">
-                    <div class="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center mb-6">
-                        <i class="fas fa-tools text-emerald-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-3">Conciergerie</h3>
-                    <p class="text-slate-600 mb-6">Nous déplaçons votre véhicule vers nos partenaires agréés pour l'entretien, le CT ou les réparations.</p>
-                    <ul class="space-y-2 text-sm text-slate-500 mb-6">
-                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Zéro déplacement pour vous</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Réseau garages partenaires</li>
-                    </ul>
-                    <a href="#" class="text-emerald-600 font-semibold text-sm hover:underline">Voir les services &rarr;</a>
-                </div>
-
-                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-slate-100">
-                    <div class="w-14 h-14 bg-amber-50 rounded-xl flex items-center justify-center mb-6">
-                        <i class="fas fa-warehouse text-amber-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-3">Stockage</h3>
-                    <p class="text-slate-600 mb-6">Besoin de tamponner entre deux affectations ? Nous stockons vos véhicules en toute sécurité.</p>
-                    <ul class="space-y-2 text-sm text-slate-500 mb-6">
-                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Forfait trimestriel (~200€)</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Sécurisé et assuré</li>
-                    </ul>
-                    <a href="#" class="text-amber-600 font-semibold text-sm hover:underline">Réserver un emplacement &rarr;</a>
-                </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 PolyValences SAS. Tous droits réservés.</span>
+            <div>
+                <a href="#">Mentions Légales</a>
+                <a href="#">CGV</a>
+                <a href="#">Politique de confidentialité</a>
             </div>
         </div>
-    </section>
+    </div>
+</footer>
 
-    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8 mb-8">
-                <div class="col-span-1 md:col-span-2">
-                    <span class="text-2xl font-bold text-white tracking-tight">Poly<span class="text-brand-600">Valences</span></span>
-                    <p class="mt-4 max-w-xs text-sm">
-                        Simplifiez la vie de votre parc automobile. Une solution technologique pour des besoins logistiques réels.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Services</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white">Convoyage</a></li>
-                        <li><a href="#" class="hover:text-white">Conciergerie</a></li>
-                        <li><a href="#" class="hover:text-white">Gestion de flotte</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Contact</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li>1 Place Paul Verlaine</li>
-                        <li>92100 Boulogne-Billancourt</li>
-                        <li class="text-brand-500 font-bold mt-2">contact@polyvalences.eu</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between text-xs">
-                <div>&copy; 2026 PolyValences SAS. Tous droits réservés.</div>
-                <div class="flex gap-4 mt-4 md:mt-0">
-                    <a href="#" class="hover:text-white">Mentions Légales</a>
-                    <a href="#" class="hover:text-white">CGV</a>
-                    <a href="#" class="hover:text-white">Politique de confidentialité</a>
-                </div>
-            </div>
+<!-- ===== AUTH OVERLAY / MODAL ===== -->
+<div class="auth-overlay" id="authOverlay" onclick="if(event.target===this)closeAuth()">
+    <div class="auth-modal">
+        <button class="auth-close" onclick="closeAuth()"><i class="fas fa-times"></i></button>
+
+        <div class="auth-icon-wrap">
+            <i class="fas fa-lock"></i>
         </div>
-    </footer>
+        <h2>Accédez à votre devis</h2>
+        <p>Connectez-vous ou créez un compte gratuit pour obtenir votre devis instantané en ligne.</p>
+
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchTab('login')">Connexion</button>
+            <button class="auth-tab" onclick="switchTab('register')">Créer un compte</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form class="auth-form active" id="formLogin" onsubmit="event.preventDefault()">
+            <div class="auth-input-group">
+                <label>Email</label>
+                <input type="email" placeholder="votre@email.com" required>
+            </div>
+            <div class="auth-input-group">
+                <label>Mot de passe</label>
+                <input type="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="auth-submit">
+                Se connecter <i class="fas fa-arrow-right" style="margin-left:8px"></i>
+            </button>
+            <p class="auth-note">
+                <a href="#" style="color:var(--blue);text-decoration:none;font-weight:600">Mot de passe oublié ?</a>
+            </p>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form class="auth-form" id="formRegister" onsubmit="event.preventDefault(); showPendingMessage()">
+            <div class="auth-row">
+                <div class="auth-input-group">
+                    <label>Prénom</label>
+                    <input type="text" placeholder="Jean" required>
+                </div>
+                <div class="auth-input-group">
+                    <label>Nom</label>
+                    <input type="text" placeholder="Dupont" required>
+                </div>
+            </div>
+            <div class="auth-input-group">
+                <label>Email professionnel</label>
+                <input type="email" placeholder="votre@entreprise.com" required>
+            </div>
+            <div class="auth-input-group">
+                <label>Téléphone</label>
+                <input type="tel" placeholder="06 XX XX XX XX" required>
+            </div>
+            <div class="auth-row">
+                <div class="auth-input-group">
+                    <label>Type de compte</label>
+                    <select>
+                        <option value="pro">Professionnel</option>
+                        <option value="particulier">Particulier</option>
+                    </select>
+                </div>
+                <div class="auth-input-group">
+                    <label>Entreprise <span style="color:var(--slate-400);font-weight:400">(optionnel)</span></label>
+                    <input type="text" placeholder="Nom de l'entreprise">
+                </div>
+            </div>
+            <div class="auth-input-group">
+                <label>Mot de passe</label>
+                <input type="password" placeholder="8 caractères minimum" required>
+            </div>
+            <button type="submit" class="auth-submit">
+                Créer mon compte <i class="fas fa-arrow-right" style="margin-left:8px"></i>
+            </button>
+            <p class="auth-note">
+                <i class="fas fa-shield-alt"></i>
+                Chaque inscription est vérifiée par notre équipe.<br>
+                Validation sous quelques heures.
+            </p>
+        </form>
+
+        <!-- PENDING STATE (after registration) -->
+        <div class="auth-form" id="formPending" style="text-align:center; padding: 20px 0;">
+            <div style="width:72px;height:72px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+                <i class="fas fa-check" style="font-size:32px;color:#16a34a"></i>
+            </div>
+            <h3 style="font-size:20px;font-weight:700;color:var(--slate-900);margin-bottom:8px;font-family:'Playfair Display',serif">Demande envoyée !</h3>
+            <p style="font-size:14px;color:var(--slate-500);line-height:1.7;margin-bottom:24px">
+                Votre inscription est en cours de vérification.<br>
+                Vous recevrez un email de confirmation dès que votre compte sera activé — <strong>généralement sous quelques heures</strong>.
+            </p>
+            <button class="auth-submit" onclick="closeAuth()" style="background:var(--emerald)">
+                Compris <i class="fas fa-check" style="margin-left:8px"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auth modal
+    function openAuth(tab) {
+        document.getElementById('authOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        switchTab(tab || 'login');
+        // Reset pending state
+        document.getElementById('formPending').style.display = 'none';
+    }
+
+    function closeAuth() {
+        document.getElementById('authOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.auth-tab').forEach((t, i) => {
+            t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+        });
+        document.getElementById('formLogin').classList.toggle('active', tab === 'login');
+        document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
+        document.getElementById('formRegister').classList.toggle('active', tab === 'register');
+        document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
+        document.getElementById('formPending').style.display = 'none';
+    }
+
+    function showPendingMessage() {
+        document.getElementById('formRegister').style.display = 'none';
+        document.getElementById('formLogin').style.display = 'none';
+        document.querySelectorAll('.auth-tab').forEach(t => t.style.display = 'none');
+        document.getElementById('formPending').style.display = 'block';
+    }
+
+    // FAQ accordion
+    function toggleFaq(btn) {
+        const answer = btn.nextElementSibling;
+        const isOpen = answer.classList.contains('open');
+        
+        // Close all
+        document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+        document.querySelectorAll('.faq-question').forEach(q => q.classList.remove('open'));
+        
+        if (!isOpen) {
+            answer.classList.add('open');
+            btn.classList.add('open');
+        }
+    }
+
+    // Escape key closes modal
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeAuth();
+    });
+</script>
 
 </body>
 </html>
