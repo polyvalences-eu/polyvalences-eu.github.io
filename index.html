@@ -329,6 +329,153 @@
         }
         .sim-footnote span { color: var(--blue); font-weight: 600; }
 
+        /* ===== AUTOCOMPLETE DROPDOWN ===== */
+        .ac-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 1px solid var(--slate-200);
+            border-radius: 0 0 10px 10px; border-top: none;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 50; display: none;
+            max-height: 220px; overflow-y: auto;
+        }
+        .ac-dropdown.show { display: block; }
+        .ac-item {
+            padding: 10px 14px 10px 40px;
+            font-size: 13px; color: var(--slate-700);
+            cursor: pointer; transition: background 0.15s;
+            border-bottom: 1px solid var(--slate-50);
+        }
+        .ac-item:hover { background: var(--blue-pale); }
+        .ac-item:last-child { border-bottom: none; }
+
+        /* ===== AUTOCOMPLETE DROPDOWN ===== */
+        .ac-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 1px solid var(--slate-200);
+            border-radius: 0 0 10px 10px; border-top: none;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 50; display: none;
+            max-height: 220px; overflow-y: auto;
+        }
+        .ac-dropdown.show { display: block; }
+        .ac-item {
+            padding: 10px 14px 10px 40px;
+            font-size: 13px; color: var(--slate-700);
+            cursor: pointer; transition: background 0.15s;
+            border-bottom: 1px solid var(--slate-50);
+        }
+        .ac-item:hover { background: var(--blue-pale); }
+        .ac-item:last-child { border-bottom: none; }
+        /* ===== QUOTE RESULT ===== */
+        .sim-result {
+            display: none; margin-top: 20px;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 2px solid #bbf7d0;
+            border-radius: var(--radius); padding: 24px;
+            animation: modal-in 0.3s ease-out;
+        }
+        .sim-result.show { display: block; }
+        .sim-result-route {
+            font-size: 13px; color: var(--slate-500);
+            margin-bottom: 4px;
+        }
+        .sim-result-price {
+            font-size: 40px; font-weight: 800;
+            color: #16a34a; font-family: 'Playfair Display', serif;
+            margin-bottom: 4px;
+        }
+        .sim-result-grid {
+            font-size: 12px; color: var(--slate-400);
+            margin-bottom: 16px;
+        }
+        .sim-result-details {
+            list-style: none;
+        }
+        .sim-result-details li {
+            font-size: 13px; color: var(--slate-600);
+            padding: 6px 0;
+            display: flex; justify-content: space-between;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .sim-result-details li:last-child { border-bottom: none; }
+        .sim-result-details li .label { display: flex; align-items: center; gap: 6px; }
+        .sim-result-details li .label i { color: var(--slate-400); font-size: 11px; width: 16px; text-align: center; }
+        .sim-result-details li .price { font-weight: 700; }
+        .sim-result-contact {
+            margin-top: 16px; padding: 16px;
+            background: #fef3c7; border: 1px solid #fde68a;
+            border-radius: 10px; text-align: center;
+            font-size: 14px; color: #92400e;
+        }
+        .sim-result-contact a {
+            color: var(--blue); font-weight: 700;
+            text-decoration: none;
+        }
+        .sim-result-cta {
+            width: 100%; padding: 14px; margin-top: 16px;
+            background: #16a34a; color: white; border: none;
+            border-radius: var(--radius); font-size: 14px;
+            font-weight: 700; font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .sim-result-cta:hover { background: #15803d; }
+
+        /* ===== USER MENU ===== */
+        .user-menu {
+            position: absolute; top: 100%; right: 0;
+            margin-top: 8px; background: white;
+            border-radius: var(--radius); padding: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            border: 1px solid var(--slate-100);
+            min-width: 220px; z-index: 150;
+            animation: modal-in 0.2s ease-out;
+        }
+        .user-menu-name {
+            font-size: 14px; font-weight: 700; color: var(--slate-900);
+        }
+        .user-menu-email {
+            font-size: 12px; color: var(--slate-400); margin-bottom: 12px;
+        }
+        .user-menu-sep {
+            height: 1px; background: var(--slate-100); margin-bottom: 12px;
+        }
+        .user-menu-btn {
+            width: 100%; padding: 10px; background: var(--slate-50);
+            border: 1px solid var(--slate-200); border-radius: 8px;
+            font-size: 13px; font-weight: 600; color: #dc2626;
+            cursor: pointer; transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; gap: 8px;
+            justify-content: center;
+        }
+        .user-menu-btn:hover { background: #fef2f2; border-color: #fecaca; }
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 32px; right: 32px;
+            background: var(--navy); color: white;
+            padding: 16px 24px; border-radius: var(--radius);
+            font-size: 14px; font-weight: 600;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            z-index: 300; display: flex; align-items: center; gap: 10px;
+            animation: toast-in 0.3s ease-out;
+        }
+        .toast i { color: #4ade80; }
+
+        /* ===== AUTH ERROR ===== */
+        .auth-error {
+            display: none; padding: 12px 14px;
+            background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 8px; margin-bottom: 14px;
+            font-size: 13px; color: #dc2626; font-weight: 500;
+            animation: modal-in 0.2s ease-out;
+        }
+        .auth-error.show { display: flex; align-items: center; gap: 8px; }
+        .auth-error i { flex-shrink: 0; }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* ===== AUTH OVERLAY ===== */
         .auth-overlay {
             display: none;
@@ -896,6 +1043,8 @@
                 <p class="sim-footnote">
                     Calcul instantané via HERE Maps &bull; <span>Gratuit et sans engagement</span>
                 </p>
+                <!-- QUOTE RESULT -->
+                <div class="sim-result" id="quoteResult"></div>
             </div>
         </div>
     </div>
@@ -1217,7 +1366,8 @@
         </div>
 
         <!-- LOGIN FORM -->
-        <form class="auth-form active" id="formLogin" onsubmit="event.preventDefault()">
+        <form class="auth-form active" id="formLogin" onsubmit="event.preventDefault(); handleLogin()">
+            <div class="auth-error" id="loginError"><i class="fas fa-exclamation-circle"></i><span></span></div>
             <div class="auth-input-group">
                 <label>Email</label>
                 <input type="email" placeholder="votre@email.com" required>
@@ -1230,12 +1380,13 @@
                 Se connecter <i class="fas fa-arrow-right" style="margin-left:8px"></i>
             </button>
             <p class="auth-note">
-                <a href="#" style="color:var(--blue);text-decoration:none;font-weight:600">Mot de passe oublié ?</a>
+                <a href="#" onclick="event.preventDefault(); alert('Contactez-nous à contact@polyvalences.eu pour réinitialiser votre mot de passe.')" style="color:var(--blue);text-decoration:none;font-weight:600">Mot de passe oublié ?</a>
             </p>
         </form>
 
         <!-- REGISTER FORM -->
-        <form class="auth-form" id="formRegister" onsubmit="event.preventDefault(); showPendingMessage()">
+        <form class="auth-form" id="formRegister" onsubmit="event.preventDefault(); handleRegister()">
+            <div class="auth-error" id="registerError"><i class="fas fa-exclamation-circle"></i><span></span></div>
             <div class="auth-row">
                 <div class="auth-input-group">
                     <label>Prénom</label>
@@ -1299,6 +1450,15 @@
 </div>
 
 <script>
+    // ===== CONFIG =====
+    const API = 'https://api.polyvalences.eu';
+    let authToken = localStorage.getItem('pv_token');
+    let currentUser = null;
+
+    // ===== STATE SIMULATEUR =====
+    let originData = null;   // { lat, lng, address }
+    let destData = null;     // { lat, lng, address }
+
     // Auth modal
     function openAuth(tab) {
         document.getElementById('authOverlay').classList.add('active');
@@ -1331,6 +1491,313 @@
         document.getElementById('formPending').style.display = 'block';
     }
 
+    // ===== LOGIN =====
+    async function handleLogin() {
+        const form = document.getElementById('formLogin');
+        const email = form.querySelector('input[type="email"]').value;
+        const password = form.querySelector('input[type="password"]').value;
+        const btn = form.querySelector('.auth-submit');
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+
+        try {
+            const res = await fetch(API + '/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                showAuthError('loginError', data.error || 'Erreur de connexion');
+                return;
+            }
+
+            authToken = data.token;
+            currentUser = data.user;
+            localStorage.setItem('pv_token', authToken);
+            closeAuth();
+            activateSimulator();
+            showToast('Bienvenue, ' + data.user.first_name + ' !');
+
+        } catch (err) {
+            showAuthError('loginError', 'Impossible de contacter le serveur. Réessayez.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Se connecter <i class="fas fa-arrow-right" style="margin-left:8px"></i>';
+        }
+    }
+
+    // ===== ACTIVATE SIMULATOR (after login) =====
+    function activateSimulator() {
+        // Enable inputs
+        document.querySelectorAll('.sim-field input').forEach(input => {
+            input.disabled = false;
+            input.style.color = 'var(--slate-800)';
+            input.style.cursor = 'text';
+        });
+        document.querySelectorAll('.sim-checkbox').forEach(cb => {
+            cb.disabled = false;
+            cb.style.cursor = 'pointer';
+        });
+
+        // Change button
+        const btn = document.querySelector('.sim-btn-placeholder');
+        btn.textContent = '';
+        btn.innerHTML = 'Calculer mon devis <i class="fas fa-calculator"></i>';
+        btn.onclick = handleQuote;
+
+        // Update nav CTA
+        const navCta = document.querySelector('.nav-cta');
+        if (currentUser) {
+            navCta.innerHTML = '<i class="fas fa-user" style="margin-right:6px"></i> ' + currentUser.first_name;
+            navCta.onclick = () => openUserMenu();
+        }
+
+        // Update hero CTAs
+        const heroBtn = document.querySelector('.hero-ctas .btn-primary');
+        if (heroBtn) {
+            heroBtn.innerHTML = '<i class="fas fa-calculator"></i> Simuler un convoyage';
+            heroBtn.onclick = (e) => {
+                e.preventDefault();
+                document.getElementById('simulateur').scrollIntoView({ behavior: 'smooth' });
+                document.querySelectorAll('.sim-field input')[0].focus();
+            };
+        }
+
+        // Init autocomplete on inputs
+        initAutocomplete();
+    }
+
+    // ===== REGISTER =====
+    async function handleRegister() {
+        const form = document.getElementById('formRegister');
+        const inputs = form.querySelectorAll('input');
+        const select = form.querySelector('select');
+        const btn = form.querySelector('.auth-submit');
+
+        const first_name = inputs[0].value.trim();
+        const last_name = inputs[1].value.trim();
+        const email = inputs[2].value.trim();
+        const phone = inputs[3].value.trim();
+        const account_type = select.value;
+        const company = inputs[4].value.trim();
+        const password = inputs[5].value;
+
+        if (!first_name || !last_name || !email || !phone || !password) {
+            showAuthError('registerError', 'Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+        if (password.length < 8) {
+            showAuthError('registerError', 'Le mot de passe doit contenir au moins 8 caractères.');
+            return;
+        }
+        if (password.length < 8) {
+            alert('Le mot de passe doit contenir au moins 8 caractères.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+
+        try {
+            const res = await fetch(API + '/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, first_name, last_name, phone, account_type, company: company || null })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                showAuthError('registerError', data.error || 'Erreur lors de l\'inscription');
+                return;
+            }
+
+            showPendingMessage();
+
+        } catch (err) {
+            showAuthError('registerError', 'Impossible de contacter le serveur. Réessayez.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Créer mon compte <i class="fas fa-arrow-right" style="margin-left:8px"></i>';
+        }
+    }
+
+    // ===== QUOTE =====
+    async function handleQuote() {
+        if (!originData || !destData) {
+            showToast('Sélectionnez une adresse de départ et d\'arrivée dans les suggestions.');
+            return;
+        }
+
+        const restitution = document.querySelectorAll('.sim-checkbox')[0].checked;
+        const peage = document.querySelectorAll('.sim-checkbox')[1].checked;
+        const btn = document.querySelector('.sim-btn-placeholder');
+        const resultDiv = document.getElementById('quoteResult');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calcul en cours...';
+        resultDiv.classList.remove('show');
+
+        try {
+            const res = await fetch(API + '/api/quote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify({
+                    origin: { lat: originData.lat, lng: originData.lng },
+                    destination: { lat: destData.lat, lng: destData.lng },
+                    restitution,
+                    peage
+                })
+            });
+            const data = await res.json();
+
+            if (res.status === 401) {
+                localStorage.removeItem('pv_token');
+                authToken = null;
+                alert('Session expirée. Veuillez vous reconnecter.');
+                openAuth('login');
+                return;
+            }
+
+            if (!res.ok) {
+                alert(data.error || 'Erreur lors du calcul');
+                return;
+            }
+
+            displayQuoteResult(data);
+
+        } catch (err) {
+            alert('Impossible de contacter le serveur. Réessayez.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Calculer mon devis <i class="fas fa-calculator"></i>';
+        }
+    }
+
+    function displayQuoteResult(data) {
+        const resultDiv = document.getElementById('quoteResult');
+
+        if (data.contact_required) {
+            resultDiv.innerHTML = `
+                <div class="sim-result-contact">
+                    <i class="fas fa-info-circle" style="margin-right:6px"></i>
+                    ${data.message}<br><br>
+                    <a href="tel:+33XXXXXXXXX"><i class="fas fa-phone"></i> 01 XX XX XX XX</a>
+                    &nbsp;&bull;&nbsp;
+                    <a href="mailto:contact@polyvalences.eu"><i class="fas fa-envelope"></i> contact@polyvalences.eu</a>
+                </div>`;
+            resultDiv.classList.add('show');
+            return;
+        }
+
+        const h = Math.floor(data.duration_minutes / 60);
+        const m = data.duration_minutes % 60;
+        const durationStr = h > 0 ? h + 'h' + (m > 0 ? m.toString().padStart(2, '0') : '') : m + ' min';
+
+        let detailsHtml = '';
+        data.details.forEach((line, i) => {
+            const isBase = i === 0;
+            const icon = isBase ? 'fa-road' :
+                         line.includes('Restitution') ? 'fa-sync-alt' :
+                         line.includes('péage') ? 'fa-truck-pickup' :
+                         line.includes('départ') ? 'fa-train' :
+                         line.includes('arrivée') ? 'fa-train' : 'fa-tag';
+
+            // Parse label and price from "Label : prix €"
+            const parts = line.split(' : ');
+            const label = parts[0];
+            const price = parts[1] || '';
+
+            detailsHtml += `<li><span class="label"><i class="fas ${icon}"></i> ${label}</span><span class="price">${price}</span></li>`;
+        });
+
+        resultDiv.innerHTML = `
+            <div class="sim-result-route">
+                <i class="fas fa-route" style="margin-right:4px"></i>
+                ${data.distance_km} km &bull; ~${durationStr} &bull; Grille ${data.grid}
+            </div>
+            <div class="sim-result-price">${data.amount.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</div>
+            <div class="sim-result-grid">TTC — Devis valable 30 jours</div>
+            <ul class="sim-result-details">
+                ${detailsHtml}
+            </ul>
+            <button class="sim-result-cta" onclick="alert('Fonctionnalité disponible prochainement. Contactez-nous pour confirmer ce devis.')">
+                <i class="fas fa-check" style="margin-right:6px"></i> Confirmer ce devis
+            </button>`;
+
+        resultDiv.classList.add('show');
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ===== AUTOCOMPLETE =====
+    let acTimeout = null;
+
+    function initAutocomplete() {
+        const originInput = document.querySelectorAll('.sim-field input')[0];
+        const destInput = document.querySelectorAll('.sim-field input')[1];
+
+        [originInput, destInput].forEach(input => {
+            const dropdown = document.createElement('div');
+            dropdown.className = 'ac-dropdown';
+            input.parentElement.appendChild(dropdown);
+        });
+
+        originInput.addEventListener('input', () => handleAutocomplete(originInput, 'origin'));
+        destInput.addEventListener('input', () => handleAutocomplete(destInput, 'destination'));
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.sim-field')) {
+                document.querySelectorAll('.ac-dropdown').forEach(d => d.classList.remove('show'));
+            }
+        });
+    }
+
+    async function handleAutocomplete(input, type) {
+        const q = input.value.trim();
+        const dropdown = input.parentElement.querySelector('.ac-dropdown');
+
+        if (q.length < 2) {
+            dropdown.classList.remove('show');
+            return;
+        }
+
+        clearTimeout(acTimeout);
+        acTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+                const data = await res.json();
+
+                if (!data.items || data.items.length === 0) {
+                    dropdown.classList.remove('show');
+                    return;
+                }
+
+                dropdown.innerHTML = data.items.map(item =>
+                    `<div class="ac-item" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
+                ).join('');
+                dropdown.classList.add('show');
+
+                dropdown.querySelectorAll('.ac-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        input.value = el.dataset.address;
+                        const selected = { lat: parseFloat(el.dataset.lat), lng: parseFloat(el.dataset.lng), address: el.dataset.address };
+                        if (type === 'origin') originData = selected;
+                        else destData = selected;
+                        dropdown.classList.remove('show');
+                    });
+                });
+
+            } catch (err) {
+                console.error('Autocomplete error:', err);
+            }
+        }, 300);
+    }
+
     // FAQ accordion
     function toggleFaq(btn) {
         const answer = btn.nextElementSibling;
@@ -1350,6 +1817,89 @@
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeAuth();
     });
+
+    // ===== AUTH ERRORS =====
+    function showAuthError(id, message) {
+        const el = document.getElementById(id);
+        el.querySelector('span').textContent = message;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 6000);
+    }
+
+    // ===== TOAST =====
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = '<i class="fas fa-check-circle"></i> ' + message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            toast.style.transition = 'all 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // ===== USER MENU (logout) =====
+    function openUserMenu() {
+        const existing = document.querySelector('.user-menu');
+        if (existing) { existing.remove(); return; }
+
+        const navCta = document.querySelector('.nav-cta');
+        const menu = document.createElement('div');
+        menu.className = 'user-menu';
+        menu.innerHTML = `
+            <div class="user-menu-name">${currentUser.first_name} ${currentUser.last_name}</div>
+            <div class="user-menu-email">${currentUser.email}</div>
+            <div class="user-menu-sep"></div>
+            <button class="user-menu-btn" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
+        `;
+        navCta.parentElement.style.position = 'relative';
+        navCta.parentElement.appendChild(menu);
+
+        // Close on click outside
+        setTimeout(() => {
+            document.addEventListener('click', function closeMenu(e) {
+                if (!e.target.closest('.user-menu') && !e.target.closest('.nav-cta')) {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
+        }, 10);
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('pv_token');
+        authToken = null;
+        currentUser = null;
+        location.reload();
+    }
+
+    // ===== AUTO-RESTORE SESSION =====
+    async function checkSession() {
+        if (!authToken) return;
+        try {
+            const res = await fetch(API + '/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                currentUser = data.user;
+                activateSimulator();
+            } else {
+                // Token expiré ou invalide
+                localStorage.removeItem('pv_token');
+                authToken = null;
+            }
+        } catch (err) {
+            console.error('Session check failed:', err);
+        }
+    }
+
+    // Launch on page load
+    checkSession();
 </script>
 
 </body>
