@@ -310,8 +310,17 @@
         .sim-checkbox {
             width: 20px; height: 20px; border-radius: 5px;
             border: 2px solid var(--slate-300);
-            appearance: none; cursor: default;
-            background: white;
+            appearance: none; cursor: pointer;
+            background: white; transition: all 0.2s;
+            position: relative;
+        }
+        .sim-checkbox:checked {
+            background: var(--blue); border-color: var(--blue);
+        }
+        .sim-checkbox:checked::after {
+            content: '✓'; position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: white; font-size: 13px; font-weight: 700;
         }
         .sim-btn-placeholder {
             width: 100%; padding: 16px;
