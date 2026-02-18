@@ -461,6 +461,26 @@
             border-radius: 6px; background: var(--blue-pale); color: var(--blue);
         }
 
+        /* ===== AUTOCOMPLETE DROPDOWN ===== */
+        .ac-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 2px solid var(--blue);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            z-index: 50; display: none;
+            max-height: 200px; overflow-y: auto;
+        }
+        .ac-dropdown.show { display: block; }
+        .ac-item {
+            padding: 10px 14px;
+            font-size: 13px; color: var(--slate-700);
+            cursor: pointer; transition: background 0.15s;
+            border-bottom: 1px solid var(--slate-50);
+        }
+        .ac-item:hover { background: var(--blue-pale); }
+        .ac-item:last-child { border-bottom: none; }
+
         /* ===== TOAST ===== */
         .toast {
             position: fixed; bottom: 24px; right: 24px;
@@ -726,9 +746,12 @@
                                 <label>Kilométrage</label>
                                 <input type="number" id="vMileage" placeholder="85000">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="position:relative;">
                                 <label>Localisation actuelle</label>
-                                <input type="text" id="vLocation" placeholder="Paris, Lille, Dépôt Nord...">
+                                <input type="text" id="vLocation" placeholder="Saisissez une adresse ou ville..." autocomplete="off">
+                                <div class="ac-dropdown" id="vLocationDropdown"></div>
+                                <input type="hidden" id="vLocationLat">
+                                <input type="hidden" id="vLocationLng">
                             </div>
                         </div>
                         <div class="form-group">
@@ -858,6 +881,14 @@
                                 <label>Date prévisionnelle</label>
                                 <input type="date" id="aPlannedDate">
                             </div>
+                            <div class="form-group" id="aDestinationGroup" style="display:none; position:relative;">
+                                <label>Lieu de destination</label>
+                                <input type="text" id="aDestination" placeholder="Ville ou adresse de destination..." autocomplete="off">
+                                <div class="ac-dropdown" id="aDestinationDropdown"></div>
+                                <input type="hidden" id="aDestinationLat">
+                                <input type="hidden" id="aDestinationLng">
+                            </div>
+                            <div id="quoteEstimateWrap" style="display:none; margin-bottom:16px;"></div>
                             <input type="hidden" id="aStatus" value="active">
                             <button type="submit" class="btn-primary" id="btnSaveAssign">
                                 <i class="fas fa-check"></i> Affecter maintenant
@@ -1203,6 +1234,8 @@
         document.getElementById('vModel').value = '';
         document.getElementById('vMileage').value = '';
         document.getElementById('vLocation').value = '';
+        document.getElementById('vLocationLat').value = '';
+        document.getElementById('vLocationLng').value = '';
         document.getElementById('vNotes').value = '';
         document.getElementById('vStatus').value = 'libre';
         document.getElementById('btnSaveVehicle').innerHTML = '<i class="fas fa-save"></i> Enregistrer le véhicule';
@@ -1218,6 +1251,8 @@
         document.getElementById('vModel').value = v.model || '';
         document.getElementById('vMileage').value = v.mileage || '';
         document.getElementById('vLocation').value = v.location || '';
+        document.getElementById('vLocationLat').value = v.location_lat || '';
+        document.getElementById('vLocationLng').value = v.location_lng || '';
         document.getElementById('vNotes').value = v.notes || '';
         document.getElementById('vStatus').value = v.status || 'libre';
         document.getElementById('btnSaveVehicle').innerHTML = '<i class="fas fa-save"></i> Mettre à jour';
@@ -1241,6 +1276,8 @@
             mileage: document.getElementById('vMileage').value ? parseInt(document.getElementById('vMileage').value) : null,
             status: document.getElementById('vStatus').value,
             location: document.getElementById('vLocation').value.trim() || null,
+            location_lat: document.getElementById('vLocationLat').value ? parseFloat(document.getElementById('vLocationLat').value) : null,
+            location_lng: document.getElementById('vLocationLng').value ? parseFloat(document.getElementById('vLocationLng').value) : null,
             notes: document.getElementById('vNotes').value.trim() || null,
         };
 
@@ -1485,16 +1522,24 @@
         document.getElementById('aEmail').value = '';
         document.getElementById('aPhone').value = '';
         document.getElementById('aPlannedDate').value = '';
+        document.getElementById('aDestination').value = '';
+        document.getElementById('aDestinationLat').value = '';
+        document.getElementById('aDestinationLng').value = '';
+        document.getElementById('quoteEstimateWrap').style.display = 'none';
+        document.getElementById('quoteEstimateWrap').innerHTML = '';
         document.getElementById('aStatus').value = type;
 
         if (type === 'future') {
             document.getElementById('assignFormTitle').textContent = 'Planifier une affectation future';
             document.getElementById('aPlannedDateGroup').style.display = '';
+            document.getElementById('aDestinationGroup').style.display = '';
             document.getElementById('btnSaveAssign').innerHTML = '<i class="fas fa-calendar-plus"></i> Planifier';
             document.getElementById('btnSaveAssign').style.background = 'var(--amber)';
         } else {
             document.getElementById('assignFormTitle').textContent = 'Nouvelle affectation';
             document.getElementById('aPlannedDateGroup').style.display = 'none';
+            document.getElementById('aDestinationGroup').style.display = 'none';
+            document.getElementById('quoteEstimateWrap').style.display = 'none';
             document.getElementById('btnSaveAssign').innerHTML = '<i class="fas fa-check"></i> Affecter maintenant';
             document.getElementById('btnSaveAssign').style.background = '';
         }
@@ -1506,6 +1551,7 @@
         btn.disabled = true;
 
         const status = document.getElementById('aStatus').value;
+        const estimatedCost = document.getElementById('quoteEstimateWrap').dataset.cost;
         const payload = {
             assigned_to: document.getElementById('aAssignedTo').value.trim(),
             assigned_to_email: document.getElementById('aEmail').value.trim() || null,
@@ -1513,6 +1559,10 @@
             assignment_profile: document.getElementById('aProfile').value.trim() || null,
             status: status,
             planned_date: status === 'future' ? document.getElementById('aPlannedDate').value || null : null,
+            destination: status === 'future' ? document.getElementById('aDestination').value.trim() || null : null,
+            destination_lat: status === 'future' && document.getElementById('aDestinationLat').value ? parseFloat(document.getElementById('aDestinationLat').value) : null,
+            destination_lng: status === 'future' && document.getElementById('aDestinationLng').value ? parseFloat(document.getElementById('aDestinationLng').value) : null,
+            estimated_cost: status === 'future' && estimatedCost ? parseFloat(estimatedCost) : null,
         };
 
         try {
@@ -1575,8 +1625,181 @@
         }
     }
 
+    // ===== AUTOCOMPLETE HERE =====
+        let acTimeout = null;
+
+        function initLocationAutocomplete(inputId, dropdownId, latId, lngId) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+
+            input.addEventListener('input', () => {
+                const q = input.value.trim();
+                if (q.length < 2) { dropdown.classList.remove('show'); return; }
+
+                clearTimeout(acTimeout);
+                acTimeout = setTimeout(async () => {
+                    try {
+                        const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+                        const data = await res.json();
+                        if (!data.items || data.items.length === 0) { dropdown.classList.remove('show'); return; }
+
+                        dropdown.innerHTML = data.items.map(item =>
+                            `<div class="ac-item" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
+                        ).join('');
+                        dropdown.classList.add('show');
+
+                        dropdown.querySelectorAll('.ac-item').forEach(el => {
+                            el.addEventListener('click', () => {
+                                input.value = el.dataset.address;
+                                document.getElementById(latId).value = el.dataset.lat;
+                                document.getElementById(lngId).value = el.dataset.lng;
+                                dropdown.classList.remove('show');
+                            });
+                        });
+                    } catch (err) {
+                        console.error('Autocomplete error:', err);
+                    }
+                }, 300);
+            });
+        }
+
+        function initDestinationAutocomplete() {
+    const input = document.getElementById('aDestination');
+    const dropdown = document.getElementById('aDestinationDropdown');
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+        if (q.length < 2) { dropdown.classList.remove('show'); return; }
+
+        clearTimeout(acTimeout);
+        acTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+                const data = await res.json();
+                if (!data.items || data.items.length === 0) { dropdown.classList.remove('show'); return; }
+
+                dropdown.innerHTML = data.items.map(item =>
+                    `<div class="ac-item" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
+                ).join('');
+                dropdown.classList.add('show');
+
+                dropdown.querySelectorAll('.ac-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        input.value = el.dataset.address;
+                        document.getElementById('aDestinationLat').value = el.dataset.lat;
+                        document.getElementById('aDestinationLng').value = el.dataset.lng;
+                        dropdown.classList.remove('show');
+                        // Lancer l'estimation automatique
+                        estimateConvoyageCost();
+                    });
+                });
+            } catch (err) {
+                console.error('Autocomplete error:', err);
+            }
+        }, 300);
+    });
+}
+
+async function estimateConvoyageCost() {
+    const wrap = document.getElementById('quoteEstimateWrap');
+    
+    // Récupérer les coordonnées du véhicule actuel
+    const v = vehiclesData.find(x => x.id === currentVehicleId);
+    if (!v || !v.location_lat || !v.location_lng) {
+        wrap.style.display = '';
+        wrap.innerHTML = `
+            <div style="padding:12px 16px; border-radius:10px; background:#fef3c7; border:1px solid #fde68a; font-size:13px; color:#92400e;">
+                <i class="fas fa-info-circle" style="margin-right:6px;"></i>
+                Localisation du véhicule sans coordonnées GPS. Modifiez le véhicule et re-saisissez la localisation via l'autocomplete pour activer l'estimation.
+            </div>`;
+        return;
+    }
+
+    const destLat = parseFloat(document.getElementById('aDestinationLat').value);
+    const destLng = parseFloat(document.getElementById('aDestinationLng').value);
+    if (!destLat || !destLng) return;
+
+    // Afficher loading
+    wrap.style.display = '';
+    wrap.innerHTML = `
+        <div style="padding:14px 16px; border-radius:10px; background:var(--slate-50); border:1px solid var(--slate-200); font-size:13px; color:var(--slate-500); text-align:center;">
+            <i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i> Estimation du convoyage en cours...
+        </div>`;
+
+    try {
+        const res = await fetch(API + '/api/quote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + authToken
+            },
+            body: JSON.stringify({
+                origin: { lat: v.location_lat, lng: v.location_lng },
+                destination: { lat: destLat, lng: destLng },
+                restitution: false,
+                peage: false
+            })
+        });
+        const data = await res.json();
+
+        if (data.contact_required) {
+            wrap.innerHTML = `
+                <div style="padding:14px 16px; border-radius:10px; background:#fef3c7; border:1px solid #fde68a; font-size:13px; color:#92400e;">
+                    <i class="fas fa-phone-alt" style="margin-right:6px;"></i> ${data.message}
+                </div>`;
+            return;
+        }
+
+        if (data.amount) {
+            // Stocker le coût estimé pour le payload
+            document.getElementById('quoteEstimateWrap').dataset.cost = data.amount;
+
+            wrap.innerHTML = `
+                <div style="padding:16px; border-radius:10px; background:linear-gradient(135deg, rgba(5,150,105,0.06), rgba(37,99,235,0.06)); border:1px solid var(--emerald-pale);">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                        <div>
+                            <div style="font-size:12px; font-weight:700; color:var(--slate-400); text-transform:uppercase; margin-bottom:4px;">
+                                <i class="fas fa-route" style="margin-right:4px;"></i> Convoyage estimé · ${data.distance_km} km
+                            </div>
+                            <div style="font-size:28px; font-weight:800; color:var(--emerald); font-family:'Playfair Display',serif;">
+                                ${data.amount.toLocaleString('fr-FR')} €
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:11px; color:var(--slate-400); margin-bottom:4px;">Comparaison</div>
+                            <div style="font-size:13px; color:var(--emerald); font-weight:700;">
+                                Relocaliser : ${data.amount.toLocaleString('fr-FR')}€ <span style="font-size:11px; font-weight:400; color:var(--slate-400);">(une fois)</span>
+                            </div>
+                            <div style="font-size:13px; color:var(--red); font-weight:600;">
+                                Location : ~800€ <span style="font-size:11px; font-weight:400; color:var(--slate-400);">/mois</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px; font-size:11px; color:var(--slate-400);">
+                        Grille ${data.grid} · Tarif de base sans options · <a href="../devis/" target="_blank" style="color:var(--blue); text-decoration:none;">Devis détaillé →</a>
+                    </div>
+                </div>`;
+        }
+    } catch (err) {
+        console.error('Quote estimate failed:', err);
+        wrap.innerHTML = `
+            <div style="padding:12px 16px; border-radius:10px; background:#fef2f2; border:1px solid #fecaca; font-size:13px; color:var(--red);">
+                <i class="fas fa-exclamation-circle" style="margin-right:6px;"></i> Impossible d'estimer le coût. Réessayez.
+            </div>`;
+    }
+}
+
+        // Fermer les dropdowns au clic extérieur
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.form-group')) {
+                document.querySelectorAll('.ac-dropdown').forEach(d => d.classList.remove('show'));
+            }
+        });
+
     // ===== START =====
-    init();
+init();
+initLocationAutocomplete('vLocation', 'vLocationDropdown', 'vLocationLat', 'vLocationLng');
+initDestinationAutocomplete();
 </script>
 
 </body>
