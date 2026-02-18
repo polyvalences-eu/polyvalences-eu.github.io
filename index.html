@@ -671,6 +671,20 @@
             display: block; font-size: 13px; font-weight: 600;
             color: var(--slate-700); margin-bottom: 6px;
         }
+
+        .auth-input-group .password-wrap {
+            position: relative;
+        }
+        .auth-input-group .password-wrap input {
+            padding-right: 44px;
+        }
+        .password-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--slate-400); font-size: 15px;
+            padding: 4px; transition: color 0.2s;
+        }
+        .password-toggle:hover { color: var(--slate-600); }
         .auth-input-group input, .auth-input-group select {
             width: 100%; padding: 12px 14px;
             border: 1px solid var(--slate-200);
@@ -1564,7 +1578,10 @@
             </div>
             <div class="auth-input-group">
                 <label>Mot de passe</label>
-                <input type="password" placeholder="••••••••" required>
+                <div class="password-wrap">
+                    <input type="password" placeholder="••••••••" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
+                </div>
             </div>
             <button type="submit" class="auth-submit">
                 Se connecter <i class="fas fa-arrow-right" style="margin-left:8px"></i>
@@ -1641,7 +1658,10 @@
             </div>
             <div class="auth-input-group">
                 <label>Mot de passe</label>
-                <input type="password" placeholder="8 caractères minimum" required>
+                <div class="password-wrap">
+                    <input type="password" placeholder="8 caractères minimum" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
+                </div>
             </div>
 
             <button type="submit" class="auth-submit">
@@ -1717,7 +1737,7 @@
     async function handleLogin() {
         const form = document.getElementById('formLogin');
         const email = form.querySelector('input[type="email"]').value;
-        const password = form.querySelector('input[type="password"]').value;
+        const password = form.querySelector('.password-wrap input').value;
         const btn = form.querySelector('.auth-submit');
         
         btn.disabled = true;
@@ -2021,6 +2041,19 @@
             toast.style.transition = 'all 0.3s';
             setTimeout(() => toast.remove(), 300);
         }, 3000);
+    }
+
+    // ===== PASSWORD TOGGLE =====
+    function togglePassword(btn) {
+        const input = btn.parentElement.querySelector('input');
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
     }
 
     // ===== SIRET SEARCH =====
