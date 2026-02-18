@@ -743,6 +743,130 @@
                 </div>
             </div>
 
+            <!-- VEHICLE DETAIL PANEL (hidden by default) -->
+            <div id="vehicleDetailWrap" style="display:none; margin-bottom:24px;">
+                <div style="background:white; border:1px solid var(--slate-200); border-radius:var(--radius); padding:24px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <button onclick="closeVehicleDetail()" style="background:none; border:1px solid var(--slate-200); border-radius:8px; width:36px; height:36px; cursor:pointer; color:var(--slate-500); display:flex; align-items:center; justify-content:center;"><i class="fas fa-arrow-left"></i></button>
+                            <div>
+                                <div style="font-size:18px; font-weight:700; color:var(--slate-900); letter-spacing:0.5px;" id="detailPlate"></div>
+                                <div style="font-size:13px; color:var(--slate-500);" id="detailDesc"></div>
+                            </div>
+                        </div>
+                        <span class="vehicle-status-badge" id="detailStatusBadge"></span>
+                    </div>
+
+                    <!-- Vehicle info summary -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:24px; padding:16px; background:var(--slate-50); border-radius:10px;">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase;">Kilométrage</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--slate-800);" id="detailMileage">—</div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase;">Localisation</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--slate-800);" id="detailLocation">—</div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase;">Notes</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--slate-800);" id="detailNotes">—</div>
+                        </div>
+                    </div>
+
+                    <!-- AFFECTATION ACTUELLE -->
+                    <div style="margin-bottom:24px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                            <h3 style="font-size:15px; font-weight:700; color:var(--slate-800); font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px;">
+                                <i class="fas fa-user" style="color:var(--blue);"></i> Affectation actuelle
+                            </h3>
+                            <button class="btn-primary" style="padding:8px 16px; font-size:12px;" onclick="showAssignForm('active')" id="btnNewAssign">
+                                <i class="fas fa-plus"></i> Affecter
+                            </button>
+                        </div>
+                        <div id="currentAssignmentContent">
+                            <div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">
+                                Aucune affectation active
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AFFECTATIONS FUTURES -->
+                    <div style="margin-bottom:24px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                            <h3 style="font-size:15px; font-weight:700; color:var(--slate-800); font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px;">
+                                <i class="fas fa-calendar-alt" style="color:var(--amber);"></i> Affectations futures
+                            </h3>
+                            <button class="btn-primary" style="padding:8px 16px; font-size:12px; background:var(--amber);" onclick="showAssignForm('future')">
+                                <i class="fas fa-plus"></i> Planifier
+                            </button>
+                        </div>
+                        <div id="futureAssignmentsContent">
+                            <div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">
+                                Aucune affectation planifiée
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HISTORIQUE -->
+                    <div>
+                        <h3 style="font-size:15px; font-weight:700; color:var(--slate-800); font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                            <i class="fas fa-history" style="color:var(--slate-400);"></i> Historique des affectations
+                        </h3>
+                        <div id="historyAssignmentsContent">
+                            <div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">
+                                Aucun historique
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ASSIGN FORM (hidden) -->
+                    <div id="assignFormWrap" style="display:none; margin-top:24px; padding:20px; background:var(--slate-50); border:1px solid var(--slate-200); border-radius:10px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                            <h3 style="font-size:15px; font-weight:700; color:var(--slate-900); font-family:'DM Sans',sans-serif;" id="assignFormTitle">Nouvelle affectation</h3>
+                            <button onclick="document.getElementById('assignFormWrap').style.display='none'" style="background:none; border:none; cursor:pointer; color:var(--slate-400); font-size:16px;"><i class="fas fa-times"></i></button>
+                        </div>
+                        <form onsubmit="event.preventDefault(); saveAssignment()">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Conducteur *</label>
+                                    <input type="text" id="aAssignedTo" placeholder="Nom prénom du conducteur" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Profil d'affectation</label>
+                                    <input type="text" id="aProfile" list="profileSuggestions" placeholder="Ex : Dirigeant, Commercial...">
+                                    <datalist id="profileSuggestions">
+                                        <option value="Dirigeant">
+                                        <option value="Commercial">
+                                        <option value="Technicien">
+                                        <option value="Responsable secteur">
+                                        <option value="VIP">
+                                        <option value="Pool / Partagé">
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="aEmail" placeholder="conducteur@email.com">
+                                </div>
+                                <div class="form-group">
+                                    <label>Téléphone</label>
+                                    <input type="tel" id="aPhone" placeholder="06 XX XX XX XX">
+                                </div>
+                            </div>
+                            <div class="form-group" id="aPlannedDateGroup" style="display:none;">
+                                <label>Date prévisionnelle</label>
+                                <input type="date" id="aPlannedDate">
+                            </div>
+                            <input type="hidden" id="aStatus" value="active">
+                            <button type="submit" class="btn-primary" id="btnSaveAssign">
+                                <i class="fas fa-check"></i> Affecter maintenant
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- VEHICLES LIST -->
             <div id="vehiclesList">
                 <div style="text-align:center; padding:40px; color:var(--slate-400);">
@@ -1200,7 +1324,7 @@
                 const desc = [v.brand, v.model].filter(Boolean).join(' ') || 'Véhicule';
                 const assign = v.current_assignment;
                 return `
-                <div class="vehicle-card" onclick="event.stopPropagation()">
+                <div class="vehicle-card" onclick="openVehicleDetail(${v.id})">
                     <div class="vehicle-icon ${sc}"><i class="fas fa-car"></i></div>
                     <div class="vehicle-info">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -1225,6 +1349,229 @@
         } catch (err) {
             console.error('Load vehicles failed:', err);
             container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de connexion.</p>';
+        }
+    }
+
+    // ===== VEHICLE DETAIL =====
+    let currentVehicleId = null;
+
+    function openVehicleDetail(id) {
+        currentVehicleId = id;
+        document.getElementById('vehiclesList').style.display = 'none';
+        document.getElementById('vehicleFormWrap').style.display = 'none';
+        document.getElementById('vehicleDetailWrap').style.display = '';
+        document.getElementById('assignFormWrap').style.display = 'none';
+        loadVehicleDetail(id);
+    }
+
+    function closeVehicleDetail() {
+        currentVehicleId = null;
+        document.getElementById('vehicleDetailWrap').style.display = 'none';
+        document.getElementById('vehiclesList').style.display = '';
+        loadVehicles();
+    }
+
+    async function loadVehicleDetail(id) {
+        try {
+            const res = await fetch(API + '/api/vehicles/' + id, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { showToast('Erreur chargement', 'error'); return; }
+            const data = await res.json();
+            const v = data.vehicle;
+            const assignments = data.assignments || [];
+
+            // Header
+            document.getElementById('detailPlate').textContent = v.plate;
+            document.getElementById('detailDesc').textContent = [v.brand, v.model].filter(Boolean).join(' ') || 'Véhicule';
+            const badge = document.getElementById('detailStatusBadge');
+            badge.textContent = statusLabels[v.status] || v.status;
+            badge.className = 'vehicle-status-badge ' + statusClass(v.status);
+
+            // Info
+            document.getElementById('detailMileage').textContent = v.mileage ? v.mileage.toLocaleString('fr-FR') + ' km' : '—';
+            document.getElementById('detailLocation').textContent = v.location || '—';
+            document.getElementById('detailNotes').textContent = v.notes || '—';
+
+            // Current assignment
+            const active = assignments.filter(a => a.status === 'active');
+            const future = assignments.filter(a => a.status === 'future');
+            const ended = assignments.filter(a => a.status === 'ended');
+
+            const currentDiv = document.getElementById('currentAssignmentContent');
+            if (active.length > 0) {
+                const a = active[0];
+                document.getElementById('btnNewAssign').style.display = 'none';
+                currentDiv.innerHTML = `
+                    <div style="padding:16px; border:1px solid var(--blue-pale); border-radius:10px; background:rgba(37,99,235,0.04);">
+                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                            <div>
+                                <div style="font-size:15px; font-weight:700; color:var(--slate-900);">${a.assigned_to}</div>
+                                <div style="font-size:12px; color:var(--slate-500); margin-top:2px;">
+                                    ${a.assignment_profile ? '<span style="background:var(--blue-pale);color:var(--blue);padding:1px 6px;border-radius:4px;font-size:11px;font-weight:700;">' + a.assignment_profile + '</span> · ' : ''}
+                                    ${a.assigned_to_email ? a.assigned_to_email + ' · ' : ''}
+                                    ${a.assigned_to_phone || ''}
+                                </div>
+                                <div style="font-size:12px; color:var(--slate-400); margin-top:4px;">
+                                    <i class="fas fa-calendar-check" style="margin-right:4px;"></i> Depuis le ${a.start_date || '—'}
+                                </div>
+                            </div>
+                            <button class="btn-primary" style="padding:8px 16px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id})">
+                                <i class="fas fa-times"></i> Retirer
+                            </button>
+                        </div>
+                    </div>`;
+            } else {
+                document.getElementById('btnNewAssign').style.display = '';
+                currentDiv.innerHTML = '<div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">Aucune affectation active</div>';
+            }
+
+            // Future assignments
+            const futureDiv = document.getElementById('futureAssignmentsContent');
+            if (future.length > 0) {
+                futureDiv.innerHTML = future.map(a => `
+                    <div style="padding:14px; border:1px solid var(--amber-pale); border-radius:10px; background:rgba(217,119,6,0.04); margin-bottom:8px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                            <div>
+                                <div style="font-size:14px; font-weight:700; color:var(--slate-900);">${a.assigned_to}</div>
+                                <div style="font-size:12px; color:var(--slate-500); margin-top:2px;">
+                                    ${a.assignment_profile ? '<span style="background:var(--amber-pale);color:var(--amber);padding:1px 6px;border-radius:4px;font-size:11px;font-weight:700;">' + a.assignment_profile + '</span> · ' : ''}
+                                    Prévu le ${a.planned_date || '—'}
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn-primary" style="padding:7px 14px; font-size:12px;" onclick="activateAssignment(${a.id})" ${active.length > 0 ? 'disabled title="Retirez d\'abord l\'affectation active"' : ''}>
+                                    <i class="fas fa-play"></i> Activer
+                                </button>
+                                <button class="btn-primary" style="padding:7px 14px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id})">
+                                    <i class="fas fa-times"></i> Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            } else {
+                futureDiv.innerHTML = '<div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">Aucune affectation planifiée</div>';
+            }
+
+            // History
+            const historyDiv = document.getElementById('historyAssignmentsContent');
+            if (ended.length > 0) {
+                historyDiv.innerHTML = ended.map(a => `
+                    <div style="padding:12px 14px; border:1px solid var(--slate-100); border-radius:8px; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                        <div>
+                            <span style="font-size:14px; font-weight:600; color:var(--slate-700);">${a.assigned_to}</span>
+                            ${a.assignment_profile ? '<span style="background:var(--slate-100);color:var(--slate-500);padding:1px 6px;border-radius:4px;font-size:11px;font-weight:700;margin-left:6px;">' + a.assignment_profile + '</span>' : ''}
+                        </div>
+                        <div style="font-size:12px; color:var(--slate-400);">
+                            ${a.start_date || '?'} → ${a.end_date || '?'}
+                            ${a.end_reason ? ' · <em>' + a.end_reason + '</em>' : ''}
+                        </div>
+                    </div>`).join('');
+            } else {
+                historyDiv.innerHTML = '<div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">Aucun historique</div>';
+            }
+
+        } catch (err) {
+            console.error('Vehicle detail failed:', err);
+            showToast('Erreur de connexion', 'error');
+        }
+    }
+
+    // ===== ASSIGN FORM =====
+    function showAssignForm(type) {
+        document.getElementById('assignFormWrap').style.display = '';
+        document.getElementById('aAssignedTo').value = '';
+        document.getElementById('aProfile').value = '';
+        document.getElementById('aEmail').value = '';
+        document.getElementById('aPhone').value = '';
+        document.getElementById('aPlannedDate').value = '';
+        document.getElementById('aStatus').value = type;
+
+        if (type === 'future') {
+            document.getElementById('assignFormTitle').textContent = 'Planifier une affectation future';
+            document.getElementById('aPlannedDateGroup').style.display = '';
+            document.getElementById('btnSaveAssign').innerHTML = '<i class="fas fa-calendar-plus"></i> Planifier';
+            document.getElementById('btnSaveAssign').style.background = 'var(--amber)';
+        } else {
+            document.getElementById('assignFormTitle').textContent = 'Nouvelle affectation';
+            document.getElementById('aPlannedDateGroup').style.display = 'none';
+            document.getElementById('btnSaveAssign').innerHTML = '<i class="fas fa-check"></i> Affecter maintenant';
+            document.getElementById('btnSaveAssign').style.background = '';
+        }
+        document.getElementById('aAssignedTo').focus();
+    }
+
+    async function saveAssignment() {
+        const btn = document.getElementById('btnSaveAssign');
+        btn.disabled = true;
+
+        const status = document.getElementById('aStatus').value;
+        const payload = {
+            assigned_to: document.getElementById('aAssignedTo').value.trim(),
+            assigned_to_email: document.getElementById('aEmail').value.trim() || null,
+            assigned_to_phone: document.getElementById('aPhone').value.trim() || null,
+            assignment_profile: document.getElementById('aProfile').value.trim() || null,
+            status: status,
+            planned_date: status === 'future' ? document.getElementById('aPlannedDate').value || null : null,
+        };
+
+        try {
+            const res = await fetch(API + '/api/vehicles/' + currentVehicleId + '/assignments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message);
+                document.getElementById('assignFormWrap').style.display = 'none';
+                loadVehicleDetail(currentVehicleId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+        btn.disabled = false;
+    }
+
+    async function activateAssignment(id) {
+        if (!confirm('Activer cette affectation maintenant ?')) return;
+        try {
+            const res = await fetch(API + '/api/assignments/' + id + '/activate', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Affectation activée.');
+                loadVehicleDetail(currentVehicleId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+    }
+
+    async function endAssignment(id) {
+        const reason = prompt('Motif de fin (optionnel) :', '');
+        if (reason === null) return;
+        try {
+            const res = await fetch(API + '/api/assignments/' + id + '/end', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ end_reason: reason || null })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Affectation terminée.');
+                loadVehicleDetail(currentVehicleId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
         }
     }
 
