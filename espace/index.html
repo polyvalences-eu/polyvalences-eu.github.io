@@ -1487,7 +1487,6 @@
         } else if (firstReg) {
             const d = new Date(firstReg);
             d.setFullYear(d.getFullYear() + 4);
-            d.setMonth(d.getMonth() - 6);
             nextCtDate = d.toISOString().split('T')[0];
         }
 
@@ -1591,6 +1590,24 @@
                 const label = statusLabels[v.status] || v.status;
                 const desc = [v.brand, v.model].filter(Boolean).join(' ') || 'Véhicule';
                 const assign = v.current_assignment;
+                // Alert badges
+                let alertBadges = '';
+                if (v.next_ct_date) {
+                    const ctDays = Math.ceil((new Date(v.next_ct_date) - new Date()) / (1000 * 60 * 60 * 24));
+                    if (ctDays < 0) {
+                        alertBadges += '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#dc262620;color:#dc2626;"><i class="fas fa-exclamation-triangle" style="margin-right:3px;font-size:9px;"></i>CT expiré</span>';
+                    } else if (ctDays <= 180) {
+                        alertBadges += '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#d9770620;color:#d97706;"><i class="fas fa-clock" style="margin-right:3px;font-size:9px;"></i>CT ' + Math.ceil(ctDays / 30) + ' mois</span>';
+                    }
+                }
+                if (v.mileage && v.last_service_km && v.service_interval_km) {
+                    const kmLeft = v.service_interval_km - (v.mileage - v.last_service_km);
+                    if (kmLeft < 0) {
+                        alertBadges += '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#dc262620;color:#dc2626;"><i class="fas fa-wrench" style="margin-right:3px;font-size:9px;"></i>Révision</span>';
+                    } else if (kmLeft <= 3000) {
+                        alertBadges += '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#d9770620;color:#d97706;"><i class="fas fa-wrench" style="margin-right:3px;font-size:9px;"></i>Révision</span>';
+                    }
+                }
                 return `
                 <div class="vehicle-card" onclick="openVehicleDetail(${v.id})">
                     <div class="vehicle-icon ${sc}"><i class="fas fa-car"></i></div>
@@ -1599,6 +1616,7 @@
                             <span class="vehicle-plate">${v.plate}</span>
                             <span class="vehicle-status-badge ${sc}">${label}</span>
                             ${v.future_assignments > 0 ? '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--amber-pale);color:var(--amber);">' + v.future_assignments + ' future(s)</span>' : ''}
+                            ${alertBadges}
                         </div>
                         <div class="vehicle-desc">${desc}</div>
                         <div class="vehicle-meta">
@@ -1803,10 +1821,8 @@ function renderVehicleAlerts(vehicles) {
             const daysLeft = Math.ceil((nextCt - today) / (1000 * 60 * 60 * 24));
             if (daysLeft < 0) {
                 alerts.push({ vehicle: v, type: 'ct', level: 'red', msg: `CT expiré depuis ${Math.abs(daysLeft)}j`, icon: 'exclamation-triangle' });
-            } else if (daysLeft <= 30) {
-                alerts.push({ vehicle: v, type: 'ct', level: 'red', msg: `CT dans ${daysLeft}j`, icon: 'exclamation-circle' });
-            } else if (daysLeft <= 90) {
-                alerts.push({ vehicle: v, type: 'ct', level: 'orange', msg: `CT dans ${daysLeft}j`, icon: 'clock' });
+            } else if (daysLeft <= 180) {
+                alerts.push({ vehicle: v, type: 'ct', level: 'orange', msg: `CT dans ${Math.ceil(daysLeft / 30)} mois`, icon: 'clock' });
             }
         }
         if (v.ct_result && v.ct_result !== 'Favorable' && v.ct_result !== '') {
@@ -1892,17 +1908,15 @@ async function loadMaintenanceBlock(v) {
     if (v.next_ct_date) {
         const nextCt = new Date(v.next_ct_date);
         const daysLeft = Math.ceil((nextCt - today) / (1000 * 60 * 60 * 24));
+        const monthsLeft = Math.ceil(daysLeft / 30);
         let ctColor, ctIcon, ctMsg;
 
         if (daysLeft < 0) {
             ctColor = '#dc2626'; ctIcon = 'exclamation-triangle';
-            ctMsg = `CT expiré depuis le ${formatDate(v.next_ct_date)} (${Math.abs(daysLeft)} jours)`;
-        } else if (daysLeft <= 30) {
-            ctColor = '#dc2626'; ctIcon = 'exclamation-circle';
-            ctMsg = `CT urgent — échéance le ${formatDate(v.next_ct_date)} (${daysLeft} jours)`;
-        } else if (daysLeft <= 90) {
+            ctMsg = `CT expiré depuis le ${formatDate(v.next_ct_date)} (${Math.abs(daysLeft)} jours) — à régulariser d'urgence`;
+        } else if (daysLeft <= 180) {
             ctColor = '#d97706'; ctIcon = 'clock';
-            ctMsg = `CT à prévoir avant le ${formatDate(v.next_ct_date)} (${daysLeft} jours)`;
+            ctMsg = `CT à effectuer avant le ${formatDate(v.next_ct_date)} (${monthsLeft} mois restants)`;
         } else {
             ctColor = '#059669'; ctIcon = 'check-circle';
             ctMsg = `CT valide jusqu'au ${formatDate(v.next_ct_date)}`;
