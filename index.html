@@ -1576,24 +1576,8 @@
         <!-- REGISTER FORM -->
         <form class="auth-form" id="formRegister" onsubmit="event.preventDefault(); handleRegister()">
             <div class="auth-error" id="registerError"><i class="fas fa-exclamation-circle"></i><span></span></div>
-            <div class="auth-row">
-                <div class="auth-input-group">
-                    <label>Prénom</label>
-                    <input type="text" placeholder="Jean" required>
-                </div>
-                <div class="auth-input-group">
-                    <label>Nom</label>
-                    <input type="text" placeholder="Dupont" required>
-                </div>
-            </div>
-            <div class="auth-input-group">
-                <label>Email professionnel</label>
-                <input type="email" placeholder="votre@entreprise.com" required>
-            </div>
-            <div class="auth-input-group">
-                <label>Téléphone</label>
-                <input type="tel" placeholder="06 XX XX XX XX" required>
-            </div>
+
+            <!-- 1. Type de compte (en premier) -->
             <div class="auth-input-group">
                 <label>Type de compte</label>
                 <select id="registerAccountType" onchange="toggleCompanyBlock()">
@@ -1602,7 +1586,7 @@
                 </select>
             </div>
 
-            <!-- Bloc entreprise (Pro uniquement) -->
+            <!-- 2. Bloc entreprise (Pro uniquement) -->
             <div id="companyBlock">
                 <div class="auth-input-group">
                     <label>SIRET <span style="color:var(--slate-400);font-weight:400">(14 chiffres)</span></label>
@@ -1634,10 +1618,31 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 3. Contact (toujours visible) -->
+            <div class="auth-row">
+                <div class="auth-input-group">
+                    <label>Prénom</label>
+                    <input type="text" placeholder="Jean" required>
+                </div>
+                <div class="auth-input-group">
+                    <label>Nom</label>
+                    <input type="text" placeholder="Dupont" required>
+                </div>
+            </div>
+            <div class="auth-input-group">
+                <label>Email professionnel</label>
+                <input type="email" placeholder="votre@entreprise.com" required>
+            </div>
+            <div class="auth-input-group">
+                <label>Téléphone</label>
+                <input type="tel" placeholder="06 XX XX XX XX" required>
+            </div>
             <div class="auth-input-group">
                 <label>Mot de passe</label>
                 <input type="password" placeholder="8 caractères minimum" required>
             </div>
+
             <button type="submit" class="auth-submit">
                 Créer mon compte <i class="fas fa-arrow-right" style="margin-left:8px"></i>
             </button>
@@ -1752,11 +1757,12 @@
         const select = form.querySelector('select');
         const btn = form.querySelector('.auth-submit');
 
-        const first_name = inputs[0].value.trim();
-        const last_name = inputs[1].value.trim();
-        const email = inputs[2].value.trim();
-        const phone = inputs[3].value.trim();
         const account_type = document.getElementById('registerAccountType').value;
+        // inputs: [0]=siret, [1]=prénom, [2]=nom, [3]=email, [4]=tel, [5]=password
+        const first_name = inputs[1].value.trim();
+        const last_name = inputs[2].value.trim();
+        const email = inputs[3].value.trim();
+        const phone = inputs[4].value.trim();
         const password = inputs[5].value;
 
         if (!first_name || !last_name || !email || !phone || !password) {
