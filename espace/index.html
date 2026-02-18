@@ -970,6 +970,7 @@
 
             <!-- VEHICLES LIST -->
             <div id="vehiclesList">
+            <div id="vehiclesAlertsBanner" style="display:none; margin-bottom:20px;"></div>
                 <div style="text-align:center; padding:40px; color:var(--slate-400);">
                     <i class="fas fa-spinner fa-spin" style="font-size:24px; margin-bottom:12px; display:block;"></i>
                     Chargement...
@@ -1574,6 +1575,7 @@
             if (!res.ok) { container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de chargement.</p>'; return; }
             const data = await res.json();
             vehiclesData = data.vehicles || [];
+            renderVehicleAlerts(vehiclesData);
 
             if (vehiclesData.length === 0) {
                 container.innerHTML = `
@@ -1783,6 +1785,99 @@
             showToast('Erreur de connexion', 'error');
         }
     }
+
+    // ===== GLOBAL ALERTS BANNER =====
+function renderVehicleAlerts(vehicles) {
+    const banner = document.getElementById('vehiclesAlertsBanner');
+    if (!banner) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const alerts = [];
+
+    vehicles.forEach(v => {
+        // CT check
+        if (v.next_ct_date) {
+            const nextCt = new Date(v.next_ct_date);
+            const daysLeft = Math.ceil((nextCt - today) / (1000 * 60 * 60 * 24));
+            if (daysLeft < 0) {
+                alerts.push({ vehicle: v, type: 'ct', level: 'red', msg: `CT expiré depuis ${Math.abs(daysLeft)}j`, icon: 'exclamation-triangle' });
+            } else if (daysLeft <= 30) {
+                alerts.push({ vehicle: v, type: 'ct', level: 'red', msg: `CT dans ${daysLeft}j`, icon: 'exclamation-circle' });
+            } else if (daysLeft <= 90) {
+                alerts.push({ vehicle: v, type: 'ct', level: 'orange', msg: `CT dans ${daysLeft}j`, icon: 'clock' });
+            }
+        }
+        if (v.ct_result && v.ct_result !== 'Favorable' && v.ct_result !== '') {
+            const existing = alerts.find(a => a.vehicle.id === v.id && a.type === 'ct');
+            if (!existing) {
+                alerts.push({ vehicle: v, type: 'ct', level: 'red', msg: `CT ${v.ct_result}`, icon: 'exclamation-triangle' });
+            }
+        }
+
+        // Revision check by km
+        if (v.mileage && v.last_service_km && v.service_interval_km) {
+            const kmLeft = v.service_interval_km - (v.mileage - v.last_service_km);
+            if (kmLeft < 0) {
+                alerts.push({ vehicle: v, type: 'revision', level: 'red', msg: `Révision dépassée (${Math.abs(kmLeft).toLocaleString('fr-FR')} km)`, icon: 'exclamation-triangle' });
+            } else if (kmLeft <= 3000) {
+                alerts.push({ vehicle: v, type: 'revision', level: 'orange', msg: `Révision dans ${kmLeft.toLocaleString('fr-FR')} km`, icon: 'clock' });
+            }
+        } else if (v.last_service_date && v.service_interval_months) {
+            // Revision check by date
+            const lastS = new Date(v.last_service_date);
+            const monthsSince = (today.getFullYear() - lastS.getFullYear()) * 12 + (today.getMonth() - lastS.getMonth());
+            const monthsLeft = v.service_interval_months - monthsSince;
+            if (monthsLeft < 0) {
+                alerts.push({ vehicle: v, type: 'revision', level: 'red', msg: `Révision dépassée (${Math.abs(monthsLeft)} mois)`, icon: 'exclamation-triangle' });
+            } else if (monthsLeft <= 3) {
+                alerts.push({ vehicle: v, type: 'revision', level: 'orange', msg: `Révision dans ${monthsLeft} mois`, icon: 'clock' });
+            }
+        }
+    });
+
+    if (alerts.length === 0) {
+        banner.style.display = 'none';
+        return;
+    }
+
+    // Sort: red first, then orange
+    alerts.sort((a, b) => (a.level === 'red' ? 0 : 1) - (b.level === 'red' ? 0 : 1));
+
+    const redCount = alerts.filter(a => a.level === 'red').length;
+    const orangeCount = alerts.filter(a => a.level === 'orange').length;
+
+    const headerColor = redCount > 0 ? '#dc2626' : '#d97706';
+    const headerIcon = redCount > 0 ? 'exclamation-triangle' : 'clock';
+    const headerMsg = redCount > 0
+        ? `${redCount} alerte${redCount > 1 ? 's' : ''} urgente${redCount > 1 ? 's' : ''}${orangeCount > 0 ? ` + ${orangeCount} à surveiller` : ''}`
+        : `${orangeCount} véhicule${orangeCount > 1 ? 's' : ''} à surveiller`;
+
+    banner.style.display = '';
+    banner.innerHTML = `
+        <div style="border-radius:12px; overflow:hidden; border:1px solid ${headerColor}30;">
+            <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:${headerColor}10; cursor:pointer;" onclick="document.getElementById('alertsDetail').style.display = document.getElementById('alertsDetail').style.display === 'none' ? '' : 'none'">
+                <i class="fas fa-${headerIcon}" style="color:${headerColor}; font-size:16px;"></i>
+                <span style="font-size:14px; font-weight:700; color:${headerColor};">${headerMsg}</span>
+                <i class="fas fa-chevron-down" style="margin-left:auto; color:${headerColor}; font-size:12px;"></i>
+            </div>
+            <div id="alertsDetail" style="display:none; padding:4px 8px 8px 8px; background:white;">
+                ${alerts.map(a => {
+                    const c = a.level === 'red' ? '#dc2626' : '#d97706';
+                    const plate = a.vehicle.plate;
+                    const label = [a.vehicle.brand, a.vehicle.model].filter(Boolean).join(' ');
+                    return `
+                    <div onclick="openVehicleDetail(${a.vehicle.id})" style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; transition:background 0.15s;" onmouseover="this.style.background='${c}08'" onmouseout="this.style.background='transparent'">
+                        <i class="fas fa-${a.icon}" style="color:${c}; font-size:13px; flex-shrink:0;"></i>
+                        <span style="font-size:13px; font-weight:700; color:var(--slate-900); min-width:90px;">${plate}</span>
+                        <span style="font-size:12px; color:var(--slate-500);">${label}</span>
+                        <span style="margin-left:auto; font-size:12px; font-weight:600; color:${c};">${a.msg}</span>
+                        <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:11px;"></i>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+}
 
     // ===== MAINTENANCE & CT ALERTS =====
 async function loadMaintenanceBlock(v) {
