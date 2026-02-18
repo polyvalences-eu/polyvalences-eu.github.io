@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — PolyValences | Convoyage automobile, conciergerie & gestion de flotte</title>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta name="description" content="Contactez PolyValences pour vos besoins en convoyage automobile, conciergerie véhicule, stockage et gestion de flotte. Réponse sous 24h.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1a2e;
+            --navy-light: #132743;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --blue-pale: #dbeafe;
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --emerald: #059669;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --radius: 12px;
+            --radius-lg: 20px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ===== NAV ===== */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--slate-200);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0 24px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+        }
+        .nav-logo img { height: 56px; width: auto; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-link {
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            color: var(--slate-600); transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--blue); }
+        .nav-link.active { color: var(--blue); font-weight: 700; }
+        .nav-link.disabled {
+            color: var(--slate-300); pointer-events: none; position: relative;
+        }
+        .nav-link.disabled::after {
+            content: 'Bientôt'; font-size: 9px; font-weight: 700;
+            background: var(--blue-pale); color: var(--blue);
+            padding: 1px 5px; border-radius: 4px;
+            position: absolute; top: -8px; right: -30px;
+        }
+        .nav-email {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--navy);
+            text-decoration: none;
+        }
+        .nav-email i { color: var(--blue); font-size: 12px; }
+        .nav-email:hover { color: var(--blue); }
+        .nav-sep { width: 1px; height: 24px; background: var(--slate-200); }
+        .nav-cta {
+            background: var(--navy); color: white;
+            padding: 10px 22px; border-radius: 10px;
+            font-size: 14px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+            border: none; cursor: pointer;
+        }
+        .nav-cta:hover { background: var(--blue); }
+        .nav-user {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--slate-50); border: 1px solid var(--slate-200);
+            padding: 6px 14px 6px 8px; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .nav-user:hover { background: var(--slate-100); }
+        .nav-user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--blue); display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 12px;
+        }
+        .nav-user-name { font-size: 14px; font-weight: 600; color: var(--slate-800); }
+        .nav-user-chevron { font-size: 10px; color: var(--slate-400); }
+        .user-dropdown {
+            display: none; position: absolute; top: calc(100% + 8px); right: 0;
+            background: white; border-radius: var(--radius); padding: 8px;
+            min-width: 220px; z-index: 150;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            border: 1px solid var(--slate-100);
+            animation: dropdown-in 0.15s ease-out;
+        }
+        .user-dropdown.show { display: block; }
+        @keyframes dropdown-in {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-dropdown-info {
+            padding: 10px 12px; font-size: 12px; color: var(--slate-400);
+            border-bottom: 1px solid var(--slate-100); margin-bottom: 4px;
+        }
+        .user-dropdown-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 8px;
+            font-size: 13px; font-weight: 500; color: var(--slate-600);
+            cursor: pointer; transition: all 0.15s;
+            border: none; background: none; width: 100%;
+            font-family: 'DM Sans', sans-serif; text-decoration: none;
+        }
+        .user-dropdown-item:hover { background: var(--slate-50); color: var(--slate-900); }
+        .user-dropdown-item.danger { color: #dc2626; }
+        .user-dropdown-item.danger:hover { background: #fef2f2; }
+        .user-dropdown-item i { width: 16px; text-align: center; }
+
+        /* Burger */
+        .nav-burger {
+            display: none; width: 44px; height: 44px;
+            border: 1px solid var(--slate-200); border-radius: 10px;
+            background: white; cursor: pointer;
+            align-items: center; justify-content: center;
+            font-size: 18px; color: var(--slate-700);
+            transition: all 0.2s;
+        }
+        .nav-burger:hover { background: var(--slate-50); }
+
+        /* Mobile menu */
+        .mobile-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(11,26,46,0.6); backdrop-filter: blur(4px);
+        }
+        .mobile-overlay.active { display: block; }
+        .mobile-menu {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 300px; max-width: 85vw; z-index: 201;
+            background: white; padding: 24px;
+            box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .mobile-menu-header img { height: 40px; }
+        .mobile-menu-close {
+            width: 40px; height: 40px; border-radius: 10px;
+            border: 1px solid var(--slate-200); background: white;
+            cursor: pointer; font-size: 16px; color: var(--slate-500);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mobile-menu-close:hover { background: var(--slate-50); }
+        .mobile-menu-links { list-style: none; margin-bottom: 32px; }
+        .mobile-menu-links li { border-bottom: 1px solid var(--slate-100); }
+        .mobile-menu-links a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 4px; font-size: 15px; font-weight: 500;
+            color: var(--slate-700); text-decoration: none;
+            width: 100%; transition: color 0.2s;
+        }
+        .mobile-menu-links a:hover { color: var(--blue); }
+        .mobile-menu-links i { width: 20px; text-align: center; color: var(--slate-400); font-size: 14px; }
+        .mobile-menu-links .disabled-link { color: var(--slate-300); pointer-events: none; }
+        .mobile-menu-links .badge-soon {
+            font-size: 9px; font-weight: 700;
+            background: var(--blue-pale); color: var(--blue);
+            padding: 2px 6px; border-radius: 4px; margin-left: auto;
+        }
+        .mobile-menu-contact {
+            background: var(--slate-50); border-radius: var(--radius);
+            padding: 20px; text-align: center;
+        }
+        .mobile-menu-contact p { font-size: 12px; color: var(--slate-400); margin-bottom: 8px; }
+        .mobile-menu-contact a { font-size: 14px; font-weight: 700; color: var(--blue); text-decoration: none; }
+        .mobile-menu-cta {
+            width: 100%; padding: 14px; margin-top: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .mobile-menu-cta:hover { background: var(--blue); }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            padding: 120px 24px 48px;
+            background: var(--navy);
+            text-align: center; color: white;
+        }
+        .page-header h1 {
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 800; margin-bottom: 12px;
+        }
+        .page-header p {
+            font-size: 17px; color: var(--slate-400);
+            max-width: 520px; margin: 0 auto;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .contact-main {
+            max-width: 1100px; margin: 0 auto;
+            padding: 48px 24px 80px;
+            display: grid; grid-template-columns: 1fr 340px; gap: 48px;
+        }
+
+        /* ===== FORM ===== */
+        .contact-form-card {
+            background: white; border-radius: var(--radius-lg);
+            padding: 40px; border: 1px solid var(--slate-100);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+        }
+        .contact-form-card h2 {
+            font-size: 24px; font-weight: 800; color: var(--slate-900);
+            margin-bottom: 8px;
+        }
+        .contact-form-card > p {
+            font-size: 14px; color: var(--slate-500);
+            margin-bottom: 28px;
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: var(--slate-700); margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%; padding: 12px 14px;
+            border: 1px solid var(--slate-200);
+            border-radius: 10px; font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            outline: none; transition: border-color 0.2s;
+            background: white; color: var(--slate-800);
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px var(--blue-glow);
+        }
+        .form-group textarea {
+            resize: vertical; min-height: 120px;
+        }
+        .form-row { display: flex; gap: 14px; }
+        .form-row > .form-group { flex: 1; }
+
+        /* SIRET block */
+        .company-block {
+            background: var(--slate-50);
+            border: 1px solid var(--slate-100);
+            border-radius: var(--radius);
+            padding: 20px; margin-bottom: 18px;
+        }
+        .company-block-title {
+            font-size: 13px; font-weight: 700; color: var(--slate-600);
+            margin-bottom: 14px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .company-block-title i { color: var(--blue); }
+        .siret-wrap {
+            display: flex; gap: 8px;
+        }
+        .siret-wrap input { flex: 1; }
+        .siret-btn {
+            padding: 12px 16px; background: var(--blue); color: white;
+            border: none; border-radius: 10px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            white-space: nowrap; transition: all 0.2s;
+        }
+        .siret-btn:hover { background: #1d4ed8; }
+        .siret-found {
+            display: none; margin-top: 14px; padding: 14px;
+            background: white; border: 1px solid var(--slate-200);
+            border-radius: 10px;
+        }
+        .siret-found.show { display: block; }
+        .siret-found-header {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+        }
+        .siret-found-header i.fa-building { color: var(--blue); }
+        .siret-found-header .check { color: #16a34a; margin-left: auto; }
+        .siret-found-header span { font-size: 13px; font-weight: 700; color: var(--slate-700); }
+        .siret-found-name { font-size: 14px; font-weight: 700; color: var(--slate-900); margin-bottom: 4px; }
+        .siret-found-detail { font-size: 13px; color: var(--slate-500); line-height: 1.6; }
+        .siret-loading {
+            display: none; text-align: center; padding: 12px;
+            color: var(--slate-400); font-size: 13px;
+        }
+        .siret-error {
+            display: none; padding: 12px; margin-top: 10px;
+            background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 8px; font-size: 13px; color: #dc2626;
+        }
+
+        /* Submit */
+        .contact-submit {
+            width: 100%; padding: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: var(--radius);
+            font-size: 15px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 8px;
+        }
+        .contact-submit:hover { background: var(--blue); }
+
+        /* ===== SIDEBAR ===== */
+        .contact-sidebar { display: flex; flex-direction: column; gap: 24px; }
+        .sidebar-card {
+            background: white; border-radius: var(--radius-lg);
+            padding: 32px; border: 1px solid var(--slate-100);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+        }
+        .sidebar-card h3 {
+            font-size: 18px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 20px; font-family: 'DM Sans', sans-serif;
+        }
+        .sidebar-info {
+            display: flex; align-items: flex-start; gap: 14px;
+            margin-bottom: 20px;
+        }
+        .sidebar-info:last-child { margin-bottom: 0; }
+        .sidebar-info-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: var(--blue-pale);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--blue); font-size: 16px; flex-shrink: 0;
+        }
+        .sidebar-info-text { font-size: 14px; color: var(--slate-600); line-height: 1.6; }
+        .sidebar-info-text strong { color: var(--slate-800); display: block; margin-bottom: 2px; }
+        .sidebar-info-text a {
+            color: var(--blue); font-weight: 700; text-decoration: none;
+        }
+        .sidebar-info-text a:hover { text-decoration: underline; }
+
+        .sidebar-hours {
+            list-style: none;
+        }
+        .sidebar-hours li {
+            display: flex; justify-content: space-between;
+            padding: 8px 0; font-size: 13px; color: var(--slate-600);
+            border-bottom: 1px solid var(--slate-50);
+        }
+        .sidebar-hours li:last-child { border-bottom: none; }
+        .sidebar-hours li span:first-child { font-weight: 600; color: var(--slate-700); }
+
+        .sidebar-trust {
+            background: var(--navy); color: white;
+            border-radius: var(--radius-lg); padding: 32px;
+            text-align: center;
+        }
+        .sidebar-trust i { font-size: 32px; color: #60a5fa; margin-bottom: 16px; }
+        .sidebar-trust h3 { color: white; margin-bottom: 8px; font-family: 'DM Sans', sans-serif; }
+        .sidebar-trust p { font-size: 14px; color: var(--slate-400); line-height: 1.6; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--navy); color: var(--slate-400);
+            padding: 40px 24px;
+        }
+        .footer-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between;
+            font-size: 12px; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-inner a {
+            color: var(--slate-400); text-decoration: none; margin-left: 16px;
+        }
+        .footer-inner a:hover { color: white; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .contact-main {
+                grid-template-columns: 1fr; gap: 32px;
+            }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none !important; }
+            .nav-burger { display: flex; }
+            .contact-form-card { padding: 28px 20px; }
+            .form-row { flex-direction: column; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="../" class="nav-logo">
+            <img src="../images/logo-polyvalences.png" alt="PolyValences">
+        </a>
+        <div class="nav-links" id="navLinks">
+            <!-- Visiteur -->
+            <a href="../#solutions" class="nav-link nav-visitor">Solutions</a>
+            <a href="../#flotte" class="nav-link nav-visitor">Gestion de Flotte</a>
+            <a href="../#faq" class="nav-link nav-visitor">FAQ</a>
+            <!-- Connecté -->
+            <a href="../devis/" class="nav-link nav-connected" style="display:none">Devis</a>
+            <a href="#" class="nav-link nav-connected disabled" style="display:none">Mon Espace</a>
+            <!-- Commun -->
+            <a href="../contact/" class="nav-link active">Contact</a>
+            <div class="nav-sep"></div>
+            <a href="mailto:support@polyvalences.eu" class="nav-email">
+                <i class="fas fa-envelope"></i> support@polyvalences.eu
+            </a>
+            <!-- Visiteur CTA -->
+            <button class="nav-cta nav-visitor" onclick="window.location.href='../'">
+                <i class="fas fa-user"></i> Espace Client
+            </button>
+            <!-- Connecté user -->
+            <div class="nav-user nav-connected" id="navUser" style="display:none" onclick="toggleUserDropdown()">
+                <div class="nav-user-avatar" id="navAvatar">?</div>
+                <span class="nav-user-name" id="navName">...</span>
+                <i class="fas fa-chevron-down nav-user-chevron"></i>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="user-dropdown-info" id="dropdownEmail"></div>
+                    <a href="../devis/" class="user-dropdown-item"><i class="fas fa-calculator"></i> Devis instantané</a>
+                    <button class="user-dropdown-item danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+                </div>
+            </div>
+        </div>
+        <button class="nav-burger" id="navBurger" onclick="openMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+        <img src="../images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;">
+        <button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <!-- Visiteur -->
+    <ul class="mobile-menu-links" id="mobileVisitorLinks">
+        <li><a href="../#solutions"><i class="fas fa-cube"></i> Solutions</a></li>
+        <li><a href="../#flotte"><i class="fas fa-car"></i> Gestion de Flotte</a></li>
+        <li><a href="../#faq"><i class="fas fa-question-circle"></i> FAQ</a></li>
+        <li><a href="../contact/"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <!-- Connecté -->
+    <ul class="mobile-menu-links" id="mobileConnectedLinks" style="display:none">
+        <li><a href="../devis/"><i class="fas fa-calculator"></i> Devis instantané</a></li>
+        <li><a href="#" class="disabled-link"><i class="fas fa-th-large"></i> Mon Espace <span class="badge-soon">Bientôt</span></a></li>
+        <li><a href="../contact/"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <div class="mobile-menu-contact">
+        <p>Besoin d'aide ?</p>
+        <a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope" style="margin-right:6px"></i>support@polyvalences.eu</a>
+    </div>
+    <button class="mobile-menu-cta" id="mobileCta" onclick="window.location.href='../'">
+        <i class="fas fa-user"></i> Espace Client
+    </button>
+    <button class="mobile-menu-cta" id="mobileLogout" style="display:none; background:#dc2626;" onclick="handleLogout()">
+        <i class="fas fa-sign-out-alt"></i> Déconnexion
+    </button>
+</div>
+
+<!-- ===== PAGE HEADER ===== -->
+<section class="page-header">
+    <h1>Contactez-nous</h1>
+    <p>Une question, un besoin spécifique, un partenariat ? Nous vous répondons sous 24h.</p>
+</section>
+
+<!-- ===== MAIN ===== -->
+<main class="contact-main">
+
+    <!-- FORM -->
+    <div class="contact-form-card">
+        <h2>Envoyez-nous un message</h2>
+        <p>Tous les champs marqués * sont obligatoires.</p>
+
+        <form id="contactForm" onsubmit="event.preventDefault(); submitContact()">
+
+            <!-- Motif -->
+            <div class="form-group">
+                <label for="contactMotif">Motif de votre demande *</label>
+                <select id="contactMotif" required>
+                    <option value="">— Sélectionnez —</option>
+                    <option value="devis">Demande de devis</option>
+                    <option value="question">Question sur un service</option>
+                    <option value="flotte">Gestion de flotte / Espace client</option>
+                    <option value="partenariat">Partenariat (garage, centre CT…)</option>
+                    <option value="convoyeur">Devenir convoyeur</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+
+            <!-- Type -->
+            <div class="form-group">
+                <label for="contactType">Vous êtes *</label>
+                <select id="contactType" onchange="toggleContactCompany()" required>
+                    <option value="pro">Professionnel</option>
+                    <option value="particulier">Particulier</option>
+                </select>
+            </div>
+
+            <!-- Bloc entreprise (Pro) -->
+            <div class="company-block" id="contactCompanyBlock">
+                <div class="company-block-title">
+                    <i class="fas fa-building"></i> Informations entreprise
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label for="contactSiret">SIRET <span style="color:var(--slate-400);font-weight:400">(14 chiffres — recherche automatique)</span></label>
+                    <div class="siret-wrap">
+                        <input type="text" id="contactSiret" placeholder="Ex : 421 938 861 00034" maxlength="20">
+                        <button type="button" class="siret-btn" onclick="searchContactSiret()">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+                    </div>
+                </div>
+                <div class="siret-loading" id="contactSiretLoading">
+                    <i class="fas fa-spinner fa-spin"></i> Recherche en cours...
+                </div>
+                <div class="siret-error" id="contactSiretError">
+                    <i class="fas fa-exclamation-circle"></i> <span></span>
+                </div>
+                <div class="siret-found" id="contactSiretFound">
+                    <div class="siret-found-header">
+                        <i class="fas fa-building"></i>
+                        <span>Entreprise trouvée</span>
+                        <i class="fas fa-check-circle check"></i>
+                    </div>
+                    <div class="siret-found-name" id="contactCompanyName"></div>
+                    <div class="siret-found-detail">
+                        <div id="contactCompanyAddress"></div>
+                        <div><strong style="display:inline;font-weight:600;color:var(--slate-600)">NAF :</strong> <span id="contactCompanyNaf"></span></div>
+                    </div>
+                </div>
+                <!-- Fallback si pas de SIRET -->
+                <div class="form-group" style="margin-top:14px">
+                    <label for="contactCompanyManual">Ou saisissez le nom de l'entreprise</label>
+                    <input type="text" id="contactCompanyManual" placeholder="Raison sociale">
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="contactFirstName">Prénom *</label>
+                    <input type="text" id="contactFirstName" placeholder="Jean" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactLastName">Nom *</label>
+                    <input type="text" id="contactLastName" placeholder="Dupont" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="contactEmail">Email *</label>
+                <input type="email" id="contactEmail" placeholder="votre@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="contactPhone">Téléphone</label>
+                <input type="tel" id="contactPhone" placeholder="06 XX XX XX XX">
+            </div>
+
+            <!-- Message -->
+            <div class="form-group">
+                <label for="contactMessage">Votre message *</label>
+                <textarea id="contactMessage" placeholder="Décrivez votre besoin, le nombre de véhicules, les trajets envisagés…" required></textarea>
+            </div>
+
+            <button type="submit" class="contact-submit">
+                <i class="fas fa-paper-plane"></i> Envoyer le message
+            </button>
+        </form>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="contact-sidebar">
+        <div class="sidebar-card">
+            <h3>Nos coordonnées</h3>
+            <div class="sidebar-info">
+                <div class="sidebar-info-icon"><i class="fas fa-envelope"></i></div>
+                <div class="sidebar-info-text">
+                    <strong>Email</strong>
+                    <a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a>
+                </div>
+            </div>
+            <div class="sidebar-info">
+                <div class="sidebar-info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="sidebar-info-text">
+                    <strong>Adresse</strong>
+                    1 Place Paul Verlaine<br>
+                    92100 Boulogne-Billancourt
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <h3>Délais de réponse</h3>
+            <ul class="sidebar-hours">
+                <li><span>Demande de devis</span><span>< 2h</span></li>
+                <li><span>Question service</span><span>< 24h</span></li>
+                <li><span>Partenariat</span><span>< 48h</span></li>
+                <li><span>Inscription compte</span><span>< quelques heures</span></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-trust">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Depuis 2009</h3>
+            <p>17 ans d'expertise dans le convoyage automobile professionnel en France et en Europe.</p>
+        </div>
+    </div>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-inner">
+        <span>&copy; 2026 PolyValences SAS. Tous droits réservés.</span>
+        <div>
+            <a href="#">Mentions Légales</a>
+            <a href="#">CGV</a>
+            <a href="#">Politique de confidentialité</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // ===== CONFIG =====
+    const API = 'https://api.polyvalences.eu';
+    let authToken = localStorage.getItem('pv_token');
+    let currentUser = null;
+    let contactSiretData = null;
+
+    // ===== MOBILE MENU =====
+    function openMobileMenu() {
+        document.getElementById('mobileOverlay').classList.add('active');
+        document.getElementById('mobileMenu').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+        document.getElementById('mobileOverlay').classList.remove('active');
+        document.getElementById('mobileMenu').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeMobileMenu();
+    });
+
+    // ===== USER DROPDOWN =====
+    function toggleUserDropdown() {
+        document.getElementById('userDropdown').classList.toggle('show');
+    }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-user')) {
+            const dd = document.getElementById('userDropdown');
+            if (dd) dd.classList.remove('show');
+        }
+    });
+
+    // ===== LOGOUT =====
+    function handleLogout() {
+        localStorage.removeItem('pv_token');
+        location.reload();
+    }
+
+    // ===== NAV STATE =====
+    function setNavConnected(user) {
+        document.querySelectorAll('.nav-visitor').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.nav-connected').forEach(el => el.style.display = '');
+        const initials = (user.first_name[0] + user.last_name[0]).toUpperCase();
+        document.getElementById('navAvatar').textContent = initials;
+        document.getElementById('navName').textContent = user.first_name;
+        document.getElementById('dropdownEmail').textContent = user.email;
+        // Mobile
+        document.getElementById('mobileVisitorLinks').style.display = 'none';
+        document.getElementById('mobileConnectedLinks').style.display = '';
+        document.getElementById('mobileCta').style.display = 'none';
+        document.getElementById('mobileLogout').style.display = 'flex';
+        // Pre-fill form
+        document.getElementById('contactFirstName').value = user.first_name || '';
+        document.getElementById('contactLastName').value = user.last_name || '';
+        document.getElementById('contactEmail').value = user.email || '';
+    }
+
+    async function checkSession() {
+        if (!authToken) return;
+        try {
+            const res = await fetch(API + '/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                currentUser = data.user;
+                setNavConnected(data.user);
+            } else {
+                localStorage.removeItem('pv_token');
+                authToken = null;
+            }
+        } catch (err) {
+            console.error('Session check failed:', err);
+        }
+    }
+    checkSession();
+
+    // ===== TOGGLE COMPANY BLOCK =====
+    function toggleContactCompany() {
+        const type = document.getElementById('contactType').value;
+        document.getElementById('contactCompanyBlock').style.display = type === 'pro' ? 'block' : 'none';
+        if (type === 'particulier') {
+            contactSiretData = null;
+            document.getElementById('contactSiret').value = '';
+            document.getElementById('contactCompanyManual').value = '';
+            document.getElementById('contactSiretFound').classList.remove('show');
+            document.getElementById('contactSiretError').style.display = 'none';
+        }
+    }
+
+    // ===== SIRET SEARCH =====
+    async function searchContactSiret() {
+        const siretInput = document.getElementById('contactSiret');
+        const siret = siretInput.value.replace(/\s/g, '');
+        const loadingDiv = document.getElementById('contactSiretLoading');
+        const errorDiv = document.getElementById('contactSiretError');
+        const foundDiv = document.getElementById('contactSiretFound');
+
+        if (!/^\d{14}$/.test(siret)) {
+            loadingDiv.style.display = 'none';
+            foundDiv.classList.remove('show');
+            errorDiv.style.display = 'block';
+            errorDiv.querySelector('span').textContent = 'Le SIRET doit contenir exactement 14 chiffres.';
+            contactSiretData = null;
+            return;
+        }
+
+        loadingDiv.style.display = 'block';
+        foundDiv.classList.remove('show');
+        errorDiv.style.display = 'none';
+        contactSiretData = null;
+
+        try {
+            const res = await fetch('https://recherche-entreprises.api.gouv.fr/search?q=' + siret + '&page=1&per_page=1');
+            const data = await res.json();
+            loadingDiv.style.display = 'none';
+
+            if (!data.results || data.results.length === 0) {
+                errorDiv.style.display = 'block';
+                errorDiv.querySelector('span').textContent = 'Aucune entreprise trouvée pour ce SIRET.';
+                return;
+            }
+
+            const entreprise = data.results[0];
+            const siege = entreprise.siege || {};
+            const nom = entreprise.nom_complet || entreprise.nom_raison_sociale || '—';
+            const adresse = siege.adresse || '—';
+            const cp = siege.code_postal || '';
+            const ville = siege.libelle_commune || '';
+            const naf = entreprise.activite_principale || siege.activite_principale || '—';
+
+            contactSiretData = { siret, company_name: nom, address: adresse, postal_code: cp, city: ville, naf_code: naf };
+
+            document.getElementById('contactCompanyName').textContent = nom;
+            document.getElementById('contactCompanyAddress').textContent = adresse + (cp ? ' — ' + cp + ' ' + ville : '');
+            document.getElementById('contactCompanyNaf').textContent = naf;
+            foundDiv.classList.add('show');
+
+            // Auto-fill manual field
+            document.getElementById('contactCompanyManual').value = nom;
+
+        } catch (err) {
+            loadingDiv.style.display = 'none';
+            errorDiv.style.display = 'block';
+            errorDiv.querySelector('span').textContent = 'Erreur de connexion. Réessayez.';
+        }
+    }
+
+    // Enter key on SIRET
+    document.getElementById('contactSiret').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); searchContactSiret(); }
+    });
+
+    // ===== SUBMIT (mailto MVP) =====
+    function submitContact() {
+        const motif = document.getElementById('contactMotif');
+        const type = document.getElementById('contactType').value;
+        const firstName = document.getElementById('contactFirstName').value.trim();
+        const lastName = document.getElementById('contactLastName').value.trim();
+        const email = document.getElementById('contactEmail').value.trim();
+        const phone = document.getElementById('contactPhone').value.trim();
+        const message = document.getElementById('contactMessage').value.trim();
+        const company = contactSiretData ? contactSiretData.company_name : document.getElementById('contactCompanyManual').value.trim();
+        const siret = contactSiretData ? contactSiretData.siret : '';
+
+        if (!motif.value || !firstName || !lastName || !email || !message) {
+            alert('Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+
+        // Build mailto
+        const motifLabel = motif.options[motif.selectedIndex].text;
+        const subject = encodeURIComponent(`[${motifLabel}] Message de ${firstName} ${lastName}`);
+
+        let body = `Motif : ${motifLabel}\n`;
+        body += `Type : ${type === 'pro' ? 'Professionnel' : 'Particulier'}\n`;
+        if (type === 'pro' && company) body += `Entreprise : ${company}\n`;
+        if (type === 'pro' && siret) body += `SIRET : ${siret}\n`;
+        body += `Nom : ${firstName} ${lastName}\n`;
+        body += `Email : ${email}\n`;
+        if (phone) body += `Téléphone : ${phone}\n`;
+        body += `\n--- Message ---\n\n${message}`;
+
+        window.location.href = `mailto:support@polyvalences.eu?subject=${subject}&body=${encodeURIComponent(body)}`;
+    }
+</script>
+
+</body>
+</html>
