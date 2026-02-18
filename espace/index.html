@@ -1573,11 +1573,17 @@
                                 <i class="fas fa-play"></i> Activer
                             </button>
                             <button class="btn-primary" style="padding:7px 14px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id}, '${a.assigned_to.replace(/'/g, "\\'")}')">
-                    <i class="fas fa-times"></i> Annuler
-                            </button>
+                                    <i class="fas fa-times"></i> Annuler
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>`).join('');
+                        ${a.estimated_cost && a.destination_lat && a.destination_lng ? `
+                        <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--amber-pale);">
+                            <button class="btn-primary" style="width:100%; padding:10px 14px; font-size:13px; background:var(--emerald); justify-content:center;" onclick="goToDevisFromAssignment(${a.destination_lat}, ${a.destination_lng}, '${(a.destination || '').replace(/'/g, "\\'")}')">
+                                <i class="fas fa-file-invoice-dollar"></i> Finaliser en demande de devis
+                            </button>
+                        </div>` : ''}
+                    </div>`).join('');
             } else {
                 futureDiv.innerHTML = '<div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">Aucune affectation planifiée</div>';
             }
@@ -1673,6 +1679,21 @@
         document.getElementById('btnSaveAssign').innerHTML = '<i class="fas fa-save"></i> Mettre à jour';
         document.getElementById('btnSaveAssign').style.background = 'var(--blue)';
         document.getElementById('assignFormWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function goToDevisFromAssignment(destLat, destLng, destAddress) {
+        // Récupérer les coordonnées du véhicule actuel
+        const v = vehiclesData.find(x => x.id === currentVehicleId);
+        if (!v || !v.location_lat || !v.location_lng) {
+            showToast('Coordonnées du véhicule manquantes. Modifiez la localisation.', 'error');
+            return;
+        }
+        // Stocker les données dans sessionStorage pour pré-remplir le devis
+        sessionStorage.setItem('pv_devis_prefill', JSON.stringify({
+            origin: { lat: v.location_lat, lng: v.location_lng, address: v.location || '' },
+            destination: { lat: destLat, lng: destLng, address: destAddress }
+        }));
+        window.open('../devis/', '_blank');
     }
 
     async function saveAssignment() {
