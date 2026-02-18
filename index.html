@@ -117,7 +117,7 @@
 
         /* ===== NAV ===== */
         .nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            position: fixed; top: 40px; left: 0; right: 0; z-index: 100;
             background: rgba(255,255,255,0.92);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--slate-200);
@@ -1091,9 +1091,47 @@
             .footer-grid { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; }
         }
+
+        @keyframes ticker-scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+        }
     </style>
 </head>
 <body>
+
+<!-- ===== TICKER BANDEAU NOUVEAUTÉ ===== -->
+<div id="tickerBanner" style="background:linear-gradient(90deg, var(--navy), #1e3a5f); overflow:hidden; position:relative; height:40px; display:flex; align-items:center; z-index:101;">
+    <button onclick="document.getElementById('tickerBanner').style.display='none'; document.querySelector('.nav').style.top='0px'; sessionStorage.setItem('pv_ticker_closed','1');" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:rgba(255,255,255,0.5); font-size:14px; cursor:pointer; z-index:2; padding:4px 8px;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'"><i class="fas fa-times"></i></button>
+    <div style="display:flex; animation:ticker-scroll 20s linear infinite; white-space:nowrap; padding-right:50px;">
+        <div style="display:flex; align-items:center; gap:32px; padding:0 64px;">
+            <span style="font-size:13px; font-weight:600; color:white; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:15px;">✨</span> PolyValences fait peau neuve — Nouvelle plateforme, nouvelles fonctionnalités pour mieux gérer votre flotte automobile.
+            </span>
+            <span style="font-size:13px; color:rgba(255,255,255,0.6);">|</span>
+            <span style="font-size:13px; font-weight:600; color:white; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:15px;">🔑</span> Un nouveau compte est nécessaire pour profiter de votre espace client amélioré.
+            </span>
+            <span style="font-size:13px; color:rgba(255,255,255,0.6);">|</span>
+            <span style="font-size:13px; font-weight:700; color:#93c5fd; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="openAuth('register')">
+                Créer mon compte gratuitement <i class="fas fa-arrow-right" style="font-size:11px;"></i>
+            </span>
+        </div>
+        <div style="display:flex; align-items:center; gap:32px; padding:0 64px;">
+            <span style="font-size:13px; font-weight:600; color:white; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:15px;">✨</span> PolyValences fait peau neuve — Nouvelle plateforme, nouvelles fonctionnalités pour mieux gérer votre flotte automobile.
+            </span>
+            <span style="font-size:13px; color:rgba(255,255,255,0.6);">|</span>
+            <span style="font-size:13px; font-weight:600; color:white; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:15px;">🔑</span> Un nouveau compte est nécessaire pour profiter de votre espace client amélioré.
+            </span>
+            <span style="font-size:13px; color:rgba(255,255,255,0.6);">|</span>
+            <span style="font-size:13px; font-weight:700; color:#93c5fd; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="openAuth('register')">
+                Créer mon compte gratuitement <i class="fas fa-arrow-right" style="font-size:11px;"></i>
+            </span>
+        </div>
+    </div>
+</div>
 
 <!-- ===== NAVIGATION ===== -->
 <nav class="nav">
@@ -1142,7 +1180,7 @@
 <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
 <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-header">
-        <img src="images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;">
+        <a href="/"><img src="images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;"></a>
         <button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
     </div>
     <!-- User info (connecté uniquement, masqué par défaut) -->
@@ -1697,6 +1735,12 @@
     const API = 'https://api.polyvalences.eu';
     let authToken = localStorage.getItem('pv_token');
     let currentUser = null;
+
+    // Ticker banner — hide if already closed
+    if (sessionStorage.getItem('pv_ticker_closed') === '1') {
+        const tb = document.getElementById('tickerBanner');
+        if (tb) { tb.style.display = 'none'; document.querySelector('.nav').style.top = '0px'; }
+    }
 
     // ===== STATE SIMULATEUR =====
     let originData = null;   // { lat, lng, address }
