@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Espace — PolyValences | Fleet Management & Convoyage automobile</title>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta name="description" content="Gérez votre fleet automobile, votre profil et vos demandes de convoyage depuis votre espace client PolyValences.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1a2e;
+            --navy-light: #132743;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --blue-pale: #dbeafe;
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --emerald: #059669;
+            --emerald-pale: #d1fae5;
+            --red: #dc2626;
+            --amber: #d97706;
+            --amber-pale: #fef3c7;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --radius: 12px;
+            --radius-lg: 20px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ===== NAV ===== */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--slate-200);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0 24px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo img { height: 56px; width: auto; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-link {
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            color: var(--slate-600); transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--blue); }
+        .nav-link.active { color: var(--blue); font-weight: 700; }
+        .nav-link.disabled {
+            color: var(--slate-300); pointer-events: none; position: relative;
+        }
+        .nav-link.disabled::after {
+            content: 'Bientôt'; font-size: 9px; font-weight: 700;
+            background: var(--blue-pale); color: var(--blue);
+            padding: 1px 5px; border-radius: 4px;
+            position: absolute; top: -8px; right: -30px;
+        }
+        .nav-email {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--navy);
+            text-decoration: none;
+        }
+        .nav-email i { color: var(--blue); font-size: 12px; }
+        .nav-email:hover { color: var(--blue); }
+        .nav-sep { width: 1px; height: 24px; background: var(--slate-200); }
+        .nav-cta {
+            background: var(--navy); color: white;
+            padding: 10px 22px; border-radius: 10px;
+            font-size: 14px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+            border: none; cursor: pointer;
+        }
+        .nav-cta:hover { background: var(--blue); }
+        .nav-user {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--slate-50); border: 1px solid var(--slate-200);
+            padding: 6px 14px 6px 8px; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .nav-user:hover { background: var(--slate-100); }
+        .nav-user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--blue); display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 12px;
+        }
+        .nav-user-name { font-size: 14px; font-weight: 600; color: var(--slate-800); }
+        .nav-user-chevron { font-size: 10px; color: var(--slate-400); }
+        .user-dropdown {
+            display: none; position: absolute; top: calc(100% + 8px); right: 0;
+            background: white; border-radius: var(--radius); padding: 8px;
+            min-width: 220px; z-index: 150;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            border: 1px solid var(--slate-100);
+            animation: dropdown-in 0.15s ease-out;
+        }
+        .user-dropdown.show { display: block; }
+        @keyframes dropdown-in {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-dropdown-info {
+            padding: 10px 12px; font-size: 12px; color: var(--slate-400);
+            border-bottom: 1px solid var(--slate-100); margin-bottom: 4px;
+        }
+        .user-dropdown-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 8px;
+            font-size: 13px; font-weight: 500; color: var(--slate-600);
+            cursor: pointer; transition: all 0.15s;
+            border: none; background: none; width: 100%;
+            font-family: 'DM Sans', sans-serif; text-decoration: none;
+        }
+        .user-dropdown-item:hover { background: var(--slate-50); color: var(--slate-900); }
+        .user-dropdown-item.danger { color: #dc2626; }
+        .user-dropdown-item.danger:hover { background: #fef2f2; }
+        .user-dropdown-item i { width: 16px; text-align: center; }
+
+        /* Burger */
+        .nav-burger {
+            display: none; width: 44px; height: 44px;
+            border: 1px solid var(--slate-200); border-radius: 10px;
+            background: white; cursor: pointer;
+            align-items: center; justify-content: center;
+            font-size: 18px; color: var(--slate-700);
+        }
+
+        /* Mobile menu */
+        .mobile-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(11,26,46,0.6); backdrop-filter: blur(4px);
+        }
+        .mobile-overlay.active { display: block; }
+        .mobile-menu {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 300px; max-width: 85vw; z-index: 201;
+            background: white; padding: 24px;
+            box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .mobile-menu-header img { height: 40px; }
+        .mobile-menu-close {
+            width: 40px; height: 40px; border-radius: 10px;
+            border: 1px solid var(--slate-200); background: white;
+            cursor: pointer; font-size: 16px; color: var(--slate-500);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mobile-menu-links { list-style: none; margin-bottom: 32px; }
+        .mobile-menu-links li { border-bottom: 1px solid var(--slate-100); }
+        .mobile-menu-links a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 4px; font-size: 15px; font-weight: 500;
+            color: var(--slate-700); text-decoration: none; width: 100%;
+        }
+        .mobile-menu-links a:hover { color: var(--blue); }
+        .mobile-menu-links i { width: 20px; text-align: center; color: var(--slate-400); font-size: 14px; }
+        .mobile-menu-links .badge-soon {
+            font-size: 9px; font-weight: 700;
+            background: var(--blue-pale); color: var(--blue);
+            padding: 2px 6px; border-radius: 4px; margin-left: auto;
+        }
+        .mobile-menu-contact {
+            background: var(--slate-50); border-radius: var(--radius);
+            padding: 20px; text-align: center;
+        }
+        .mobile-menu-contact p { font-size: 12px; color: var(--slate-400); margin-bottom: 8px; }
+        .mobile-menu-contact a { font-size: 14px; font-weight: 700; color: var(--blue); text-decoration: none; }
+        .mobile-menu-cta {
+            width: 100%; padding: 14px; margin-top: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        /* ===== NOT CONNECTED ===== */
+        .not-connected {
+            text-align: center; padding: 120px 24px 80px;
+        }
+        .not-connected i { font-size: 48px; color: var(--slate-300); margin-bottom: 16px; }
+        .not-connected h2 { font-size: 22px; color: var(--slate-700); margin-bottom: 8px; font-family: 'DM Sans', sans-serif; }
+        .not-connected p { font-size: 14px; color: var(--slate-500); margin-bottom: 24px; }
+        .not-connected a {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--navy); color: white;
+            padding: 12px 24px; border-radius: 10px;
+            text-decoration: none; font-size: 14px; font-weight: 600;
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            text-align: center; padding: 120px 24px; color: var(--slate-400);
+        }
+        .loading i { font-size: 24px; margin-bottom: 12px; display: block; }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            padding: 100px 24px 32px;
+            background: var(--navy); color: white;
+        }
+        .page-header-inner {
+            max-width: 1000px; margin: 0 auto;
+        }
+        .page-header-welcome {
+            font-size: 14px; color: var(--slate-400); margin-bottom: 4px;
+        }
+        .page-header h1 {
+            font-size: clamp(28px, 3.5vw, 40px);
+            font-weight: 800; margin-bottom: 8px;
+        }
+        .page-header p { font-size: 15px; color: var(--slate-400); }
+
+        /* ===== MAIN LAYOUT ===== */
+        .espace-main {
+            max-width: 1000px; margin: 0 auto;
+            padding: 32px 24px 80px;
+            display: grid; grid-template-columns: 220px 1fr; gap: 32px;
+        }
+
+        /* ===== SIDEBAR NAV ===== */
+        .sidebar-nav { list-style: none; }
+        .sidebar-nav li { margin-bottom: 4px; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 14px; border-radius: 10px;
+            font-size: 14px; font-weight: 500; color: var(--slate-600);
+            text-decoration: none; transition: all 0.15s;
+        }
+        .sidebar-nav a:hover { background: var(--slate-100); color: var(--slate-900); }
+        .sidebar-nav a.active {
+            background: var(--blue-pale); color: var(--blue); font-weight: 700;
+        }
+        .sidebar-nav i { width: 18px; text-align: center; font-size: 14px; }
+        .sidebar-nav .disabled-link {
+            color: var(--slate-300); pointer-events: none;
+        }
+        .sidebar-nav .badge-soon {
+            font-size: 9px; font-weight: 700;
+            background: var(--blue-pale); color: var(--blue);
+            padding: 2px 6px; border-radius: 4px; margin-left: auto;
+        }
+
+        /* ===== CONTENT CARDS ===== */
+        .section-card {
+            background: white; border-radius: var(--radius-lg);
+            padding: 32px; border: 1px solid var(--slate-100);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+            display: none;
+        }
+        .section-card.active { display: block; }
+        .section-card h2 {
+            font-size: 20px; font-weight: 800; color: var(--slate-900);
+            margin-bottom: 4px;
+        }
+        .section-card > .subtitle {
+            font-size: 13px; color: var(--slate-400); margin-bottom: 24px;
+        }
+
+        /* Form elements */
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: var(--slate-700); margin-bottom: 6px;
+        }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px 14px;
+            border: 1px solid var(--slate-200); border-radius: 10px;
+            font-size: 14px; font-family: 'DM Sans', sans-serif;
+            outline: none; transition: border-color 0.2s;
+            background: white; color: var(--slate-800);
+        }
+        .form-group input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-glow); }
+        .form-group input[readonly] {
+            background: var(--slate-50); color: var(--slate-500); cursor: not-allowed;
+        }
+        .form-row { display: flex; gap: 14px; }
+        .form-row > .form-group { flex: 1; }
+        .password-wrap { position: relative; }
+        .password-wrap input { padding-right: 44px; }
+        .password-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--slate-400); font-size: 15px; padding: 4px;
+        }
+        .password-toggle:hover { color: var(--slate-600); }
+
+        .btn-primary {
+            background: var(--navy); color: white;
+            padding: 12px 28px; border-radius: 10px;
+            font-size: 14px; font-weight: 700; border: none;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: var(--blue); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Company card */
+        .company-header {
+            display: flex; align-items: center; gap: 16px;
+            padding: 20px; background: var(--slate-50);
+            border-radius: var(--radius); margin-bottom: 24px;
+        }
+        .company-icon {
+            width: 52px; height: 52px; border-radius: 12px;
+            background: var(--blue-pale); color: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+        }
+        .company-meta { flex: 1; }
+        .company-meta h3 {
+            font-size: 16px; font-weight: 700; color: var(--slate-900);
+            font-family: 'DM Sans', sans-serif; margin-bottom: 2px;
+        }
+        .company-meta p { font-size: 13px; color: var(--slate-500); }
+        .company-fields {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+            margin-bottom: 24px;
+        }
+        .company-field-label {
+            font-size: 11px; font-weight: 700; color: var(--slate-400);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;
+        }
+        .company-field-value { font-size: 14px; color: var(--slate-800); font-weight: 500; }
+
+        /* Contacts list */
+        .contacts-title {
+            font-size: 14px; font-weight: 700; color: var(--slate-700);
+            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .contacts-title .count {
+            font-size: 11px; font-weight: 700; padding: 2px 8px;
+            border-radius: 4px; background: var(--blue-pale); color: var(--blue);
+        }
+        .contact-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 14px; border-radius: 10px;
+            border: 1px solid var(--slate-100);
+            margin-bottom: 8px; transition: background 0.15s;
+        }
+        .contact-row:hover { background: var(--slate-50); }
+        .contact-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--blue-pale); color: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; flex-shrink: 0;
+        }
+        .contact-avatar.me { background: var(--blue); color: white; }
+        .contact-info { flex: 1; }
+        .contact-name { font-size: 14px; font-weight: 600; color: var(--slate-800); }
+        .contact-name .you-badge {
+            font-size: 10px; font-weight: 700; padding: 1px 6px;
+            border-radius: 4px; background: var(--emerald-pale); color: var(--emerald);
+            margin-left: 6px;
+        }
+        .contact-email { font-size: 12px; color: var(--slate-400); }
+
+        .no-company {
+            text-align: center; padding: 40px; color: var(--slate-400);
+        }
+        .no-company i { font-size: 32px; margin-bottom: 12px; display: block; color: var(--slate-300); }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--slate-900); color: white;
+            padding: 14px 24px; border-radius: 10px;
+            font-size: 14px; font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            display: none; align-items: center; gap: 10px;
+            z-index: 1000;
+            animation: toast-in 0.3s ease-out;
+        }
+        .toast.show { display: flex; }
+        .toast.success { background: var(--emerald); }
+        .toast.error { background: var(--red); }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--navy); color: var(--slate-400); padding: 40px 24px;
+        }
+        .footer-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between;
+            font-size: 12px; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-inner a { color: var(--slate-400); text-decoration: none; margin-left: 16px; }
+        .footer-inner a:hover { color: white; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .nav-links { display: none !important; }
+            .nav-burger { display: flex; }
+            .espace-main { grid-template-columns: 1fr; gap: 0; }
+            .sidebar-nav {
+                display: flex; gap: 4px; overflow-x: auto;
+                padding-bottom: 16px; margin-bottom: 16px;
+                border-bottom: 1px solid var(--slate-200);
+            }
+            .sidebar-nav li { flex-shrink: 0; }
+            .sidebar-nav a { padding: 10px 14px; font-size: 13px; white-space: nowrap; }
+            .form-row { flex-direction: column; gap: 0; }
+            .company-fields { grid-template-columns: 1fr; }
+            .section-card { padding: 24px 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="../" class="nav-logo">
+            <img src="../images/logo-polyvalences.png" alt="PolyValences">
+        </a>
+        <div class="nav-links" id="navLinks">
+            <a href="../devis/" class="nav-link">Devis</a>
+            <a href="../espace/" class="nav-link active">Mon Espace</a>
+            <a href="../contact/" class="nav-link">Contact</a>
+            <div class="nav-sep"></div>
+            <a href="mailto:support@polyvalences.eu" class="nav-email">
+                <i class="fas fa-envelope"></i> support@polyvalences.eu
+            </a>
+            <div class="nav-user" id="navUser" onclick="toggleUserDropdown()">
+                <div class="nav-user-avatar" id="navAvatar">?</div>
+                <span class="nav-user-name" id="navName">...</span>
+                <i class="fas fa-chevron-down nav-user-chevron"></i>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="user-dropdown-info" id="dropdownEmail"></div>
+                    <a href="../devis/" class="user-dropdown-item"><i class="fas fa-calculator"></i> Devis instantané</a>
+                    <a href="../espace/" class="user-dropdown-item"><i class="fas fa-th-large"></i> Mon Espace</a>
+                    <button class="user-dropdown-item danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+                </div>
+            </div>
+        </div>
+        <button class="nav-burger" id="navBurger" onclick="openMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+        <img src="../images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;">
+        <button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <ul class="mobile-menu-links">
+        <li><a href="../devis/"><i class="fas fa-calculator"></i> Devis instantané</a></li>
+        <li><a href="../espace/"><i class="fas fa-th-large"></i> Mon Espace</a></li>
+        <li><a href="../contact/"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <div class="mobile-menu-contact">
+        <p>Besoin d'aide ?</p>
+        <a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope" style="margin-right:6px"></i>support@polyvalences.eu</a>
+    </div>
+    <button class="mobile-menu-cta" style="background:#dc2626;" onclick="handleLogout()">
+        <i class="fas fa-sign-out-alt"></i> Déconnexion
+    </button>
+</div>
+
+<!-- NOT CONNECTED -->
+<div class="not-connected" id="notConnected" style="display:none">
+    <i class="fas fa-lock"></i>
+    <h2>Connexion requise</h2>
+    <p>Connectez-vous pour accéder à votre espace fleet management et gestion de véhicules.</p>
+    <a href="../"><i class="fas fa-arrow-left"></i> Se connecter</a>
+</div>
+
+<!-- LOADING -->
+<div class="loading" id="loadingState">
+    <i class="fas fa-spinner fa-spin"></i>
+    Chargement de votre espace...
+</div>
+
+<!-- PAGE HEADER -->
+<section class="page-header" id="pageHeader" style="display:none">
+    <div class="page-header-inner">
+        <div class="page-header-welcome">Bienvenue dans votre espace</div>
+        <h1 id="headerName">Mon Espace</h1>
+        <p>Gérez votre profil, votre fleet automobile et vos demandes de convoyage.</p>
+    </div>
+</section>
+
+<!-- MAIN -->
+<main class="espace-main" id="espaceMain" style="display:none">
+
+    <!-- SIDEBAR -->
+    <nav>
+        <ul class="sidebar-nav">
+            <li><a href="#profil" class="active" onclick="showSection('profil', this)"><i class="fas fa-user"></i> Mon Profil</a></li>
+            <li><a href="#securite" onclick="showSection('securite', this)"><i class="fas fa-lock"></i> Sécurité</a></li>
+            <li><a href="#entreprise" onclick="showSection('entreprise', this)" id="navEntreprise" style="display:none"><i class="fas fa-building"></i> Entreprise</a></li>
+            <li><a href="#vehicules" class="disabled-link"><i class="fas fa-car"></i> Véhicules <span class="badge-soon">Bientôt</span></a></li>
+            <li><a href="#demandes" class="disabled-link"><i class="fas fa-file-alt"></i> Demandes <span class="badge-soon">Bientôt</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTENT -->
+    <div>
+        <!-- PROFIL -->
+        <div class="section-card active" id="section-profil">
+            <h2>Mon Profil</h2>
+            <p class="subtitle">Modifiez vos informations personnelles.</p>
+
+            <form onsubmit="event.preventDefault(); saveProfile()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Prénom</label>
+                        <input type="text" id="profileFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" id="profileLastName" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="profileEmail" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="profilePhone" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Type de compte</label>
+                        <input type="text" id="profileType" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Membre depuis</label>
+                        <input type="text" id="profileSince" readonly>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="btnSaveProfile">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </form>
+        </div>
+
+        <!-- SECURITE -->
+        <div class="section-card" id="section-securite">
+            <h2>Sécurité</h2>
+            <p class="subtitle">Modifiez votre mot de passe.</p>
+
+            <form onsubmit="event.preventDefault(); changePassword()">
+                <div class="form-group">
+                    <label>Mot de passe actuel</label>
+                    <div class="password-wrap">
+                        <input type="password" id="currentPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nouveau mot de passe</label>
+                    <div class="password-wrap">
+                        <input type="password" id="newPassword" placeholder="8 caractères minimum" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirmer le nouveau mot de passe</label>
+                    <div class="password-wrap">
+                        <input type="password" id="confirmPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="btnChangePassword">
+                    <i class="fas fa-key"></i> Changer le mot de passe
+                </button>
+            </form>
+        </div>
+
+        <!-- ENTREPRISE -->
+        <div class="section-card" id="section-entreprise">
+            <h2>Mon Entreprise</h2>
+            <p class="subtitle">Informations de votre entreprise et contacts rattachés.</p>
+
+            <div id="companyContent">
+                <div class="no-company">
+                    <i class="fas fa-building"></i>
+                    <p>Chargement...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="footerEl" style="display:none">
+    <div class="footer-inner">
+        <span>&copy; 2026 PolyValences SAS — Fleet management & convoyage automobile.</span>
+        <div>
+            <a href="#">Mentions Légales</a>
+            <a href="#">CGV</a>
+            <a href="#">Politique de confidentialité</a>
+        </div>
+    </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMsg"></span>
+</div>
+
+<script>
+    const API = 'https://api.polyvalences.eu';
+    let authToken = localStorage.getItem('pv_token');
+    let currentUser = null;
+
+    // ===== TOAST =====
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        const icon = toast.querySelector('i');
+        toast.className = 'toast show ' + type;
+        icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        document.getElementById('toastMsg').textContent = msg;
+        setTimeout(() => { toast.classList.remove('show'); }, 4000);
+    }
+
+    // ===== MOBILE MENU =====
+    function openMobileMenu() {
+        document.getElementById('mobileOverlay').classList.add('active');
+        document.getElementById('mobileMenu').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+        document.getElementById('mobileOverlay').classList.remove('active');
+        document.getElementById('mobileMenu').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
+
+    // ===== USER DROPDOWN =====
+    function toggleUserDropdown() {
+        document.getElementById('userDropdown').classList.toggle('show');
+    }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-user')) {
+            const dd = document.getElementById('userDropdown');
+            if (dd) dd.classList.remove('show');
+        }
+    });
+
+    // ===== PASSWORD TOGGLE =====
+    function togglePassword(btn) {
+        const input = btn.parentElement.querySelector('input');
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    }
+
+    // ===== LOGOUT =====
+    function handleLogout() {
+        localStorage.removeItem('pv_token');
+        window.location.href = '../';
+    }
+
+    // ===== SECTION SWITCH =====
+    function showSection(id, link) {
+        document.querySelectorAll('.section-card').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+        document.getElementById('section-' + id).classList.add('active');
+        if (link) link.classList.add('active');
+    }
+
+    // ===== INIT =====
+    async function init() {
+        if (!authToken) { showNotConnected(); return; }
+        try {
+            const res = await fetch(API + '/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { showNotConnected(); return; }
+            const data = await res.json();
+            currentUser = data.user;
+
+            // Nav
+            const initials = ((currentUser.first_name || '?')[0] + (currentUser.last_name || '?')[0]).toUpperCase();
+            document.getElementById('navAvatar').textContent = initials;
+            document.getElementById('navName').textContent = currentUser.first_name;
+            document.getElementById('dropdownEmail').textContent = currentUser.email;
+
+            // Header
+            document.getElementById('headerName').textContent = `Bonjour, ${currentUser.first_name}`;
+
+            // Profile form
+            document.getElementById('profileFirstName').value = currentUser.first_name || '';
+            document.getElementById('profileLastName').value = currentUser.last_name || '';
+            document.getElementById('profileEmail').value = currentUser.email || '';
+            document.getElementById('profilePhone').value = currentUser.phone || '';
+            document.getElementById('profileType').value = currentUser.account_type === 'pro' ? 'Professionnel' : 'Particulier';
+            document.getElementById('profileSince').value = new Date(currentUser.created_at + 'Z').toLocaleDateString('fr-FR', {
+                day: '2-digit', month: 'long', year: 'numeric'
+            });
+
+            // Show entreprise tab if Pro
+            if (currentUser.account_type === 'pro') {
+                document.getElementById('navEntreprise').style.display = '';
+                loadCompany();
+            }
+
+            // Show UI
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('pageHeader').style.display = '';
+            document.getElementById('espaceMain').style.display = '';
+            document.getElementById('footerEl').style.display = '';
+
+        } catch (err) {
+            console.error('Init failed:', err);
+            showNotConnected();
+        }
+    }
+
+    function showNotConnected() {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('notConnected').style.display = '';
+    }
+
+    // ===== SAVE PROFILE =====
+    async function saveProfile() {
+        const btn = document.getElementById('btnSaveProfile');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+        try {
+            const res = await fetch(API + '/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify({
+                    first_name: document.getElementById('profileFirstName').value.trim(),
+                    last_name: document.getElementById('profileLastName').value.trim(),
+                    phone: document.getElementById('profilePhone').value.trim(),
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Profil mis à jour avec succès.');
+                // Update nav
+                const fn = document.getElementById('profileFirstName').value.trim();
+                const ln = document.getElementById('profileLastName').value.trim();
+                document.getElementById('navName').textContent = fn;
+                document.getElementById('navAvatar').textContent = (fn[0] + ln[0]).toUpperCase();
+                document.getElementById('headerName').textContent = `Bonjour, ${fn}`;
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+    }
+
+    // ===== CHANGE PASSWORD =====
+    async function changePassword() {
+        const newPwd = document.getElementById('newPassword').value;
+        const confirmPwd = document.getElementById('confirmPassword').value;
+
+        if (newPwd !== confirmPwd) {
+            showToast('Les mots de passe ne correspondent pas.', 'error');
+            return;
+        }
+        if (newPwd.length < 8) {
+            showToast('Le mot de passe doit contenir au moins 8 caractères.', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btnChangePassword');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Modification...';
+
+        try {
+            const res = await fetch(API + '/api/user/password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify({
+                    current_password: document.getElementById('currentPassword').value,
+                    new_password: newPwd,
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Mot de passe modifié avec succès.');
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-key"></i> Changer le mot de passe';
+    }
+
+    // ===== LOAD COMPANY =====
+    async function loadCompany() {
+        try {
+            const res = await fetch(API + '/api/user/company', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            const container = document.getElementById('companyContent');
+
+            if (!data.company) {
+                container.innerHTML = `
+                    <div class="no-company">
+                        <i class="fas fa-building"></i>
+                        <p>Aucune entreprise rattachée à votre compte.<br>
+                        <span style="font-size:12px">Si vous êtes professionnel, votre SIRET sera rattaché lors de l'inscription.</span></p>
+                    </div>`;
+                return;
+            }
+
+            const c = data.company;
+            const contacts = data.contacts || [];
+
+            let html = `
+                <div class="company-header">
+                    <div class="company-icon"><i class="fas fa-building"></i></div>
+                    <div class="company-meta">
+                        <h3>${c.name}</h3>
+                        <p>SIRET : ${c.siret}</p>
+                    </div>
+                </div>
+                <div class="company-fields">
+                    <div>
+                        <div class="company-field-label">Adresse</div>
+                        <div class="company-field-value">${c.address || '—'}</div>
+                    </div>
+                    <div>
+                        <div class="company-field-label">Ville</div>
+                        <div class="company-field-value">${c.postal_code || ''} ${c.city || '—'}</div>
+                    </div>
+                    <div>
+                        <div class="company-field-label">Code NAF</div>
+                        <div class="company-field-value">${c.naf_code || '—'}</div>
+                    </div>
+                    <div>
+                        <div class="company-field-label">Inscrite le</div>
+                        <div class="company-field-value">${new Date(c.created_at + 'Z').toLocaleDateString('fr-FR')}</div>
+                    </div>
+                </div>`;
+
+            if (contacts.length > 0) {
+                html += `
+                    <div class="contacts-title">
+                        <i class="fas fa-users"></i> Contacts de l'entreprise
+                        <span class="count">${contacts.length}</span>
+                    </div>`;
+                contacts.forEach(ct => {
+                    const initials = ((ct.first_name || '?')[0] + (ct.last_name || '?')[0]).toUpperCase();
+                    const isMe = ct.id === currentUser.id;
+                    html += `
+                    <div class="contact-row">
+                        <div class="contact-avatar ${isMe ? 'me' : ''}">${initials}</div>
+                        <div class="contact-info">
+                            <div class="contact-name">${ct.first_name} ${ct.last_name}${isMe ? '<span class="you-badge">Vous</span>' : ''}</div>
+                            <div class="contact-email">${ct.email} · ${ct.phone || '—'}</div>
+                        </div>
+                    </div>`;
+                });
+            }
+
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error('Company load failed:', err);
+        }
+    }
+
+    // ===== START =====
+    init();
+</script>
+
+</body>
+</html>
