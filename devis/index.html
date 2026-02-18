@@ -65,11 +65,11 @@
             background: rgba(11,26,46,0.6);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(255,255,255,0.06);
-            padding: 0 32px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0 24px; height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
         }
         .nav-left {
             display: flex; align-items: center; gap: 12px;
@@ -86,20 +86,38 @@
             font-size: 14px; font-weight: 600; color: var(--slate-400);
             letter-spacing: 0.02em;
         }
-        .nav-right {
-            display: flex; align-items: center; gap: 16px;
+        .nav-links {
+            display: flex; align-items: center; gap: 24px;
         }
-        .nav-home {
-            font-size: 13px; color: var(--slate-400); text-decoration: none;
-            display: flex; align-items: center; gap: 6px;
-            transition: color 0.2s;
+        .nav-link {
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            color: var(--slate-400); transition: color 0.2s;
+            display: flex; align-items: center;
         }
-        .nav-home:hover { color: white; }
+        .nav-link:hover { color: white; }
+        .nav-link.disabled {
+            color: var(--slate-500); pointer-events: none; position: relative;
+            opacity: 0.5;
+        }
+        .nav-link.disabled::after {
+            content: 'Bientôt'; font-size: 9px; font-weight: 700;
+            background: rgba(59,130,246,0.2); color: #60a5fa;
+            padding: 1px 5px; border-radius: 4px;
+            position: absolute; top: -8px; right: -30px;
+        }
+        .nav-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.1); }
+        .nav-email {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--slate-400);
+            text-decoration: none;
+        }
+        .nav-email i { font-size: 12px; }
+        .nav-email:hover { color: white; }
         .nav-user {
             display: flex; align-items: center; gap: 10px;
             background: rgba(255,255,255,0.06);
             border: 1px solid rgba(255,255,255,0.08);
-            padding: 8px 16px; border-radius: 10px;
+            padding: 6px 14px 6px 8px; border-radius: 10px;
             cursor: pointer; transition: all 0.2s;
             position: relative;
         }
@@ -108,27 +126,26 @@
             width: 32px; height: 32px; border-radius: 50%;
             background: var(--blue); display: flex;
             align-items: center; justify-content: center;
-            color: white; font-weight: 700; font-size: 13px;
+            color: white; font-weight: 700; font-size: 12px;
         }
-        .nav-user-name {
-            font-size: 14px; font-weight: 600; color: white;
-        }
-        .nav-user-chevron {
-            font-size: 10px; color: var(--slate-400);
-        }
-
-        /* User dropdown */
+        .nav-user-name { font-size: 14px; font-weight: 600; color: white; }
+        .nav-user-chevron { font-size: 10px; color: var(--slate-400); }
         .user-dropdown {
             display: none; position: absolute; top: calc(100% + 8px); right: 0;
-            background: white; border-radius: var(--radius);
-            padding: 8px; min-width: 200px; z-index: 50;
+            background: white; border-radius: var(--radius); padding: 8px;
+            min-width: 220px; z-index: 150;
             box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-            animation: drop-in 0.15s ease-out;
+            border: 1px solid var(--slate-100);
+            animation: dropdown-in 0.15s ease-out;
         }
         .user-dropdown.show { display: block; }
-        @keyframes drop-in {
+        @keyframes dropdown-in {
             from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        .user-dropdown-info {
+            padding: 10px 12px; font-size: 12px; color: var(--slate-400);
+            border-bottom: 1px solid var(--slate-100); margin-bottom: 4px;
         }
         .user-dropdown-item {
             display: flex; align-items: center; gap: 10px;
@@ -141,7 +158,95 @@
         .user-dropdown-item:hover { background: var(--slate-50); color: var(--slate-900); }
         .user-dropdown-item.danger { color: #dc2626; }
         .user-dropdown-item.danger:hover { background: #fef2f2; }
-        .user-dropdown-sep { height: 1px; background: var(--slate-100); margin: 4px 0; }
+        .user-dropdown-item i { width: 16px; text-align: center; }
+
+        /* Burger */
+        .nav-burger {
+            display: none; width: 44px; height: 44px;
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            background: rgba(255,255,255,0.06); cursor: pointer;
+            align-items: center; justify-content: center;
+            font-size: 18px; color: var(--slate-400);
+            transition: all 0.2s;
+        }
+        .nav-burger:hover { background: rgba(255,255,255,0.1); }
+
+        /* Mobile menu */
+        .mobile-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(11,26,46,0.6); backdrop-filter: blur(4px);
+        }
+        .mobile-overlay.active { display: block; }
+        .mobile-menu {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 300px; max-width: 85vw; z-index: 201;
+            background: white; padding: 24px;
+            box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .mobile-menu-header img { height: 40px; }
+        .mobile-menu-close {
+            width: 40px; height: 40px; border-radius: 10px;
+            border: 1px solid var(--slate-200); background: white;
+            cursor: pointer; font-size: 16px; color: var(--slate-500);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .mobile-menu-close:hover { background: var(--slate-50); }
+        .mobile-menu-links { list-style: none; margin-bottom: 32px; }
+        .mobile-menu-links li { border-bottom: 1px solid var(--slate-100); }
+        .mobile-menu-links a, .mobile-menu-links button {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 4px; font-size: 15px; font-weight: 500;
+            color: var(--slate-700); text-decoration: none;
+            width: 100%; background: none; border: none;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            transition: color 0.2s;
+        }
+        .mobile-menu-links a:hover { color: var(--blue); }
+        .mobile-menu-links i { width: 20px; text-align: center; color: var(--slate-400); font-size: 14px; }
+        .mobile-menu-links .disabled-link { color: var(--slate-300); pointer-events: none; }
+        .mobile-menu-links .badge-soon {
+            font-size: 9px; font-weight: 700;
+            background: var(--blue-pale); color: var(--blue);
+            padding: 2px 6px; border-radius: 4px; margin-left: auto;
+        }
+        .mobile-menu-contact {
+            background: var(--slate-50); border-radius: var(--radius);
+            padding: 20px; text-align: center;
+        }
+        .mobile-menu-contact p { font-size: 12px; color: var(--slate-400); margin-bottom: 8px; }
+        .mobile-menu-contact a { font-size: 14px; font-weight: 700; color: var(--blue); text-decoration: none; }
+        .mobile-menu-cta {
+            width: 100%; padding: 14px; margin-top: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .mobile-menu-cta:hover { background: var(--blue); }
+        .mobile-menu-user {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px; background: var(--slate-50);
+            border-radius: var(--radius); margin-bottom: 24px;
+        }
+        .mobile-menu-user-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--blue); display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 14px;
+        }
+        .mobile-menu-user-name { font-size: 15px; font-weight: 700; color: var(--slate-900); }
+        .mobile-menu-user-email { font-size: 12px; color: var(--slate-400); }
 
         /* ===== MAIN CONTENT ===== */
         .main {
@@ -485,8 +590,9 @@
         .footer a:hover { color: var(--slate-400); }
 
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 640px) {
-            .nav { padding: 0 16px; }
+        @media (max-width: 768px) {
+            .nav-links { display: none !important; }
+            .nav-burger { display: flex; }
             .nav-page-title { display: none; }
             .main { padding: 24px 16px 40px; }
             .sim-panel { padding: 28px 20px; }
@@ -502,28 +608,67 @@
 
 <!-- ===== NAV ===== -->
 <nav class="nav">
-    <div class="nav-left">
-        <a href="../" class="nav-logo">
-            <img src="../images/logo-polyvalences.png" alt="PolyValences">
-        </a>
-        <div class="nav-sep-v"></div>
-        <span class="nav-page-title">Devis instantané</span>
-    </div>
-    <div class="nav-right">
-        <a href="../" class="nav-home"><i class="fas fa-arrow-left"></i> Accueil</a>
-        <div class="nav-user" id="navUser" onclick="toggleUserDropdown()">
-            <div class="nav-user-avatar" id="navAvatar">?</div>
-            <span class="nav-user-name" id="navName">...</span>
-            <i class="fas fa-chevron-down nav-user-chevron"></i>
-            <div class="user-dropdown" id="userDropdown">
-                <div class="user-dropdown-item" id="dropdownInfo" style="pointer-events:none;color:var(--slate-400);font-size:12px"></div>
-                <div class="user-dropdown-sep"></div>
-                <a href="../" class="user-dropdown-item"><i class="fas fa-home" style="width:16px"></i> Accueil</a>
-                <button class="user-dropdown-item danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt" style="width:16px"></i> Déconnexion</button>
+    <div class="nav-inner">
+        <div class="nav-left">
+            <a href="../" class="nav-logo">
+                <img src="../images/logo-polyvalences.png" alt="PolyValences">
+            </a>
+            <div class="nav-sep-v"></div>
+            <span class="nav-page-title">Devis instantané</span>
+        </div>
+        <div class="nav-links">
+            <a href="../" class="nav-link"><i class="fas fa-home" style="margin-right:4px"></i> Accueil</a>
+            <a href="#" class="nav-link disabled">Mon Espace</a>
+            <a href="../contact" class="nav-link">Contact</a>
+            <div class="nav-sep"></div>
+            <a href="mailto:support@polyvalences.eu" class="nav-email">
+                <i class="fas fa-envelope"></i> support@polyvalences.eu
+            </a>
+            <div class="nav-user" id="navUser" onclick="toggleUserDropdown()">
+                <div class="nav-user-avatar" id="navAvatar">?</div>
+                <span class="nav-user-name" id="navName">...</span>
+                <i class="fas fa-chevron-down nav-user-chevron"></i>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="user-dropdown-info" id="dropdownEmail"></div>
+                    <a href="../" class="user-dropdown-item"><i class="fas fa-home"></i> Accueil</a>
+                    <button class="user-dropdown-item danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+                </div>
             </div>
         </div>
+        <button class="nav-burger" id="navBurger" onclick="openMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
     </div>
 </nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+        <img src="../images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;">
+        <button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mobile-menu-user" id="mobileUser">
+        <div class="mobile-menu-user-avatar" id="mobileAvatar">?</div>
+        <div>
+            <div class="mobile-menu-user-name" id="mobileName">...</div>
+            <div class="mobile-menu-user-email" id="mobileEmail">...</div>
+        </div>
+    </div>
+    <ul class="mobile-menu-links">
+        <li><a href="../"><i class="fas fa-home"></i> Accueil</a></li>
+        <li><a href="../devis/"><i class="fas fa-calculator"></i> Devis instantané</a></li>
+        <li><a href="#" class="disabled-link"><i class="fas fa-th-large"></i> Mon Espace <span class="badge-soon">Bientôt</span></a></li>
+        <li><a href="../contact"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <div class="mobile-menu-contact">
+        <p>Besoin d'aide ?</p>
+        <a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope" style="margin-right:6px"></i>support@polyvalences.eu</a>
+    </div>
+    <button class="mobile-menu-cta" style="background:#dc2626;" onclick="handleLogout()">
+        <i class="fas fa-sign-out-alt"></i> Déconnexion
+    </button>
+</div>
 
 <!-- ===== MAIN ===== -->
 <main class="main">
@@ -638,10 +783,30 @@
 
     function updateNav() {
         const initials = (currentUser.first_name[0] + currentUser.last_name[0]).toUpperCase();
+        // Desktop
         document.getElementById('navAvatar').textContent = initials;
         document.getElementById('navName').textContent = currentUser.first_name;
-        document.getElementById('dropdownInfo').textContent = currentUser.email;
+        document.getElementById('dropdownEmail').textContent = currentUser.email;
+        // Mobile
+        document.getElementById('mobileAvatar').textContent = initials;
+        document.getElementById('mobileName').textContent = currentUser.first_name + ' ' + currentUser.last_name;
+        document.getElementById('mobileEmail').textContent = currentUser.email;
     }
+
+    // ===== MOBILE MENU =====
+    function openMobileMenu() {
+        document.getElementById('mobileOverlay').classList.add('active');
+        document.getElementById('mobileMenu').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+        document.getElementById('mobileOverlay').classList.remove('active');
+        document.getElementById('mobileMenu').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeMobileMenu();
+    });
 
     // ===== USER DROPDOWN =====
     function toggleUserDropdown() {
@@ -782,9 +947,7 @@
                     <div class="sim-result-contact">
                         <div class="sim-result-contact-icon"><i class="fas fa-phone-alt"></i></div>
                         <strong>${data.message}</strong><br><br>
-                        <a href="tel:+33XXXXXXXXX"><i class="fas fa-phone"></i> 01 XX XX XX XX</a>
-                        &nbsp;&bull;&nbsp;
-                        <a href="mailto:contact@polyvalences.eu"><i class="fas fa-envelope"></i> contact@polyvalences.eu</a>
+                        <a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope"></i> support@polyvalences.eu</a>
                     </div>
                 </div>`;
             resultDiv.classList.add('show');
