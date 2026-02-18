@@ -941,6 +941,61 @@
     <span id="toastMsg"></span>
 </div>
 
+<!-- MODAL CHARTE -->
+<div id="charterModal" style="display:none; position:fixed; inset:0; z-index:600; background:rgba(11,26,46,0.7); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:16px; padding:32px; max-width:560px; width:92%; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh; display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-shrink:0;">
+            <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg, var(--blue), var(--emerald)); display:flex; align-items:center; justify-content:center; color:white; font-size:20px; flex-shrink:0;">
+                <i class="fas fa-file-signature"></i>
+            </div>
+            <div>
+                <div style="font-size:18px; font-weight:800; color:var(--slate-900);">Charte d'utilisation</div>
+                <div style="font-size:13px; color:var(--slate-500);">Veuillez lire et accepter avant de continuer</div>
+            </div>
+        </div>
+
+        <div style="flex:1; overflow-y:auto; padding:20px; background:var(--slate-50); border-radius:10px; border:1px solid var(--slate-200); margin-bottom:20px; font-size:13px; color:var(--slate-700); line-height:1.7;">
+            <p style="font-weight:700; color:var(--slate-900); font-size:14px; margin-bottom:12px;">Charte de responsabilité — Espace Client PolyValences</p>
+
+            <p style="font-weight:600; color:var(--slate-800); margin-top:14px;">1. Objet de l'espace client</p>
+            <p>L'espace client PolyValences met à votre disposition un outil de gestion de parc automobile incluant le suivi des véhicules, des affectations, de l'entretien et des échéances de contrôle technique. Cet outil est fourni à titre informatif et d'aide à la gestion.</p>
+
+            <p style="font-weight:600; color:var(--slate-800); margin-top:14px;">2. Données saisies par l'utilisateur</p>
+            <p>Toutes les données relatives à vos véhicules (kilométrage, dates d'entretien, dates de contrôle technique, intervalles de révision, etc.) sont saisies sous votre entière responsabilité. Il vous appartient de vérifier leur exactitude et de les maintenir à jour.</p>
+
+            <p style="font-weight:600; color:var(--slate-800); margin-top:14px;">3. Alertes et rappels</p>
+            <p>Les alertes d'échéances (contrôle technique, révisions) affichées dans votre espace sont calculées automatiquement à partir des données que vous avez renseignées. Elles sont fournies à titre <strong>indicatif uniquement</strong> et ne constituent ni un conseil professionnel, ni une obligation contractuelle de la part de PolyValences.</p>
+
+            <p style="font-weight:600; color:var(--slate-800); margin-top:14px;">4. Limitation de responsabilité</p>
+            <p>PolyValences ne saurait être tenu responsable en cas de :</p>
+            <p style="padding-left:16px;">— Données erronées ou incomplètes saisies par l'utilisateur<br>
+            — Échéances manquées suite à des alertes basées sur des données incorrectes<br>
+            — Conséquences liées au non-respect des obligations légales d'entretien ou de contrôle technique<br>
+            — Toute décision prise sur la base des informations affichées dans l'espace client</p>
+
+            <p style="font-weight:600; color:var(--slate-800); margin-top:14px;">5. Obligations légales</p>
+            <p>Le respect des échéances de contrôle technique et d'entretien de vos véhicules relève de votre responsabilité exclusive, conformément au Code de la route et aux réglementations en vigueur. L'espace client PolyValences ne se substitue en aucun cas à ces obligations.</p>
+
+            <p style="font-weight:600; color:var(--slate-800); margin-top:14px;">6. Protection des données</p>
+            <p>Vos données sont stockées de manière sécurisée et traitées conformément au RGPD. Elles ne sont ni revendues ni partagées avec des tiers sans votre consentement explicite.</p>
+
+            <p style="font-weight:600; color:var(--slate-800); margin-top:14px;">7. Acceptation</p>
+            <p>En acceptant cette charte, vous reconnaissez avoir pris connaissance de l'ensemble de ces conditions et vous engagez à utiliser l'espace client conformément aux présentes.</p>
+
+            <p style="margin-top:16px; font-size:12px; color:var(--slate-400);">Version 2026-02 — PolyValences SAS — Depuis 2009</p>
+        </div>
+
+        <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:16px; cursor:pointer; flex-shrink:0;" id="charterCheckLabel">
+            <input type="checkbox" id="charterCheck" style="margin-top:3px; accent-color:var(--blue); width:18px; height:18px;">
+            <span style="font-size:13px; color:var(--slate-700);">J'ai lu et j'accepte la charte de responsabilité de l'espace client PolyValences</span>
+        </label>
+
+        <button id="btnSignCharter" onclick="signCharter()" disabled style="width:100%; padding:14px; border-radius:10px; border:none; background:var(--slate-300); font-size:15px; font-weight:700; color:white; cursor:not-allowed; font-family:'DM Sans',sans-serif; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; flex-shrink:0;">
+            <i class="fas fa-signature"></i> Accepter et continuer
+        </button>
+    </div>
+</div>
+
 <!-- MODAL RETRAIT -->
 <div id="endAssignModal" style="display:none; position:fixed; inset:0; z-index:500; background:rgba(11,26,46,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
     <div style="background:white; border-radius:16px; padding:32px; max-width:460px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:dropdown-in 0.2s ease-out; max-height:90vh; overflow-y:auto;">
@@ -1102,6 +1157,11 @@
             if (currentUser.account_type === 'pro') {
                 document.getElementById('navEntreprise').style.display = '';
                 loadCompany();
+            }
+
+            // Check charte
+            if (!currentUser.charter_signed) {
+                document.getElementById('charterModal').style.display = 'flex';
             }
 
             // Show UI
@@ -2072,6 +2132,45 @@ async function estimateConvoyageCost() {
                 document.querySelectorAll('.ac-dropdown').forEach(d => d.classList.remove('show'));
             }
         });
+
+        // ===== CHARTE =====
+document.getElementById('charterCheck').addEventListener('change', function() {
+    const btn = document.getElementById('btnSignCharter');
+    if (this.checked) {
+        btn.disabled = false;
+        btn.style.background = 'var(--blue)';
+        btn.style.cursor = 'pointer';
+    } else {
+        btn.disabled = true;
+        btn.style.background = 'var(--slate-300)';
+        btn.style.cursor = 'not-allowed';
+    }
+});
+
+async function signCharter() {
+    const btn = document.getElementById('btnSignCharter');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signature en cours...';
+
+    try {
+        const res = await fetch(API + '/api/user/charter', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+            body: JSON.stringify({ version: '2026-02' })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            document.getElementById('charterModal').style.display = 'none';
+            showToast('Charte acceptée. Bienvenue !');
+        } else {
+            showToast(data.error || 'Erreur', 'error');
+        }
+    } catch (err) {
+        showToast('Erreur de connexion', 'error');
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-signature"></i> Accepter et continuer';
+}
 
     // ===== START =====
 init();
