@@ -1594,17 +1594,44 @@
                 <label>Téléphone</label>
                 <input type="tel" placeholder="06 XX XX XX XX" required>
             </div>
-            <div class="auth-row">
+            <div class="auth-input-group">
+                <label>Type de compte</label>
+                <select id="registerAccountType" onchange="toggleCompanyBlock()">
+                    <option value="pro">Professionnel</option>
+                    <option value="particulier">Particulier</option>
+                </select>
+            </div>
+
+            <!-- Bloc entreprise (Pro uniquement) -->
+            <div id="companyBlock">
                 <div class="auth-input-group">
-                    <label>Type de compte</label>
-                    <select>
-                        <option value="pro">Professionnel</option>
-                        <option value="particulier">Particulier</option>
-                    </select>
+                    <label>SIRET <span style="color:var(--slate-400);font-weight:400">(14 chiffres)</span></label>
+                    <div style="display:flex;gap:8px">
+                        <input type="text" id="registerSiret" placeholder="Ex : 12345678901234" maxlength="14" pattern="[0-9]{14}" style="flex:1" required>
+                        <button type="button" onclick="searchSiret()" style="padding:12px 16px;background:var(--blue);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='var(--blue)'">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+                    </div>
                 </div>
-                <div class="auth-input-group">
-                    <label>Entreprise <span style="color:var(--slate-400);font-weight:400">(optionnel)</span></label>
-                    <input type="text" placeholder="Nom de l'entreprise">
+                <div id="siretResult" style="display:none">
+                    <div id="siretLoading" style="display:none;text-align:center;padding:12px;color:var(--slate-400);font-size:13px">
+                        <i class="fas fa-spinner fa-spin"></i> Recherche en cours...
+                    </div>
+                    <div id="siretError" style="display:none;padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:13px;color:#dc2626;margin-bottom:14px">
+                        <i class="fas fa-exclamation-circle"></i> <span></span>
+                    </div>
+                    <div id="siretFound" style="display:none;padding:16px;background:var(--slate-50);border:1px solid var(--slate-200);border-radius:10px;margin-bottom:14px">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+                            <i class="fas fa-building" style="color:var(--blue)"></i>
+                            <span style="font-size:13px;font-weight:700;color:var(--slate-700)">Entreprise trouvée</span>
+                            <i class="fas fa-check-circle" style="color:#16a34a;margin-left:auto"></i>
+                        </div>
+                        <div style="font-size:14px;font-weight:700;color:var(--slate-900);margin-bottom:8px" id="siretCompanyName"></div>
+                        <div style="font-size:13px;color:var(--slate-500);line-height:1.6">
+                            <div id="siretAddress"></div>
+                            <div><span style="font-weight:600;color:var(--slate-600)">NAF :</span> <span id="siretNaf"></span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="auth-input-group">
@@ -1729,8 +1756,7 @@
         const last_name = inputs[1].value.trim();
         const email = inputs[2].value.trim();
         const phone = inputs[3].value.trim();
-        const account_type = select.value;
-        const company = inputs[4].value.trim();
+        const account_type = document.getElementById('registerAccountType').value;
         const password = inputs[5].value;
 
         if (!first_name || !last_name || !email || !phone || !password) {
@@ -1741,8 +1767,8 @@
             showAuthError('registerError', 'Le mot de passe doit contenir au moins 8 caractères.');
             return;
         }
-        if (password.length < 8) {
-            alert('Le mot de passe doit contenir au moins 8 caractères.');
+        if (account_type === 'pro' && !siretData) {
+            showAuthError('registerError', 'Veuillez rechercher et valider votre SIRET avant de continuer.');
             return;
         }
 
@@ -1753,7 +1779,15 @@
             const res = await fetch(API + '/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, first_name, last_name, phone, account_type, company: company || null })
+                body: JSON.stringify({
+                    email, password, first_name, last_name, phone, account_type,
+                    company: siretData ? siretData.company_name : null,
+                    siret: siretData ? siretData.siret : null,
+                    company_address: siretData ? siretData.address : null,
+                    company_postal_code: siretData ? siretData.postal_code : null,
+                    company_city: siretData ? siretData.city : null,
+                    naf_code: siretData ? siretData.naf_code : null
+                })
             });
             const data = await res.json();
 
@@ -1981,6 +2015,105 @@
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
+
+    // ===== SIRET SEARCH =====
+    function toggleCompanyBlock() {
+        const type = document.getElementById('registerAccountType').value;
+        const block = document.getElementById('companyBlock');
+        const siretInput = document.getElementById('registerSiret');
+        block.style.display = type === 'pro' ? 'block' : 'none';
+        siretInput.required = (type === 'pro');
+        // Reset SIRET fields when switching
+        if (type === 'particulier') {
+            siretInput.value = '';
+            document.getElementById('siretResult').style.display = 'none';
+            document.getElementById('siretFound').style.display = 'none';
+            document.getElementById('siretError').style.display = 'none';
+            siretData = null;
+        }
+    }
+
+    let siretData = null; // stocke les données entreprise trouvées
+
+    async function searchSiret() {
+        const siretInput = document.getElementById('registerSiret');
+        const siret = siretInput.value.replace(/\s/g, '');
+        const resultDiv = document.getElementById('siretResult');
+        const loadingDiv = document.getElementById('siretLoading');
+        const errorDiv = document.getElementById('siretError');
+        const foundDiv = document.getElementById('siretFound');
+
+        // Validation format
+        if (!/^\d{14}$/.test(siret)) {
+            resultDiv.style.display = 'block';
+            loadingDiv.style.display = 'none';
+            foundDiv.style.display = 'none';
+            errorDiv.style.display = 'block';
+            errorDiv.querySelector('span').textContent = 'Le SIRET doit contenir exactement 14 chiffres.';
+            siretData = null;
+            return;
+        }
+
+        // Afficher loading
+        resultDiv.style.display = 'block';
+        loadingDiv.style.display = 'block';
+        foundDiv.style.display = 'none';
+        errorDiv.style.display = 'none';
+        siretData = null;
+
+        try {
+            const res = await fetch('https://recherche-entreprises.api.gouv.fr/search?q=' + siret + '&page=1&per_page=1');
+            const data = await res.json();
+
+            loadingDiv.style.display = 'none';
+
+            if (!data.results || data.results.length === 0) {
+                errorDiv.style.display = 'block';
+                errorDiv.querySelector('span').textContent = 'Aucune entreprise trouvée pour ce SIRET. Vérifiez le numéro.';
+                return;
+            }
+
+            const entreprise = data.results[0];
+            const siege = entreprise.siege || {};
+            const nom = entreprise.nom_complet || entreprise.nom_raison_sociale || '—';
+            const adresse = siege.adresse || '—';
+            const codePostal = siege.code_postal || '';
+            const ville = siege.libelle_commune || '';
+            const naf = entreprise.activite_principale || siege.activite_principale || '—';
+
+            // Stocker les données
+            siretData = {
+                siret: siret,
+                company_name: nom,
+                address: adresse,
+                postal_code: codePostal,
+                city: ville,
+                naf_code: naf
+            };
+
+            // Afficher
+            document.getElementById('siretCompanyName').textContent = nom;
+            document.getElementById('siretAddress').textContent = adresse + (codePostal ? ' — ' + codePostal + ' ' + ville : '');
+            document.getElementById('siretNaf').textContent = naf;
+            foundDiv.style.display = 'block';
+
+        } catch (err) {
+            loadingDiv.style.display = 'none';
+            errorDiv.style.display = 'block';
+            errorDiv.querySelector('span').textContent = 'Erreur de connexion à l\'API. Réessayez.';
+            console.error('SIRET search error:', err);
+        }
+    }
+
+    // Permettre la recherche avec Entrée dans le champ SIRET
+    document.addEventListener('DOMContentLoaded', () => {
+        const siretInput = document.getElementById('registerSiret');
+        if (siretInput) {
+            siretInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); searchSiret(); }
+            });
+        }
+    });
 
     // ===== MOBILE MENU =====
     function openMobileMenu() {
