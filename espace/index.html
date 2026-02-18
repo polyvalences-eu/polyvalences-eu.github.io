@@ -862,6 +862,9 @@
                         </div>
                     </div>
 
+                    <!-- ENTRETIEN & CT -->
+                    <div style="margin-bottom:24px;" id="maintenanceBlock"></div>
+                   
                     <!-- AFFECTATION ACTUELLE -->
                     <div style="margin-bottom:24px;">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
@@ -1657,6 +1660,9 @@
             document.getElementById('detailLocation').textContent = v.location || '—';
             document.getElementById('detailNotes').textContent = v.notes || '—';
 
+            // Maintenance & CT alerts
+            loadMaintenanceBlock(v);
+
             // Current assignment
             const active = assignments.filter(a => a.status === 'active');
             const future = assignments.filter(a => a.status === 'future');
@@ -1777,6 +1783,283 @@
             showToast('Erreur de connexion', 'error');
         }
     }
+
+    // ===== MAINTENANCE & CT ALERTS =====
+async function loadMaintenanceBlock(v) {
+    const block = document.getElementById('maintenanceBlock');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let alertsHtml = '';
+
+    // --- CT ALERT ---
+    if (v.next_ct_date) {
+        const nextCt = new Date(v.next_ct_date);
+        const daysLeft = Math.ceil((nextCt - today) / (1000 * 60 * 60 * 24));
+        let ctColor, ctIcon, ctMsg;
+
+        if (daysLeft < 0) {
+            ctColor = '#dc2626'; ctIcon = 'exclamation-triangle';
+            ctMsg = `CT expiré depuis le ${formatDate(v.next_ct_date)} (${Math.abs(daysLeft)} jours)`;
+        } else if (daysLeft <= 30) {
+            ctColor = '#dc2626'; ctIcon = 'exclamation-circle';
+            ctMsg = `CT urgent — échéance le ${formatDate(v.next_ct_date)} (${daysLeft} jours)`;
+        } else if (daysLeft <= 90) {
+            ctColor = '#d97706'; ctIcon = 'clock';
+            ctMsg = `CT à prévoir avant le ${formatDate(v.next_ct_date)} (${daysLeft} jours)`;
+        } else {
+            ctColor = '#059669'; ctIcon = 'check-circle';
+            ctMsg = `CT valide jusqu'au ${formatDate(v.next_ct_date)}`;
+        }
+        if (v.ct_result && v.ct_result !== 'Favorable') {
+            ctColor = '#dc2626';
+            ctMsg += ` · Dernier résultat : ${v.ct_result}`;
+        }
+        alertsHtml += `
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:${ctColor}10; border:1px solid ${ctColor}30; margin-bottom:8px;">
+                <i class="fas fa-${ctIcon}" style="color:${ctColor}; font-size:16px; flex-shrink:0;"></i>
+                <span style="font-size:13px; font-weight:600; color:${ctColor};">${ctMsg}</span>
+            </div>`;
+    } else if (v.first_registration_date) {
+        alertsHtml += `
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:#d9770610; border:1px solid #d9770630; margin-bottom:8px;">
+                <i class="fas fa-info-circle" style="color:#d97706; font-size:16px; flex-shrink:0;"></i>
+                <span style="font-size:13px; font-weight:600; color:#d97706;">Aucun CT renseigné. Mise en circulation le ${formatDate(v.first_registration_date)}.</span>
+            </div>`;
+    } else {
+        alertsHtml += `
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:var(--slate-50); border:1px solid var(--slate-200); margin-bottom:8px;">
+                <i class="fas fa-info-circle" style="color:var(--slate-400); font-size:16px; flex-shrink:0;"></i>
+                <span style="font-size:13px; color:var(--slate-400);">Date CT non renseignée</span>
+            </div>`;
+    }
+
+    // --- REVISION ALERT ---
+    if (v.mileage && v.last_service_km && v.service_interval_km) {
+        const kmSince = v.mileage - v.last_service_km;
+        const kmLeft = v.service_interval_km - kmSince;
+        let revColor, revIcon, revMsg;
+
+        if (kmLeft < 0) {
+            revColor = '#dc2626'; revIcon = 'exclamation-triangle';
+            revMsg = `Révision dépassée de ${Math.abs(kmLeft).toLocaleString('fr-FR')} km`;
+        } else if (kmLeft <= 3000) {
+            revColor = '#d97706'; revIcon = 'clock';
+            revMsg = `Révision à prévoir (dans ~${kmLeft.toLocaleString('fr-FR')} km)`;
+        } else {
+            revColor = '#059669'; revIcon = 'check-circle';
+            revMsg = `Prochaine révision dans ~${kmLeft.toLocaleString('fr-FR')} km`;
+        }
+        alertsHtml += `
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:${revColor}10; border:1px solid ${revColor}30; margin-bottom:8px;">
+                <i class="fas fa-${revIcon}" style="color:${revColor}; font-size:16px; flex-shrink:0;"></i>
+                <span style="font-size:13px; font-weight:600; color:${revColor};">${revMsg}</span>
+            </div>`;
+    } else if (v.last_service_date) {
+        // Check by date
+        const lastService = new Date(v.last_service_date);
+        const monthsSince = (today.getFullYear() - lastService.getFullYear()) * 12 + (today.getMonth() - lastService.getMonth());
+        const monthsLeft = (v.service_interval_months || 24) - monthsSince;
+
+        let revColor, revIcon, revMsg;
+        if (monthsLeft < 0) {
+            revColor = '#dc2626'; revIcon = 'exclamation-triangle';
+            revMsg = `Révision dépassée de ${Math.abs(monthsLeft)} mois`;
+        } else if (monthsLeft <= 3) {
+            revColor = '#d97706'; revIcon = 'clock';
+            revMsg = `Révision à prévoir (dans ~${monthsLeft} mois)`;
+        } else {
+            revColor = '#059669'; revIcon = 'check-circle';
+            revMsg = `Prochaine révision dans ~${monthsLeft} mois`;
+        }
+        alertsHtml += `
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:${revColor}10; border:1px solid ${revColor}30; margin-bottom:8px;">
+                <i class="fas fa-${revIcon}" style="color:${revColor}; font-size:16px; flex-shrink:0;"></i>
+                <span style="font-size:13px; font-weight:600; color:${revColor};">${revMsg}</span>
+            </div>`;
+    } else {
+        alertsHtml += `
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:var(--slate-50); border:1px solid var(--slate-200); margin-bottom:8px;">
+                <i class="fas fa-info-circle" style="color:var(--slate-400); font-size:16px; flex-shrink:0;"></i>
+                <span style="font-size:13px; color:var(--slate-400);">Aucun entretien renseigné</span>
+            </div>`;
+    }
+
+    // --- LOAD MAINTENANCE HISTORY ---
+    let historyHtml = '';
+    try {
+        const res = await fetch(API + '/api/vehicles/' + v.id + '/maintenance', {
+            headers: { 'Authorization': 'Bearer ' + authToken }
+        });
+        const mData = await res.json();
+        const logs = mData.maintenance || [];
+
+        if (logs.length > 0) {
+            historyHtml = `
+                <div style="margin-top:12px;">
+                    <div style="font-size:12px; font-weight:700; color:var(--slate-500); text-transform:uppercase; margin-bottom:8px;">Historique entretien</div>
+                    ${logs.map(m => `
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border:1px solid var(--slate-100); border-radius:8px; margin-bottom:4px; flex-wrap:wrap; gap:6px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="background:var(--blue-pale); color:var(--blue); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; text-transform:uppercase;">${m.type}</span>
+                            <span style="font-size:13px; font-weight:600; color:var(--slate-700);">${m.description || '—'}</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:12px; color:var(--slate-400);">
+                                ${formatDate(m.date)}
+                                ${m.mileage ? ' · ' + m.mileage.toLocaleString('fr-FR') + ' km' : ''}
+                                ${m.provider ? ' · ' + m.provider : ''}
+                                ${m.cost ? ' · ' + m.cost.toLocaleString('fr-FR') + ' €' : ''}
+                            </span>
+                            <button onclick="deleteMaintenance(${m.id})" style="background:none; border:none; cursor:pointer; color:var(--slate-300); font-size:13px; transition:color 0.15s;" onmouseover="this.style.color='#dc2626'" onmouseout="this.style.color='var(--slate-300)'">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>`).join('')}
+                </div>`;
+        }
+    } catch (err) {
+        console.error('Maintenance load failed:', err);
+    }
+
+    // --- RENDER BLOCK ---
+    block.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <h3 style="font-size:15px; font-weight:700; color:var(--slate-800); font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-wrench" style="color:var(--emerald);"></i> Entretien & Contrôle technique
+            </h3>
+            <button class="btn-primary" style="padding:8px 16px; font-size:12px; background:var(--emerald);" onclick="showMaintenanceForm()">
+                <i class="fas fa-plus"></i> Ajouter
+            </button>
+        </div>
+        ${alertsHtml}
+        <div style="margin-top:4px; font-size:10px; color:var(--slate-400); font-style:italic;">
+            <i class="fas fa-info-circle" style="margin-right:4px;"></i>Les alertes sont indicatives, basées sur vos données. Vérifiez vos échéances auprès d'un professionnel.
+        </div>
+        <!-- MAINTENANCE FORM (hidden) -->
+        <div id="maintenanceFormWrap" style="display:none; margin-top:16px; padding:16px; background:var(--slate-50); border:1px solid var(--slate-200); border-radius:10px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <div style="font-size:14px; font-weight:700; color:var(--slate-900);">Ajouter un entretien</div>
+                <button onclick="document.getElementById('maintenanceFormWrap').style.display='none'" style="background:none; border:none; cursor:pointer; color:var(--slate-400); font-size:16px;"><i class="fas fa-times"></i></button>
+            </div>
+            <form onsubmit="event.preventDefault(); saveMaintenance()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Type *</label>
+                        <select id="mType">
+                            <option value="ct">Contrôle technique</option>
+                            <option value="revision">Révision / Vidange</option>
+                            <option value="freins">Freins</option>
+                            <option value="pneus">Pneumatiques</option>
+                            <option value="distribution">Distribution</option>
+                            <option value="climatisation">Climatisation</option>
+                            <option value="batterie">Batterie</option>
+                            <option value="carrosserie">Carrosserie</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="mDate" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="mDesc" placeholder="Vidange + filtres, CT favorable...">
+                    </div>
+                    <div class="form-group">
+                        <label>Kilométrage</label>
+                        <input type="number" id="mMileage" placeholder="85000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Garage / Prestataire</label>
+                        <input type="text" id="mProvider" placeholder="Garage Dupont...">
+                    </div>
+                    <div class="form-group">
+                        <label>Coût (€)</label>
+                        <input type="number" id="mCost" placeholder="150" step="0.01">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="btnSaveMaint" style="background:var(--emerald);">
+                    <i class="fas fa-save"></i> Enregistrer l'entretien
+                </button>
+            </form>
+        </div>
+        ${historyHtml}`;
+}
+
+function formatDate(d) {
+    if (!d) return '—';
+    const parts = d.split('-');
+    if (parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+    return d;
+}
+
+function showMaintenanceForm() {
+    const wrap = document.getElementById('maintenanceFormWrap');
+    wrap.style.display = '';
+    document.getElementById('mType').value = 'revision';
+    document.getElementById('mDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('mDesc').value = '';
+    document.getElementById('mMileage').value = '';
+    document.getElementById('mProvider').value = '';
+    document.getElementById('mCost').value = '';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function saveMaintenance() {
+    const btn = document.getElementById('btnSaveMaint');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+    try {
+        const res = await fetch(API + '/api/vehicles/' + currentVehicleId + '/maintenance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+            body: JSON.stringify({
+                type: document.getElementById('mType').value,
+                date: document.getElementById('mDate').value,
+                description: document.getElementById('mDesc').value.trim() || null,
+                mileage: document.getElementById('mMileage').value ? parseInt(document.getElementById('mMileage').value) : null,
+                provider: document.getElementById('mProvider').value.trim() || null,
+                cost: document.getElementById('mCost').value ? parseFloat(document.getElementById('mCost').value) : null,
+            })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            showToast('Entretien enregistré.');
+            loadVehicleDetail(currentVehicleId);
+        } else {
+            showToast(data.error || 'Erreur', 'error');
+        }
+    } catch (err) {
+        showToast('Erreur de connexion', 'error');
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer l\'entretien';
+}
+
+async function deleteMaintenance(id) {
+    if (!confirm('Supprimer cette entrée ?')) return;
+    try {
+        const res = await fetch(API + '/api/maintenance/' + id, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + authToken }
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            showToast('Entrée supprimée.');
+            loadVehicleDetail(currentVehicleId);
+        } else {
+            showToast(data.error || 'Erreur', 'error');
+        }
+    } catch (err) {
+        showToast('Erreur de connexion', 'error');
+    }
+}
 
     // ===== ASSIGN FORM =====
     function showAssignForm(type) {
