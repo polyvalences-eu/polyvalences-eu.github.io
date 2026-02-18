@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — PolyValences</title>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1a2e;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --blue-pale: #dbeafe;
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --emerald: #059669;
+            --emerald-pale: #d1fae5;
+            --red: #dc2626;
+            --red-pale: #fef2f2;
+            --amber: #d97706;
+            --amber-pale: #fef3c7;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        /* ===== TOP BAR ===== */
+        .topbar {
+            background: var(--navy); color: white;
+            padding: 0 24px; height: 56px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .topbar-left {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .topbar-left i { color: var(--blue-light); }
+        .topbar-left span { font-size: 15px; font-weight: 700; }
+        .topbar-left .badge {
+            font-size: 10px; font-weight: 700;
+            background: var(--blue); color: white;
+            padding: 2px 8px; border-radius: 6px;
+        }
+        .topbar-right {
+            display: flex; align-items: center; gap: 16px;
+        }
+        .topbar-right a {
+            color: var(--slate-400); font-size: 13px;
+            text-decoration: none; transition: color 0.2s;
+        }
+        .topbar-right a:hover { color: white; }
+        .topbar-user {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600;
+        }
+        .topbar-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--blue); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700;
+        }
+        .btn-logout {
+            background: none; border: 1px solid var(--slate-600);
+            color: var(--slate-400); padding: 6px 12px;
+            border-radius: 8px; font-size: 12px; font-weight: 600;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+        /* ===== MAIN ===== */
+        .admin-main {
+            max-width: 1000px; margin: 0 auto;
+            padding: 32px 24px 80px;
+        }
+
+        /* ===== ACCESS DENIED ===== */
+        .access-denied {
+            text-align: center; padding: 80px 24px;
+        }
+        .access-denied i { font-size: 48px; color: var(--slate-300); margin-bottom: 16px; }
+        .access-denied h2 { font-size: 20px; color: var(--slate-700); margin-bottom: 8px; }
+        .access-denied p { font-size: 14px; color: var(--slate-500); margin-bottom: 24px; }
+        .access-denied a {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--navy); color: white;
+            padding: 12px 24px; border-radius: 10px;
+            text-decoration: none; font-size: 14px; font-weight: 600;
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            text-align: center; padding: 60px; color: var(--slate-400);
+        }
+        .loading i { font-size: 24px; margin-bottom: 12px; display: block; }
+
+        /* ===== STATS ROW ===== */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px; margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white; border-radius: var(--radius);
+            padding: 20px; border: 1px solid var(--slate-100);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .stat-card-label {
+            font-size: 12px; font-weight: 600; color: var(--slate-400);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .stat-card-value {
+            font-size: 28px; font-weight: 700; color: var(--slate-900);
+        }
+        .stat-card-value.pending { color: var(--amber); }
+        .stat-card-value.active { color: var(--emerald); }
+
+        /* ===== SECTION ===== */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .section-header h2 {
+            font-size: 18px; font-weight: 700; color: var(--slate-900);
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-header .count {
+            font-size: 12px; font-weight: 700;
+            background: var(--amber-pale); color: var(--amber);
+            padding: 2px 10px; border-radius: 6px;
+        }
+        .btn-refresh {
+            background: white; border: 1px solid var(--slate-200);
+            padding: 8px 14px; border-radius: 8px;
+            font-size: 13px; font-weight: 600; color: var(--slate-600);
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-refresh:hover { border-color: var(--blue); color: var(--blue); }
+
+        /* ===== TABLE ===== */
+        .table-card {
+            background: white; border-radius: var(--radius);
+            border: 1px solid var(--slate-100);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+        .empty-state {
+            text-align: center; padding: 48px 24px;
+            color: var(--slate-400);
+        }
+        .empty-state i { font-size: 32px; margin-bottom: 12px; display: block; color: var(--slate-300); }
+        .empty-state p { font-size: 14px; }
+
+        /* User cards (responsive) */
+        .user-card {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--slate-50);
+            display: flex; align-items: center; gap: 16px;
+            transition: background 0.15s;
+        }
+        .user-card:hover { background: var(--slate-50); }
+        .user-card:last-child { border-bottom: none; }
+
+        .user-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--blue-pale); color: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
+        }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name {
+            font-size: 15px; font-weight: 700; color: var(--slate-900);
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+        .user-name .type-badge {
+            font-size: 10px; font-weight: 700; padding: 2px 8px;
+            border-radius: 4px; text-transform: uppercase;
+        }
+        .type-badge.pro { background: var(--blue-pale); color: var(--blue); }
+        .type-badge.particulier { background: var(--slate-100); color: var(--slate-500); }
+        .user-email { font-size: 13px; color: var(--slate-500); }
+        .user-details {
+            font-size: 12px; color: var(--slate-400); margin-top: 4px;
+            display: flex; flex-wrap: wrap; gap: 12px;
+        }
+        .user-details span {
+            display: flex; align-items: center; gap: 4px;
+        }
+        .user-details i { font-size: 11px; }
+
+        .user-actions { flex-shrink: 0; display: flex; gap: 8px; }
+        .btn-validate {
+            background: var(--emerald); color: white;
+            border: none; padding: 10px 20px; border-radius: 8px;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-validate:hover { background: #047857; }
+        .btn-validate:disabled {
+            opacity: 0.5; cursor: not-allowed;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--slate-900); color: white;
+            padding: 14px 24px; border-radius: 10px;
+            font-size: 14px; font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            display: none; align-items: center; gap: 10px;
+            z-index: 1000;
+            animation: toast-in 0.3s ease-out;
+        }
+        .toast.show { display: flex; }
+        .toast.success { background: var(--emerald); }
+        .toast.error { background: var(--red); }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .user-card {
+                flex-direction: column; align-items: flex-start; gap: 12px;
+            }
+            .user-actions { width: 100%; }
+            .btn-validate { flex: 1; justify-content: center; }
+            .topbar-right a.hide-mobile { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <div class="topbar-left">
+        <i class="fas fa-shield-alt"></i>
+        <span>PolyValences Admin</span>
+        <span class="badge">BETA</span>
+    </div>
+    <div class="topbar-right">
+        <a href="../" class="hide-mobile"><i class="fas fa-arrow-left"></i> Retour au site</a>
+        <div class="topbar-user">
+            <div class="topbar-avatar" id="adminAvatar">?</div>
+            <span id="adminName">...</span>
+        </div>
+        <button class="btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Déco</button>
+    </div>
+</div>
+
+<!-- ACCESS DENIED (hidden by default) -->
+<div class="access-denied" id="accessDenied" style="display:none">
+    <i class="fas fa-lock"></i>
+    <h2>Accès refusé</h2>
+    <p>Cette page est réservée aux administrateurs PolyValences.</p>
+    <a href="../"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
+</div>
+
+<!-- LOADING -->
+<div class="loading" id="loadingState">
+    <i class="fas fa-spinner fa-spin"></i>
+    Chargement...
+</div>
+
+<!-- MAIN (hidden until loaded) -->
+<main class="admin-main" id="adminMain" style="display:none">
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow">
+        <div class="stat-card">
+            <div class="stat-card-label">En attente</div>
+            <div class="stat-card-value pending" id="statPending">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-label">Comptes actifs</div>
+            <div class="stat-card-value active" id="statActive">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-label">Total inscrits</div>
+            <div class="stat-card-value" id="statTotal">0</div>
+        </div>
+    </div>
+
+    <!-- PENDING USERS -->
+    <div class="section-header">
+        <h2>
+            <i class="fas fa-user-clock" style="color:var(--amber)"></i>
+            Comptes en attente
+            <span class="count" id="pendingCount">0</span>
+        </h2>
+        <button class="btn-refresh" onclick="loadPending()">
+            <i class="fas fa-sync-alt"></i> Actualiser
+        </button>
+    </div>
+    <div class="table-card" id="pendingList">
+        <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <p>Aucun compte en attente de validation.</p>
+        </div>
+    </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMsg"></span>
+</div>
+
+<script>
+    const API = 'https://api.polyvalences.eu';
+    let authToken = localStorage.getItem('pv_token');
+    let currentUser = null;
+
+    // ===== TOAST =====
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        const icon = toast.querySelector('i');
+        toast.className = 'toast show ' + type;
+        icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        document.getElementById('toastMsg').textContent = msg;
+        setTimeout(() => { toast.classList.remove('show'); }, 4000);
+    }
+
+    // ===== LOGOUT =====
+    function handleLogout() {
+        localStorage.removeItem('pv_token');
+        window.location.href = '../';
+    }
+
+    // ===== CHECK ADMIN =====
+    async function checkAdmin() {
+        if (!authToken) {
+            showAccessDenied();
+            return;
+        }
+        try {
+            const res = await fetch(API + '/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { showAccessDenied(); return; }
+            const data = await res.json();
+            currentUser = data.user;
+
+            if (currentUser.role !== 'admin') {
+                showAccessDenied();
+                return;
+            }
+
+            // Show admin UI
+            const initials = (currentUser.first_name[0] + (currentUser.last_name || '')[0] || '').toUpperCase();
+            document.getElementById('adminAvatar').textContent = initials;
+            document.getElementById('adminName').textContent = currentUser.first_name;
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('adminMain').style.display = 'block';
+
+            loadPending();
+            loadStats();
+
+        } catch (err) {
+            console.error('Admin check failed:', err);
+            showAccessDenied();
+        }
+    }
+
+    function showAccessDenied() {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('accessDenied').style.display = '';
+    }
+
+    // ===== LOAD PENDING =====
+    async function loadPending() {
+        try {
+            const res = await fetch(API + '/api/admin/pending', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { showToast('Erreur chargement', 'error'); return; }
+            const data = await res.json();
+            const users = data.users || [];
+
+            document.getElementById('pendingCount').textContent = users.length;
+            document.getElementById('statPending').textContent = users.length;
+
+            const container = document.getElementById('pendingList');
+
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle" style="color:var(--emerald)"></i>
+                        <p>Aucun compte en attente de validation.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = users.map(u => {
+                const initials = ((u.first_name || '?')[0] + (u.last_name || '?')[0]).toUpperCase();
+                const type = u.account_type || 'pro';
+                const date = new Date(u.created_at + 'Z').toLocaleString('fr-FR', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+                return `
+                <div class="user-card" id="user-${u.id}">
+                    <div class="user-avatar">${initials}</div>
+                    <div class="user-info">
+                        <div class="user-name">
+                            ${u.first_name} ${u.last_name}
+                            <span class="type-badge ${type}">${type}</span>
+                        </div>
+                        <div class="user-email">${u.email}</div>
+                        <div class="user-details">
+                            <span><i class="fas fa-phone"></i> ${u.phone || '—'}</span>
+                            ${u.company ? '<span><i class="fas fa-building"></i> ' + u.company + '</span>' : ''}
+                            <span><i class="fas fa-clock"></i> ${date}</span>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-validate" onclick="validateUser(${u.id}, '${u.first_name}', this)">
+                            <i class="fas fa-check"></i> Valider
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+
+        } catch (err) {
+            console.error('Load pending failed:', err);
+            showToast('Erreur de connexion', 'error');
+        }
+    }
+
+    // ===== LOAD STATS =====
+    async function loadStats() {
+        try {
+            // Use the pending endpoint for now — we'll add a stats endpoint later
+            // For now just show pending count
+        } catch (err) {
+            console.error('Stats failed:', err);
+        }
+    }
+
+    // ===== VALIDATE USER =====
+    async function validateUser(id, name, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validation...';
+
+        try {
+            const res = await fetch(API + '/api/admin/validate/' + id, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                showToast(`${name} validé(e) — email de bienvenue envoyé !`);
+                // Animate out
+                const card = document.getElementById('user-' + id);
+                if (card) {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateX(20px)';
+                    setTimeout(() => {
+                        card.remove();
+                        // Update count
+                        const remaining = document.querySelectorAll('.user-card').length;
+                        document.getElementById('pendingCount').textContent = remaining;
+                        document.getElementById('statPending').textContent = remaining;
+                        if (remaining === 0) {
+                            document.getElementById('pendingList').innerHTML = `
+                                <div class="empty-state">
+                                    <i class="fas fa-check-circle" style="color:var(--emerald)"></i>
+                                    <p>Aucun compte en attente de validation.</p>
+                                </div>`;
+                        }
+                    }, 300);
+                }
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Valider';
+            }
+        } catch (err) {
+            console.error('Validate failed:', err);
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Valider';
+        }
+    }
+
+    // ===== INIT =====
+    checkAdmin();
+</script>
+
+</body>
+</html>
