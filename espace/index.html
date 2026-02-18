@@ -941,6 +941,33 @@
     <span id="toastMsg"></span>
 </div>
 
+<!-- MODAL RETRAIT -->
+<div id="endAssignModal" style="display:none; position:fixed; inset:0; z-index:500; background:rgba(11,26,46,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:16px; padding:32px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:dropdown-in 0.2s ease-out;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <div style="width:44px; height:44px; border-radius:12px; background:#fef2f2; display:flex; align-items:center; justify-content:center; color:#dc2626; font-size:18px; flex-shrink:0;">
+                <i class="fas fa-user-minus"></i>
+            </div>
+            <div>
+                <div style="font-size:16px; font-weight:700; color:var(--slate-900);">Retirer l'affectation</div>
+                <div style="font-size:13px; color:var(--slate-500);" id="endAssignModalDesc">Retirer ce conducteur du véhicule ?</div>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:20px;">
+            <label>Motif de fin <span style="font-weight:400; color:var(--slate-400);">(optionnel)</span></label>
+            <input type="text" id="endAssignReason" placeholder="Ex : Réaffectation, Fin de mission, Départ...">
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button onclick="closeEndAssignModal()" style="flex:1; padding:12px; border-radius:10px; border:1px solid var(--slate-200); background:white; font-size:14px; font-weight:600; color:var(--slate-600); cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s;" onmouseover="this.style.background='var(--slate-50)'" onmouseout="this.style.background='white'">
+                Annuler
+            </button>
+            <button onclick="confirmEndAssignment()" id="btnConfirmEnd" style="flex:1; padding:12px; border-radius:10px; border:none; background:#dc2626; font-size:14px; font-weight:700; color:white; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.15s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+                <i class="fas fa-check"></i> Confirmer le retrait
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     const API = 'https://api.polyvalences.eu';
     let authToken = localStorage.getItem('pv_token');
@@ -1454,7 +1481,7 @@
                                     <i class="fas fa-calendar-check" style="margin-right:4px;"></i> Depuis le ${a.start_date || '—'}
                                 </div>
                             </div>
-                            <button class="btn-primary" style="padding:8px 16px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id})">
+                            <button class="btn-primary" style="padding:8px 16px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id}, '${a.assigned_to.replace(/'/g, "\\'")}')">
                                 <i class="fas fa-times"></i> Retirer
                             </button>
                         </div>
@@ -1505,8 +1532,8 @@
                             <button class="btn-primary" style="padding:7px 14px; font-size:12px;" onclick="activateAssignment(${a.id})" ${active.length > 0 ? 'disabled title="Retirez d\'abord l\'affectation active"' : ''}>
                                 <i class="fas fa-play"></i> Activer
                             </button>
-                            <button class="btn-primary" style="padding:7px 14px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id})">
-                                <i class="fas fa-times"></i> Annuler
+                            <button class="btn-primary" style="padding:7px 14px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id}, '${a.assigned_to.replace(/'/g, "\\'")}')">
+                    <i class="fas fa-times"></i> Annuler
                             </button>
                         </div>
                     </div>
@@ -1664,26 +1691,54 @@
         }
     }
 
-    async function endAssignment(id) {
-        const reason = prompt('Motif de fin (optionnel) :', '');
-        if (reason === null) return;
-        try {
-            const res = await fetch(API + '/api/assignments/' + id + '/end', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                body: JSON.stringify({ end_reason: reason || null })
-            });
-            const data = await res.json();
-            if (res.ok && data.success) {
-                showToast('Affectation terminée.');
-                loadVehicleDetail(currentVehicleId);
-            } else {
-                showToast(data.error || 'Erreur', 'error');
-            }
-        } catch (err) {
-            showToast('Erreur de connexion', 'error');
+    let endAssignId = null;
+
+        function endAssignment(id, name) {
+            endAssignId = id;
+            document.getElementById('endAssignReason').value = '';
+            document.getElementById('endAssignModalDesc').textContent = name
+                ? 'Retirer ' + name + ' du véhicule ?'
+                : 'Retirer ce conducteur du véhicule ?';
+            const modal = document.getElementById('endAssignModal');
+            modal.style.display = 'flex';
         }
-    }
+
+        function closeEndAssignModal() {
+            document.getElementById('endAssignModal').style.display = 'none';
+            endAssignId = null;
+        }
+
+        async function confirmEndAssignment() {
+            if (!endAssignId) return;
+            const btn = document.getElementById('btnConfirmEnd');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Retrait...';
+
+            try {
+                const res = await fetch(API + '/api/assignments/' + endAssignId + '/end', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                    body: JSON.stringify({ end_reason: document.getElementById('endAssignReason').value.trim() || null })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast('Affectation terminée.');
+                    closeEndAssignModal();
+                    loadVehicleDetail(currentVehicleId);
+                } else {
+                    showToast(data.error || 'Erreur', 'error');
+                }
+            } catch (err) {
+                showToast('Erreur de connexion', 'error');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Confirmer le retrait';
+        }
+
+        // Fermer au clic sur le fond
+        document.getElementById('endAssignModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('endAssignModal')) closeEndAssignModal();
+        });
 
     // ===== AUTOCOMPLETE HERE =====
         let acTimeout = null;
