@@ -461,8 +461,14 @@
     // ===== LOAD STATS =====
     async function loadStats() {
         try {
-            // Use the pending endpoint for now — we'll add a stats endpoint later
-            // For now just show pending count
+            const res = await fetch(API + '/api/admin/stats', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            document.getElementById('statPending').textContent = data.pending || 0;
+            document.getElementById('statActive').textContent = data.active || 0;
+            document.getElementById('statTotal').textContent = data.total || 0;
         } catch (err) {
             console.error('Stats failed:', err);
         }
