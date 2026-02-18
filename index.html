@@ -24,7 +24,7 @@
         "name": "PolyValences",
         "description": "Service de convoyage automobile, conciergerie et gestion de flotte en France et Europe",
         "url": "https://polyvalences.eu",
-        "telephone": "+33-1-XX-XX-XX-XX",
+        "email": "support@polyvalences.eu",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "1 Place Paul Verlaine",
@@ -150,12 +150,22 @@
             color: var(--slate-600); transition: color 0.2s;
         }
         .nav-link:hover { color: var(--blue); }
-        .nav-phone {
+        .nav-email {
             display: flex; align-items: center; gap: 8px;
-            font-size: 14px; font-weight: 700; color: var(--navy);
+            font-size: 13px; font-weight: 600; color: var(--navy);
             text-decoration: none;
         }
-        .nav-phone i { color: var(--blue); }
+        .nav-email i { color: var(--blue); font-size: 12px; }
+        .nav-email:hover { color: var(--blue); }
+        .nav-link.disabled {
+            color: var(--slate-300); pointer-events: none; position: relative;
+        }
+        .nav-link.disabled::after {
+            content: 'Bientôt'; font-size: 9px; font-weight: 700;
+            background: var(--blue-pale); color: var(--blue);
+            padding: 1px 5px; border-radius: 4px;
+            position: absolute; top: -8px; right: -30px;
+        }
         .nav-cta {
             background: var(--navy); color: white;
             padding: 10px 22px; border-radius: 10px;
@@ -165,6 +175,140 @@
         }
         .nav-cta:hover { background: var(--blue); }
         .nav-sep { width: 1px; height: 24px; background: var(--slate-200); }
+
+        /* Nav user (connected) */
+        .nav-user {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--slate-50); border: 1px solid var(--slate-200);
+            padding: 6px 14px 6px 8px; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .nav-user:hover { background: var(--slate-100); }
+        .nav-user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--blue); display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 12px;
+        }
+        .nav-user-name { font-size: 14px; font-weight: 600; color: var(--slate-800); }
+        .nav-user-chevron { font-size: 10px; color: var(--slate-400); }
+        .user-dropdown {
+            display: none; position: absolute; top: calc(100% + 8px); right: 0;
+            background: white; border-radius: var(--radius); padding: 8px;
+            min-width: 220px; z-index: 150;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            border: 1px solid var(--slate-100);
+            animation: dropdown-in 0.15s ease-out;
+        }
+        .user-dropdown.show { display: block; }
+        @keyframes dropdown-in {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-dropdown-info {
+            padding: 10px 12px; font-size: 12px; color: var(--slate-400);
+            border-bottom: 1px solid var(--slate-100); margin-bottom: 4px;
+        }
+        .user-dropdown-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 8px;
+            font-size: 13px; font-weight: 500; color: var(--slate-600);
+            cursor: pointer; transition: all 0.15s;
+            border: none; background: none; width: 100%;
+            font-family: 'DM Sans', sans-serif; text-decoration: none;
+        }
+        .user-dropdown-item:hover { background: var(--slate-50); color: var(--slate-900); }
+        .user-dropdown-item.danger { color: #dc2626; }
+        .user-dropdown-item.danger:hover { background: #fef2f2; }
+        .user-dropdown-item i { width: 16px; text-align: center; }
+
+        /* Burger */
+        .nav-burger {
+            display: none; width: 44px; height: 44px;
+            border: 1px solid var(--slate-200); border-radius: 10px;
+            background: white; cursor: pointer;
+            align-items: center; justify-content: center;
+            font-size: 18px; color: var(--slate-700);
+            transition: all 0.2s;
+        }
+        .nav-burger:hover { background: var(--slate-50); }
+
+        /* Mobile menu */
+        .mobile-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(11,26,46,0.6); backdrop-filter: blur(4px);
+        }
+        .mobile-overlay.active { display: block; }
+        .mobile-menu {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 300px; max-width: 85vw; z-index: 201;
+            background: white; padding: 24px;
+            box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .mobile-menu-header img { height: 40px; }
+        .mobile-menu-close {
+            width: 40px; height: 40px; border-radius: 10px;
+            border: 1px solid var(--slate-200); background: white;
+            cursor: pointer; font-size: 16px; color: var(--slate-500);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .mobile-menu-close:hover { background: var(--slate-50); }
+        .mobile-menu-links { list-style: none; margin-bottom: 32px; }
+        .mobile-menu-links li { border-bottom: 1px solid var(--slate-100); }
+        .mobile-menu-links a, .mobile-menu-links button {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 4px; font-size: 15px; font-weight: 500;
+            color: var(--slate-700); text-decoration: none;
+            width: 100%; background: none; border: none;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            transition: color 0.2s;
+        }
+        .mobile-menu-links a:hover, .mobile-menu-links button:hover { color: var(--blue); }
+        .mobile-menu-links i { width: 20px; text-align: center; color: var(--slate-400); font-size: 14px; }
+        .mobile-menu-links .disabled-link { color: var(--slate-300); pointer-events: none; }
+        .mobile-menu-links .badge-soon {
+            font-size: 9px; font-weight: 700;
+            background: var(--blue-pale); color: var(--blue);
+            padding: 2px 6px; border-radius: 4px; margin-left: auto;
+        }
+        .mobile-menu-contact {
+            background: var(--slate-50); border-radius: var(--radius);
+            padding: 20px; text-align: center;
+        }
+        .mobile-menu-contact p { font-size: 12px; color: var(--slate-400); margin-bottom: 8px; }
+        .mobile-menu-contact a { font-size: 14px; font-weight: 700; color: var(--blue); text-decoration: none; }
+        .mobile-menu-cta {
+            width: 100%; padding: 14px; margin-top: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .mobile-menu-cta:hover { background: var(--blue); }
+        .mobile-menu-user {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px; background: var(--slate-50);
+            border-radius: var(--radius); margin-bottom: 24px;
+        }
+        .mobile-menu-user-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--blue); display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 14px;
+        }
+        .mobile-menu-user-name { font-size: 15px; font-weight: 700; color: var(--slate-900); }
+        .mobile-menu-user-email { font-size: 12px; color: var(--slate-400); }
 
         /* ===== HERO ===== */
         .hero {
@@ -429,35 +573,6 @@
         }
         .sim-result-cta:hover { background: #15803d; }
 
-        /* ===== USER MENU ===== */
-        .user-menu {
-            position: absolute; top: 100%; right: 0;
-            margin-top: 8px; background: white;
-            border-radius: var(--radius); padding: 16px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-            border: 1px solid var(--slate-100);
-            min-width: 220px; z-index: 150;
-            animation: modal-in 0.2s ease-out;
-        }
-        .user-menu-name {
-            font-size: 14px; font-weight: 700; color: var(--slate-900);
-        }
-        .user-menu-email {
-            font-size: 12px; color: var(--slate-400); margin-bottom: 12px;
-        }
-        .user-menu-sep {
-            height: 1px; background: var(--slate-100); margin-bottom: 12px;
-        }
-        .user-menu-btn {
-            width: 100%; padding: 10px; background: var(--slate-50);
-            border: 1px solid var(--slate-200); border-radius: 8px;
-            font-size: 13px; font-weight: 600; color: #dc2626;
-            cursor: pointer; transition: all 0.2s;
-            font-family: 'DM Sans', sans-serif;
-            display: flex; align-items: center; gap: 8px;
-            justify-content: center;
-        }
-        .user-menu-btn:hover { background: #fef2f2; border-color: #fecaca; }
         /* ===== TOAST ===== */
         .toast {
             position: fixed; bottom: 32px; right: 32px;
@@ -954,7 +1069,8 @@
             .comp-vs { display: none; }
         }
         @media (max-width: 768px) {
-            .nav-links { display: none; }
+            .nav-links { display: none !important; }
+            .nav-burger { display: flex; }
             .trust-inner { grid-template-columns: repeat(2, 1fr); }
             .trust-item + .trust-item::before { display: none; }
             .footer-grid { grid-template-columns: 1fr; }
@@ -967,23 +1083,88 @@
 <!-- ===== NAVIGATION ===== -->
 <nav class="nav">
     <div class="nav-inner">
-        <a href="#" class="nav-logo">
+        <a href="/" class="nav-logo">
             <img src="images/logo-polyvalences.png" alt="PolyValences — Convoyage automobile" style="height:56px;width:auto;">
         </a>
-        <div class="nav-links">
-            <a href="#solutions" class="nav-link">Solutions</a>
-            <a href="#flotte" class="nav-link">Gestion de Flotte</a>
-            <a href="#faq" class="nav-link">FAQ</a>
+        <div class="nav-links" id="navLinks">
+            <!-- Visiteur (déconnecté) -->
+            <a href="#solutions" class="nav-link nav-visitor">Solutions</a>
+            <a href="#flotte" class="nav-link nav-visitor">Gestion de Flotte</a>
+            <a href="#faq" class="nav-link nav-visitor">FAQ</a>
+            <!-- Connecté -->
+            <a href="/devis" class="nav-link nav-connected" style="display:none">Devis</a>
+            <a href="#" class="nav-link nav-connected disabled" style="display:none">Mon Espace</a>
+            <!-- Commun -->
+            <a href="/contact" class="nav-link">Contact</a>
             <div class="nav-sep"></div>
-            <a href="tel:+33XXXXXXXXX" class="nav-phone">
-                <i class="fas fa-phone"></i> 01 XX XX XX XX
+            <a href="mailto:support@polyvalences.eu" class="nav-email">
+                <i class="fas fa-envelope"></i> support@polyvalences.eu
             </a>
-            <button class="nav-cta" onclick="openAuth('login')">
-                <i class="fas fa-user" style="margin-right:6px"></i> Espace Client
+            <!-- Bouton déconnecté -->
+            <button class="nav-cta nav-visitor" id="navCtaVisitor" onclick="openAuth('login')">
+                <i class="fas fa-user"></i> Espace Client
             </button>
+            <!-- Bouton connecté -->
+            <div class="nav-user nav-connected" id="navUser" style="display:none" onclick="toggleUserDropdown()">
+                <div class="nav-user-avatar" id="navAvatar">?</div>
+                <span class="nav-user-name" id="navName">...</span>
+                <i class="fas fa-chevron-down nav-user-chevron"></i>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="user-dropdown-info" id="dropdownEmail"></div>
+                    <a href="/devis" class="user-dropdown-item"><i class="fas fa-calculator"></i> Devis instantané</a>
+                    <button class="user-dropdown-item danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+                </div>
+            </div>
         </div>
+        <button class="nav-burger" id="navBurger" onclick="openMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
     </div>
 </nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+        <img src="images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;">
+        <button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <!-- User info (connecté uniquement, masqué par défaut) -->
+    <div class="mobile-menu-user" id="mobileUser" style="display:none">
+        <div class="mobile-menu-user-avatar" id="mobileAvatar">?</div>
+        <div>
+            <div class="mobile-menu-user-name" id="mobileName">...</div>
+            <div class="mobile-menu-user-email" id="mobileEmail">...</div>
+        </div>
+    </div>
+    <!-- Liens visiteur -->
+    <ul class="mobile-menu-links" id="mobileVisitorLinks">
+        <li><a href="#solutions" onclick="closeMobileMenu()"><i class="fas fa-cube"></i> Solutions</a></li>
+        <li><a href="#flotte" onclick="closeMobileMenu()"><i class="fas fa-car"></i> Gestion de Flotte</a></li>
+        <li><a href="#faq" onclick="closeMobileMenu()"><i class="fas fa-question-circle"></i> FAQ</a></li>
+        <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <!-- Liens connecté -->
+    <ul class="mobile-menu-links" id="mobileConnectedLinks" style="display:none">
+        <li><a href="/devis"><i class="fas fa-calculator"></i> Devis instantané</a></li>
+        <li><a href="#" class="disabled-link"><i class="fas fa-th-large"></i> Mon Espace <span class="badge-soon">Bientôt</span></a></li>
+        <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li><a href="#solutions" onclick="closeMobileMenu()"><i class="fas fa-cube"></i> Solutions</a></li>
+        <li><a href="#faq" onclick="closeMobileMenu()"><i class="fas fa-question-circle"></i> FAQ</a></li>
+    </ul>
+    <div class="mobile-menu-contact">
+        <p>Besoin d'aide ?</p>
+        <a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope" style="margin-right:6px"></i>support@polyvalences.eu</a>
+    </div>
+    <!-- CTA visiteur -->
+    <button class="mobile-menu-cta" id="mobileCta" onclick="closeMobileMenu(); openAuth('login')">
+        <i class="fas fa-user"></i> Espace Client
+    </button>
+    <!-- CTA connecté (déconnexion) -->
+    <button class="mobile-menu-cta" id="mobileLogout" style="display:none; background:#dc2626;" onclick="handleLogout()">
+        <i class="fas fa-sign-out-alt"></i> Déconnexion
+    </button>
+</div>
 
 <!-- ===== HERO ===== -->
 <section class="hero">
@@ -1342,8 +1523,7 @@
                 <ul>
                     <li><span>1 Place Paul Verlaine</span></li>
                     <li><span>92100 Boulogne-Billancourt</span></li>
-                    <li style="margin-top:12px"><a href="tel:+33XXXXXXXXX" class="footer-contact-phone"><i class="fas fa-phone" style="margin-right:6px"></i>01 XX XX XX XX</a></li>
-                    <li><a href="mailto:contact@polyvalences.eu" style="color:#3b82f6;font-weight:600">contact@polyvalences.eu</a></li>
+                    <li style="margin-top:12px"><a href="mailto:support@polyvalences.eu" style="color:#3b82f6;font-weight:600"><i class="fas fa-envelope" style="margin-right:6px"></i>support@polyvalences.eu</a></li>
                 </ul>
             </div>
         </div>
@@ -1527,7 +1707,6 @@
             currentUser = data.user;
             localStorage.setItem('pv_token', authToken);
             closeAuth();
-            localStorage.setItem('pv_token', authToken);
             window.location.href = '/devis';
 
         } catch (err) {
@@ -1538,46 +1717,6 @@
         }
     }
 
-    // ===== ACTIVATE SIMULATOR (after login) =====
-    function activateSimulator() {
-        // Enable inputs
-        document.querySelectorAll('.sim-field input').forEach(input => {
-            input.disabled = false;
-            input.style.color = 'var(--slate-800)';
-            input.style.cursor = 'text';
-        });
-        document.querySelectorAll('.sim-checkbox').forEach(cb => {
-            cb.disabled = false;
-            cb.style.cursor = 'pointer';
-        });
-
-        // Change button
-        const btn = document.querySelector('.sim-btn-placeholder');
-        btn.textContent = '';
-        btn.innerHTML = 'Calculer mon devis <i class="fas fa-calculator"></i>';
-        btn.onclick = handleQuote;
-
-        // Update nav CTA
-        const navCta = document.querySelector('.nav-cta');
-        if (currentUser) {
-            navCta.innerHTML = '<i class="fas fa-user" style="margin-right:6px"></i> ' + currentUser.first_name;
-            navCta.onclick = () => openUserMenu();
-        }
-
-        // Update hero CTAs
-        const heroBtn = document.querySelector('.hero-ctas .btn-primary');
-        if (heroBtn) {
-            heroBtn.innerHTML = '<i class="fas fa-calculator"></i> Simuler un convoyage';
-            heroBtn.onclick = (e) => {
-                e.preventDefault();
-                document.getElementById('simulateur').scrollIntoView({ behavior: 'smooth' });
-                document.querySelectorAll('.sim-field input')[0].focus();
-            };
-        }
-
-        // Init autocomplete on inputs
-        initAutocomplete();
-    }
 
     // ===== REGISTER =====
     async function handleRegister() {
@@ -1696,9 +1835,7 @@
                 <div class="sim-result-contact">
                     <i class="fas fa-info-circle" style="margin-right:6px"></i>
                     ${data.message}<br><br>
-                    <a href="tel:+33XXXXXXXXX"><i class="fas fa-phone"></i> 01 XX XX XX XX</a>
-                    &nbsp;&bull;&nbsp;
-                    <a href="mailto:contact@polyvalences.eu"><i class="fas fa-envelope"></i> contact@polyvalences.eu</a>
+                    <a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope"></i> support@polyvalences.eu</a>
                 </div>`;
             resultDiv.classList.add('show');
             return;
@@ -1822,11 +1959,7 @@
         }
     }
 
-    // Escape key closes modal
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeAuth();
-    });
-
+    
     // ===== AUTH ERRORS =====
     function showAuthError(id, message) {
         const el = document.getElementById(id);
@@ -1849,41 +1982,59 @@
         }, 3000);
     }
 
-    // ===== USER MENU (logout) =====
-    function openUserMenu() {
-        const existing = document.querySelector('.user-menu');
-        if (existing) { existing.remove(); return; }
-
-        const navCta = document.querySelector('.nav-cta');
-        const menu = document.createElement('div');
-        menu.className = 'user-menu';
-        menu.innerHTML = `
-            <div class="user-menu-name">${currentUser.first_name} ${currentUser.last_name}</div>
-            <div class="user-menu-email">${currentUser.email}</div>
-            <div class="user-menu-sep"></div>
-            <button class="user-menu-btn" onclick="handleLogout()">
-                <i class="fas fa-sign-out-alt"></i> Déconnexion
-            </button>
-        `;
-        navCta.parentElement.style.position = 'relative';
-        navCta.parentElement.appendChild(menu);
-
-        // Close on click outside
-        setTimeout(() => {
-            document.addEventListener('click', function closeMenu(e) {
-                if (!e.target.closest('.user-menu') && !e.target.closest('.nav-cta')) {
-                    menu.remove();
-                    document.removeEventListener('click', closeMenu);
-                }
-            });
-        }, 10);
+    // ===== MOBILE MENU =====
+    function openMobileMenu() {
+        document.getElementById('mobileOverlay').classList.add('active');
+        document.getElementById('mobileMenu').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
+    function closeMobileMenu() {
+        document.getElementById('mobileOverlay').classList.remove('active');
+        document.getElementById('mobileMenu').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeMobileMenu(); closeAuth(); }
+    });
 
+    // ===== USER DROPDOWN (desktop) =====
+    function toggleUserDropdown() {
+        document.getElementById('userDropdown').classList.toggle('show');
+    }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-user')) {
+            const dd = document.getElementById('userDropdown');
+            if (dd) dd.classList.remove('show');
+        }
+    });
+
+    // ===== LOGOUT =====
     function handleLogout() {
         localStorage.removeItem('pv_token');
         authToken = null;
         currentUser = null;
         location.reload();
+    }
+
+    // ===== SWITCH NAV STATE =====
+    function setNavConnected(user) {
+        // Desktop: hide visitor, show connected
+        document.querySelectorAll('.nav-visitor').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.nav-connected').forEach(el => el.style.display = '');
+        // Desktop user info
+        const initials = (user.first_name[0] + user.last_name[0]).toUpperCase();
+        document.getElementById('navAvatar').textContent = initials;
+        document.getElementById('navName').textContent = user.first_name;
+        document.getElementById('dropdownEmail').textContent = user.email;
+        // Mobile: show connected, hide visitor
+        document.getElementById('mobileVisitorLinks').style.display = 'none';
+        document.getElementById('mobileConnectedLinks').style.display = '';
+        document.getElementById('mobileUser').style.display = 'flex';
+        document.getElementById('mobileAvatar').textContent = initials;
+        document.getElementById('mobileName').textContent = user.first_name + ' ' + user.last_name;
+        document.getElementById('mobileEmail').textContent = user.email;
+        document.getElementById('mobileCta').style.display = 'none';
+        document.getElementById('mobileLogout').style.display = 'flex';
     }
 
     // ===== AUTO-RESTORE SESSION =====
@@ -1896,12 +2047,8 @@
             if (res.ok) {
                 const data = await res.json();
                 currentUser = data.user;
-                // Update nav with user name
-                const navCta = document.querySelector('.nav-cta');
-                navCta.innerHTML = '<i class="fas fa-user" style="margin-right:6px"></i> ' + data.user.first_name;
-                navCta.onclick = () => window.location.href = '/devis';
+                setNavConnected(data.user);
             } else {
-                // Token expiré ou invalide
                 localStorage.removeItem('pv_token');
                 authToken = null;
             }
