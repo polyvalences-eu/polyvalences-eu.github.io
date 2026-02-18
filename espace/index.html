@@ -835,15 +835,21 @@
             <!-- VEHICLE DETAIL PANEL (hidden by default) -->
             <div id="vehicleDetailWrap" style="display:none; margin-bottom:24px;">
                 <div style="background:white; border:1px solid var(--slate-200); border-radius:var(--radius); padding:24px;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <button onclick="closeVehicleDetail()" style="background:none; border:1px solid var(--slate-200); border-radius:8px; width:36px; height:36px; cursor:pointer; color:var(--slate-500); display:flex; align-items:center; justify-content:center;"><i class="fas fa-arrow-left"></i></button>
                             <div>
-                                <div style="font-size:18px; font-weight:700; color:var(--slate-900); letter-spacing:0.5px;" id="detailPlate"></div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="font-size:18px; font-weight:700; color:var(--slate-900); letter-spacing:0.5px;" id="detailPlate"></span>
+                                    <button class="btn-icon" onclick="closeVehicleDetail(); setTimeout(() => showEditVehicleForm(vehiclesData.find(x=>x.id===currentVehicleId)), 100)" title="Modifier le véhicule" style="width:30px; height:30px; font-size:12px;"><i class="fas fa-pen"></i></button>
+                                </div>
                                 <div style="font-size:13px; color:var(--slate-500);" id="detailDesc"></div>
                             </div>
                         </div>
                         <span class="vehicle-status-badge" id="detailStatusBadge"></span>
+                    </div>
+                    <div style="font-size:12px; color:var(--slate-400); margin-bottom:20px;">
+                        <i class="fas fa-info-circle" style="margin-right:4px;"></i> Fiche véhicule — alertes, entretien, affectations et historique
                     </div>
 
                     <!-- Vehicle info summary -->
@@ -1628,6 +1634,7 @@
                     <div class="vehicle-actions">
                         <button class="btn-icon" onclick="event.stopPropagation(); showEditVehicleForm(vehiclesData.find(x=>x.id===${v.id}))" title="Modifier"><i class="fas fa-pen"></i></button>
                         <button class="btn-icon danger" onclick="event.stopPropagation(); deleteVehicle(${v.id}, '${v.plate}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                        <span style="color:var(--blue); font-size:12px; font-weight:600; display:flex; align-items:center; gap:3px; margin-left:4px; white-space:nowrap;">Fiche <i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
                     </div>
                 </div>`;
             }).join('');
@@ -2026,6 +2033,14 @@ async function loadMaintenanceBlock(v) {
                             </button>
                         </div>
                     </div>`).join('')}
+                </div>`;
+        } else {
+            historyHtml = `
+                <div style="margin-top:12px;">
+                    <div style="font-size:12px; font-weight:700; color:var(--slate-500); text-transform:uppercase; margin-bottom:8px;">Historique entretien</div>
+                    <div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">
+                        Aucun entretien enregistré
+                    </div>
                 </div>`;
         }
     } catch (err) {
