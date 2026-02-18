@@ -1575,11 +1575,10 @@
             if (!res.ok) { container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de chargement.</p>'; return; }
             const data = await res.json();
             vehiclesData = data.vehicles || [];
-            renderVehicleAlerts(vehiclesData);
-
+            
             if (vehiclesData.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align:center; padding:48px 20px; color:var(--slate-400);">
+                container.innerHTML = '<div id="vehiclesAlertsBanner" style="margin-bottom:20px;"></div>' + `
+    <div style="text-align:center; padding:48px 20px; color:var(--slate-400);">
                         <i class="fas fa-car" style="font-size:36px; margin-bottom:12px; display:block; color:var(--slate-300);"></i>
                         <p style="font-size:14px; margin-bottom:4px;">Aucun véhicule dans votre parc.</p>
                         <p style="font-size:13px;">Cliquez sur <strong>Ajouter un véhicule</strong> pour commencer.</p>
@@ -1587,7 +1586,7 @@
                 return;
             }
 
-            container.innerHTML = vehiclesData.map(v => {
+            container.innerHTML = '<div id="vehiclesAlertsBanner" style="margin-bottom:20px;"></div>' + vehiclesData.map(v => {
                 const sc = statusClass(v.status);
                 const label = statusLabels[v.status] || v.status;
                 const desc = [v.brand, v.model].filter(Boolean).join(' ') || 'Véhicule';
@@ -1614,6 +1613,8 @@
                     </div>
                 </div>`;
             }).join('');
+
+            renderVehicleAlerts(vehiclesData);
 
         } catch (err) {
             console.error('Load vehicles failed:', err);
