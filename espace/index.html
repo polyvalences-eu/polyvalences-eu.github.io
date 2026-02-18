@@ -397,6 +397,70 @@
         }
         .no-company i { font-size: 32px; margin-bottom: 12px; display: block; color: var(--slate-300); }
 
+        /* ===== VEHICLES ===== */
+        .vehicle-card {
+            display: flex; align-items: center; gap: 16px;
+            padding: 16px 20px; border-radius: var(--radius);
+            border: 1px solid var(--slate-100);
+            margin-bottom: 8px; transition: all 0.15s;
+            cursor: pointer;
+        }
+        .vehicle-card:hover { background: var(--slate-50); border-color: var(--slate-200); }
+        .vehicle-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .vehicle-info { flex: 1; min-width: 0; }
+        .vehicle-plate {
+            font-size: 15px; font-weight: 700; color: var(--slate-900);
+            letter-spacing: 0.5px;
+        }
+        .vehicle-desc { font-size: 13px; color: var(--slate-500); margin-top: 2px; }
+        .vehicle-meta {
+            display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px;
+            font-size: 12px; color: var(--slate-400);
+        }
+        .vehicle-meta span { display: flex; align-items: center; gap: 4px; }
+        .vehicle-meta i { font-size: 11px; }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            display: inline-block; margin-right: 4px;
+        }
+        .status-dot.libre { background: var(--emerald); }
+        .status-dot.affecte { background: var(--blue); }
+        .status-dot.en_reparation { background: var(--red); }
+        .status-dot.en_stockage { background: var(--slate-400); }
+        .status-dot.en_transit { background: var(--amber); }
+        .vehicle-icon.libre { background: var(--emerald-pale); color: var(--emerald); }
+        .vehicle-icon.affecte { background: var(--blue-pale); color: var(--blue); }
+        .vehicle-icon.en_reparation { background: var(--red-pale, #fef2f2); color: var(--red); }
+        .vehicle-icon.en_stockage { background: var(--slate-100); color: var(--slate-500); }
+        .vehicle-icon.en_transit { background: var(--amber-pale); color: var(--amber); }
+        .vehicle-status-badge {
+            font-size: 11px; font-weight: 700; padding: 2px 8px;
+            border-radius: 4px; white-space: nowrap;
+        }
+        .vehicle-status-badge.libre { background: var(--emerald-pale); color: var(--emerald); }
+        .vehicle-status-badge.affecte { background: var(--blue-pale); color: var(--blue); }
+        .vehicle-status-badge.en_reparation { background: #fef2f2; color: var(--red); }
+        .vehicle-status-badge.en_stockage { background: var(--slate-100); color: var(--slate-500); }
+        .vehicle-status-badge.en_transit { background: var(--amber-pale); color: var(--amber); }
+        .vehicle-actions { flex-shrink: 0; display: flex; gap: 6px; }
+        .btn-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            border: 1px solid var(--slate-200); background: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--slate-500); font-size: 13px;
+            transition: all 0.15s;
+        }
+        .btn-icon:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+        .btn-icon.danger:hover { border-color: var(--red); color: var(--red); background: #fef2f2; }
+        .vehicles-count {
+            font-size: 12px; font-weight: 700; padding: 2px 10px;
+            border-radius: 6px; background: var(--blue-pale); color: var(--blue);
+        }
+
         /* ===== TOAST ===== */
         .toast {
             position: fixed; bottom: 24px; right: 24px;
@@ -785,6 +849,7 @@
         document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
         document.getElementById('section-' + id).classList.add('active');
         if (link) link.classList.add('active');
+        if (id === 'vehicules') loadVehicles();
     }
 
     // ===== INIT =====
@@ -998,6 +1063,168 @@
 
         } catch (err) {
             console.error('Company load failed:', err);
+        }
+    }
+
+    // ===== VEHICLES =====
+    let vehiclesData = [];
+
+    function showAddVehicleForm() {
+        document.getElementById('vehicleFormWrap').style.display = '';
+        document.getElementById('vehicleFormTitle').textContent = 'Ajouter un véhicule';
+        document.getElementById('vEditId').value = '';
+        document.getElementById('vPlate').value = '';
+        document.getElementById('vPlate').readOnly = false;
+        document.getElementById('vBrand').value = '';
+        document.getElementById('vModel').value = '';
+        document.getElementById('vMileage').value = '';
+        document.getElementById('vLocation').value = '';
+        document.getElementById('vNotes').value = '';
+        document.getElementById('vStatus').value = 'libre';
+        document.getElementById('btnSaveVehicle').innerHTML = '<i class="fas fa-save"></i> Enregistrer le véhicule';
+    }
+
+    function showEditVehicleForm(v) {
+        document.getElementById('vehicleFormWrap').style.display = '';
+        document.getElementById('vehicleFormTitle').textContent = 'Modifier ' + v.plate;
+        document.getElementById('vEditId').value = v.id;
+        document.getElementById('vPlate').value = v.plate;
+        document.getElementById('vPlate').readOnly = true;
+        document.getElementById('vBrand').value = v.brand || '';
+        document.getElementById('vModel').value = v.model || '';
+        document.getElementById('vMileage').value = v.mileage || '';
+        document.getElementById('vLocation').value = v.location || '';
+        document.getElementById('vNotes').value = v.notes || '';
+        document.getElementById('vStatus').value = v.status || 'libre';
+        document.getElementById('btnSaveVehicle').innerHTML = '<i class="fas fa-save"></i> Mettre à jour';
+        window.scrollTo({ top: document.getElementById('vehicleFormWrap').offsetTop - 100, behavior: 'smooth' });
+    }
+
+    function hideVehicleForm() {
+        document.getElementById('vehicleFormWrap').style.display = 'none';
+    }
+
+    async function saveVehicle() {
+        const btn = document.getElementById('btnSaveVehicle');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+        const editId = document.getElementById('vEditId').value;
+        const payload = {
+            plate: document.getElementById('vPlate').value.trim(),
+            brand: document.getElementById('vBrand').value.trim() || null,
+            model: document.getElementById('vModel').value.trim() || null,
+            mileage: document.getElementById('vMileage').value ? parseInt(document.getElementById('vMileage').value) : null,
+            status: document.getElementById('vStatus').value,
+            location: document.getElementById('vLocation').value.trim() || null,
+            notes: document.getElementById('vNotes').value.trim() || null,
+        };
+
+        try {
+            const url = editId ? API + '/api/vehicles/' + editId : API + '/api/vehicles';
+            const method = editId ? 'PUT' : 'POST';
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(editId ? 'Véhicule mis à jour.' : 'Véhicule ajouté.');
+                hideVehicleForm();
+                loadVehicles();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = editId ? '<i class="fas fa-save"></i> Mettre à jour' : '<i class="fas fa-save"></i> Enregistrer le véhicule';
+    }
+
+    async function deleteVehicle(id, plate) {
+        if (!confirm('Supprimer le véhicule ' + plate + ' ? Cette action est irréversible.')) return;
+        try {
+            const res = await fetch(API + '/api/vehicles/' + id, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Véhicule supprimé.');
+                loadVehicles();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+    }
+
+    const statusLabels = {
+        'libre': 'Libre',
+        'affecté': 'Affecté',
+        'en_réparation': 'En réparation',
+        'en_stockage': 'En stockage',
+        'en_transit': 'En transit'
+    };
+
+    function statusClass(s) {
+        return (s || 'libre').replace('é', 'e').replace('é', 'e');
+    }
+
+    async function loadVehicles() {
+        const container = document.getElementById('vehiclesList');
+        try {
+            const res = await fetch(API + '/api/vehicles', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de chargement.</p>'; return; }
+            const data = await res.json();
+            vehiclesData = data.vehicles || [];
+
+            if (vehiclesData.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:48px 20px; color:var(--slate-400);">
+                        <i class="fas fa-car" style="font-size:36px; margin-bottom:12px; display:block; color:var(--slate-300);"></i>
+                        <p style="font-size:14px; margin-bottom:4px;">Aucun véhicule dans votre parc.</p>
+                        <p style="font-size:13px;">Cliquez sur <strong>Ajouter un véhicule</strong> pour commencer.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = vehiclesData.map(v => {
+                const sc = statusClass(v.status);
+                const label = statusLabels[v.status] || v.status;
+                const desc = [v.brand, v.model].filter(Boolean).join(' ') || 'Véhicule';
+                const assign = v.current_assignment;
+                return `
+                <div class="vehicle-card" onclick="event.stopPropagation()">
+                    <div class="vehicle-icon ${sc}"><i class="fas fa-car"></i></div>
+                    <div class="vehicle-info">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span class="vehicle-plate">${v.plate}</span>
+                            <span class="vehicle-status-badge ${sc}">${label}</span>
+                            ${v.future_assignments > 0 ? '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--amber-pale);color:var(--amber);">' + v.future_assignments + ' future(s)</span>' : ''}
+                        </div>
+                        <div class="vehicle-desc">${desc}</div>
+                        <div class="vehicle-meta">
+                            ${v.mileage ? '<span><i class="fas fa-tachometer-alt"></i> ' + v.mileage.toLocaleString('fr-FR') + ' km</span>' : ''}
+                            ${v.location ? '<span><i class="fas fa-map-marker-alt"></i> ' + v.location + '</span>' : ''}
+                            ${assign ? '<span><i class="fas fa-user"></i> ' + assign.assigned_to + (assign.assignment_profile ? ' (' + assign.assignment_profile + ')' : '') + '</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="vehicle-actions">
+                        <button class="btn-icon" onclick="event.stopPropagation(); showEditVehicleForm(vehiclesData.find(x=>x.id===${v.id}))" title="Modifier"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon danger" onclick="event.stopPropagation(); deleteVehicle(${v.id}, '${v.plate}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+
+        } catch (err) {
+            console.error('Load vehicles failed:', err);
+            container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de connexion.</p>';
         }
     }
 
