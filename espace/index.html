@@ -890,6 +890,7 @@
                             </div>
                             <div id="quoteEstimateWrap" style="display:none; margin-bottom:16px;"></div>
                             <input type="hidden" id="aStatus" value="active">
+                            <input type="hidden" id="aEditId" value="">
                             <button type="submit" class="btn-primary" id="btnSaveAssign">
                                 <i class="fas fa-check"></i> Affecter maintenant
                             </button>
@@ -1467,25 +1468,46 @@
             const futureDiv = document.getElementById('futureAssignmentsContent');
             if (future.length > 0) {
                 futureDiv.innerHTML = future.map(a => `
-                    <div style="padding:14px; border:1px solid var(--amber-pale); border-radius:10px; background:rgba(217,119,6,0.04); margin-bottom:8px;">
-                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                            <div>
-                                <div style="font-size:14px; font-weight:700; color:var(--slate-900);">${a.assigned_to}</div>
-                                <div style="font-size:12px; color:var(--slate-500); margin-top:2px;">
-                                    ${a.assignment_profile ? '<span style="background:var(--amber-pale);color:var(--amber);padding:1px 6px;border-radius:4px;font-size:11px;font-weight:700;">' + a.assignment_profile + '</span> · ' : ''}
-                                    Prévu le ${a.planned_date || '—'}
+                <div style="padding:14px; border:1px solid var(--amber-pale); border-radius:10px; background:rgba(217,119,6,0.04); margin-bottom:8px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:14px; font-weight:700; color:var(--slate-900);">${a.assigned_to}</div>
+                            <div style="font-size:12px; color:var(--slate-500); margin-top:2px;">
+                                ${a.assignment_profile ? '<span style="background:var(--amber-pale);color:var(--amber);padding:1px 6px;border-radius:4px;font-size:11px;font-weight:700;">' + a.assignment_profile + '</span> · ' : ''}
+                                Prévu le ${a.planned_date || '—'}
+                            </div>
+                            ${a.destination ? `
+                            <div style="margin-top:6px; font-size:12px; color:var(--slate-600);">
+                                <i class="fas fa-map-marker-alt" style="color:var(--blue); margin-right:4px;"></i> → ${a.destination}
+                            </div>` : ''}
+                            ${a.estimated_cost ? `
+                            <div style="margin-top:6px; padding:8px 12px; background:linear-gradient(135deg, rgba(5,150,105,0.06), rgba(37,99,235,0.06)); border-radius:8px; border:1px solid var(--emerald-pale);">
+                                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+                                    <span style="font-size:16px; font-weight:800; color:var(--emerald); font-family:'Playfair Display',serif;">
+                                        ${a.estimated_cost.toLocaleString('fr-FR')} €
+                                    </span>
+                                    <span style="font-size:11px; color:var(--slate-400);">convoyage estimé</span>
                                 </div>
-                            </div>
-                            <div style="display:flex; gap:6px;">
-                                <button class="btn-primary" style="padding:7px 14px; font-size:12px;" onclick="activateAssignment(${a.id})" ${active.length > 0 ? 'disabled title="Retirez d\'abord l\'affectation active"' : ''}>
-                                    <i class="fas fa-play"></i> Activer
-                                </button>
-                                <button class="btn-primary" style="padding:7px 14px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id})">
-                                    <i class="fas fa-times"></i> Annuler
-                                </button>
-                            </div>
+                                <div style="margin-top:4px; font-size:11px;">
+                                    <span style="color:var(--emerald); font-weight:600;">Relocaliser : ${a.estimated_cost.toLocaleString('fr-FR')}€</span>
+                                    <span style="color:var(--slate-400);"> (une fois) vs </span>
+                                    <span style="color:var(--red); font-weight:600;">Location : ~800€/mois</span>
+                                </div>
+                            </div>` : ''}
                         </div>
-                    </div>`).join('');
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
+                            <button class="btn-primary" style="padding:7px 14px; font-size:12px; background:var(--slate-600);" onclick='editAssignment(${JSON.stringify(a).replace(/'/g, "&#39;")})'>
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="btn-primary" style="padding:7px 14px; font-size:12px;" onclick="activateAssignment(${a.id})" ${active.length > 0 ? 'disabled title="Retirez d\'abord l\'affectation active"' : ''}>
+                                <i class="fas fa-play"></i> Activer
+                            </button>
+                            <button class="btn-primary" style="padding:7px 14px; font-size:12px; background:var(--red);" onclick="endAssignment(${a.id})">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                        </div>
+                    </div>
+                </div>`).join('');
             } else {
                 futureDiv.innerHTML = '<div style="padding:16px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">Aucune affectation planifiée</div>';
             }
@@ -1528,6 +1550,7 @@
         document.getElementById('quoteEstimateWrap').style.display = 'none';
         document.getElementById('quoteEstimateWrap').innerHTML = '';
         document.getElementById('aStatus').value = type;
+        document.getElementById('aEditId').value = '';
 
         if (type === 'future') {
             document.getElementById('assignFormTitle').textContent = 'Planifier une affectation future';
@@ -1546,12 +1569,37 @@
         document.getElementById('aAssignedTo').focus();
     }
 
+    function editAssignment(a) {
+        showAssignForm('future');
+        document.getElementById('aEditId').value = a.id;
+        document.getElementById('assignFormTitle').textContent = 'Modifier l\'affectation';
+        document.getElementById('aAssignedTo').value = a.assigned_to || '';
+        document.getElementById('aProfile').value = a.assignment_profile || '';
+        document.getElementById('aEmail').value = a.assigned_to_email || '';
+        document.getElementById('aPhone').value = a.assigned_to_phone || '';
+        document.getElementById('aPlannedDate').value = a.planned_date || '';
+        document.getElementById('aDestination').value = a.destination || '';
+        document.getElementById('aDestinationLat').value = a.destination_lat || '';
+        document.getElementById('aDestinationLng').value = a.destination_lng || '';
+        document.getElementById('btnSaveAssign').innerHTML = '<i class="fas fa-save"></i> Mettre à jour';
+        document.getElementById('btnSaveAssign').style.background = 'var(--blue)';
+
+        // Relancer l'estimation si destination existe
+        if (a.destination_lat && a.destination_lng) {
+            estimateConvoyageCost();
+        }
+
+        document.getElementById('assignFormWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
     async function saveAssignment() {
         const btn = document.getElementById('btnSaveAssign');
         btn.disabled = true;
 
         const status = document.getElementById('aStatus').value;
+        const editId = document.getElementById('aEditId').value;
         const estimatedCost = document.getElementById('quoteEstimateWrap').dataset.cost;
+
         const payload = {
             assigned_to: document.getElementById('aAssignedTo').value.trim(),
             assigned_to_email: document.getElementById('aEmail').value.trim() || null,
@@ -1566,8 +1614,17 @@
         };
 
         try {
-            const res = await fetch(API + '/api/vehicles/' + currentVehicleId + '/assignments', {
-                method: 'POST',
+            let url, method;
+            if (editId) {
+                url = API + '/api/assignments/' + editId;
+                method = 'PUT';
+            } else {
+                url = API + '/api/vehicles/' + currentVehicleId + '/assignments';
+                method = 'POST';
+            }
+
+            const res = await fetch(url, {
+                method,
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
                 body: JSON.stringify(payload)
             });
