@@ -943,7 +943,7 @@
 
 <!-- MODAL RETRAIT -->
 <div id="endAssignModal" style="display:none; position:fixed; inset:0; z-index:500; background:rgba(11,26,46,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:16px; padding:32px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:dropdown-in 0.2s ease-out;">
+    <div style="background:white; border-radius:16px; padding:32px; max-width:460px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:dropdown-in 0.2s ease-out; max-height:90vh; overflow-y:auto;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
             <div style="width:44px; height:44px; border-radius:12px; background:#fef2f2; display:flex; align-items:center; justify-content:center; color:#dc2626; font-size:18px; flex-shrink:0;">
                 <i class="fas fa-user-minus"></i>
@@ -953,16 +953,49 @@
                 <div style="font-size:13px; color:var(--slate-500);" id="endAssignModalDesc">Retirer ce conducteur du véhicule ?</div>
             </div>
         </div>
+
         <div class="form-group" style="margin-bottom:20px;">
             <label>Motif de fin <span style="font-weight:400; color:var(--slate-400);">(optionnel)</span></label>
             <input type="text" id="endAssignReason" placeholder="Ex : Réaffectation, Fin de mission, Départ...">
         </div>
+
+        <!-- ET ENSUITE ? -->
+        <div style="margin-bottom:20px;">
+            <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                <i class="fas fa-arrow-right" style="color:var(--blue); font-size:11px;"></i> Et ensuite pour le véhicule ?
+            </div>
+
+            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px 14px; border:2px solid var(--blue); border-radius:10px; background:rgba(37,99,235,0.04); cursor:pointer; margin-bottom:8px; transition:all 0.15s;" id="optionLibreLabel">
+                <input type="radio" name="endAction" value="libre" checked style="margin-top:2px; accent-color:var(--blue);">
+                <div>
+                    <div style="font-size:14px; font-weight:600; color:var(--slate-800);">🟢 Libre</div>
+                    <div style="font-size:12px; color:var(--slate-500);">En attente de réaffectation</div>
+                </div>
+            </label>
+
+            <label style="display:none; align-items:flex-start; gap:10px; padding:12px 14px; border:2px solid var(--slate-200); border-radius:10px; cursor:pointer; margin-bottom:8px; transition:all 0.15s;" id="optionFutureLabel">
+                <input type="radio" name="endAction" value="activate_future" style="margin-top:2px; accent-color:var(--blue);">
+                <div>
+                    <div style="font-size:14px; font-weight:600; color:var(--slate-800);">🔵 Activer l'affectation future</div>
+                    <div style="font-size:12px; color:var(--slate-500);" id="optionFutureDesc">Passer directement à la prochaine affectation planifiée</div>
+                </div>
+            </label>
+
+            <label style="display:flex; align-items:flex-start; gap:10px; padding:12px 14px; border:2px solid var(--slate-200); border-radius:10px; cursor:pointer; transition:all 0.15s;" id="optionStockageLabel">
+                <input type="radio" name="endAction" value="stockage" style="margin-top:2px; accent-color:var(--blue);">
+                <div>
+                    <div style="font-size:14px; font-weight:600; color:var(--slate-800);">🏢 Stockage PolyValences</div>
+                    <div style="font-size:12px; color:var(--slate-500);">Passer le véhicule en stationnement</div>
+                </div>
+            </label>
+        </div>
+
         <div style="display:flex; gap:10px;">
             <button onclick="closeEndAssignModal()" style="flex:1; padding:12px; border-radius:10px; border:1px solid var(--slate-200); background:white; font-size:14px; font-weight:600; color:var(--slate-600); cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s;" onmouseover="this.style.background='var(--slate-50)'" onmouseout="this.style.background='white'">
                 Annuler
             </button>
             <button onclick="confirmEndAssignment()" id="btnConfirmEnd" style="flex:1; padding:12px; border-radius:10px; border:none; background:#dc2626; font-size:14px; font-weight:700; color:white; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.15s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
-                <i class="fas fa-check"></i> Confirmer le retrait
+                <i class="fas fa-check"></i> Confirmer
             </button>
         </div>
     </div>
@@ -1692,53 +1725,141 @@
     }
 
     let endAssignId = null;
+    let endAssignFutureId = null;
 
-        function endAssignment(id, name) {
-            endAssignId = id;
-            document.getElementById('endAssignReason').value = '';
-            document.getElementById('endAssignModalDesc').textContent = name
-                ? 'Retirer ' + name + ' du véhicule ?'
-                : 'Retirer ce conducteur du véhicule ?';
-            const modal = document.getElementById('endAssignModal');
-            modal.style.display = 'flex';
-        }
+    function endAssignment(id, name) {
+        endAssignId = id;
+        endAssignFutureId = null;
+        document.getElementById('endAssignReason').value = '';
+        document.getElementById('endAssignModalDesc').textContent = name
+            ? 'Retirer ' + name + ' du véhicule ?'
+            : 'Retirer ce conducteur du véhicule ?';
 
-        function closeEndAssignModal() {
-            document.getElementById('endAssignModal').style.display = 'none';
-            endAssignId = null;
-        }
+        // Reset radio
+        document.querySelector('input[name="endAction"][value="libre"]').checked = true;
+        highlightEndOption();
 
-        async function confirmEndAssignment() {
-            if (!endAssignId) return;
-            const btn = document.getElementById('btnConfirmEnd');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Retrait...';
+        // Check if future assignments exist for this vehicle
+        const v = vehiclesData.find(x => x.id === currentVehicleId);
+        const futureLabel = document.getElementById('optionFutureLabel');
 
-            try {
-                const res = await fetch(API + '/api/assignments/' + endAssignId + '/end', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                    body: JSON.stringify({ end_reason: document.getElementById('endAssignReason').value.trim() || null })
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    showToast('Affectation terminée.');
-                    closeEndAssignModal();
-                    loadVehicleDetail(currentVehicleId);
-                } else {
-                    showToast(data.error || 'Erreur', 'error');
-                }
-            } catch (err) {
-                showToast('Erreur de connexion', 'error');
+        // Load detail to get future assignments
+        fetch(API + '/api/vehicles/' + currentVehicleId, {
+            headers: { 'Authorization': 'Bearer ' + authToken }
+        }).then(r => r.json()).then(data => {
+            const futures = (data.assignments || []).filter(a => a.status === 'future');
+            if (futures.length > 0) {
+                endAssignFutureId = futures[0].id;
+                const f = futures[0];
+                document.getElementById('optionFutureDesc').textContent =
+                    'Activer ' + f.assigned_to + (f.planned_date ? ' (prévu le ' + f.planned_date + ')' : '') +
+                    (f.destination ? ' → ' + f.destination : '');
+                futureLabel.style.display = 'flex';
+            } else {
+                futureLabel.style.display = 'none';
             }
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check"></i> Confirmer le retrait';
-        }
-
-        // Fermer au clic sur le fond
-        document.getElementById('endAssignModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('endAssignModal')) closeEndAssignModal();
+        }).catch(() => {
+            futureLabel.style.display = 'none';
         });
+
+        const modal = document.getElementById('endAssignModal');
+        modal.style.display = 'flex';
+    }
+
+    function closeEndAssignModal() {
+        document.getElementById('endAssignModal').style.display = 'none';
+        endAssignId = null;
+        endAssignFutureId = null;
+    }
+
+    // Highlight selected radio option
+    document.querySelectorAll('input[name="endAction"]').forEach(radio => {
+        radio.addEventListener('change', highlightEndOption);
+    });
+
+    function highlightEndOption() {
+        const labels = {
+            'libre': document.getElementById('optionLibreLabel'),
+            'activate_future': document.getElementById('optionFutureLabel'),
+            'stockage': document.getElementById('optionStockageLabel')
+        };
+        Object.values(labels).forEach(l => {
+            l.style.borderColor = 'var(--slate-200)';
+            l.style.background = 'white';
+        });
+        const selected = document.querySelector('input[name="endAction"]:checked').value;
+        if (labels[selected]) {
+            labels[selected].style.borderColor = 'var(--blue)';
+            labels[selected].style.background = 'rgba(37,99,235,0.04)';
+        }
+    }
+
+    async function confirmEndAssignment() {
+        if (!endAssignId) return;
+        const btn = document.getElementById('btnConfirmEnd');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> En cours...';
+
+        const action = document.querySelector('input[name="endAction"]:checked').value;
+        const reason = document.getElementById('endAssignReason').value.trim() || null;
+
+        try {
+            // 1. End current assignment
+            const res = await fetch(API + '/api/assignments/' + endAssignId + '/end', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ end_reason: reason })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Confirmer';
+                return;
+            }
+
+            // 2. Action selon le choix
+            if (action === 'activate_future' && endAssignFutureId) {
+                const res2 = await fetch(API + '/api/assignments/' + endAssignFutureId + '/activate', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                const data2 = await res2.json();
+                if (res2.ok && data2.success) {
+                    showToast('Affectation retirée. Nouvelle affectation activée.');
+                } else {
+                    showToast('Affectation retirée. Erreur activation future : ' + (data2.error || ''), 'error');
+                }
+            } else if (action === 'stockage') {
+                await fetch(API + '/api/vehicles/' + currentVehicleId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                    body: JSON.stringify({ status: 'en_stockage' })
+                });
+                showToast('Affectation retirée. Véhicule en stockage.');
+            } else {
+                showToast('Affectation retirée. Véhicule libre.');
+            }
+
+            closeEndAssignModal();
+            loadVehicleDetail(currentVehicleId);
+
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> Confirmer';
+    }
+
+    // Fermer au clic sur le fond ou Escape
+    document.getElementById('endAssignModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('endAssignModal')) closeEndAssignModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('endAssignModal').style.display === 'flex') {
+            closeEndAssignModal();
+        }
+    });
 
     // ===== AUTOCOMPLETE HERE =====
         let acTimeout = null;
