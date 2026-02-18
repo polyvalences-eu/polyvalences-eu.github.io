@@ -754,6 +754,63 @@
                                 <input type="hidden" id="vLocationLng">
                             </div>
                         </div>
+                        <!-- ENTRETIEN & CT -->
+                        <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--slate-200);">
+                            <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                                <i class="fas fa-wrench" style="color:var(--blue); font-size:11px;"></i> Entretien & Contrôle technique
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Motorisation</label>
+                                    <select id="vFuelType" onchange="updateServiceInterval()">
+                                        <option value="essence">Essence</option>
+                                        <option value="diesel">Diesel</option>
+                                        <option value="electrique">Électrique</option>
+                                        <option value="hybride">Hybride</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Date 1ère mise en circulation</label>
+                                    <input type="date" id="vFirstReg">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Intervalle révision (km)</label>
+                                    <input type="number" id="vServiceKm" placeholder="15000">
+                                </div>
+                                <div class="form-group">
+                                    <label>Intervalle révision (mois)</label>
+                                    <input type="number" id="vServiceMonths" placeholder="24">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Dernier entretien (date)</label>
+                                    <input type="date" id="vLastServiceDate">
+                                </div>
+                                <div class="form-group">
+                                    <label>Km au dernier entretien</label>
+                                    <input type="number" id="vLastServiceKm" placeholder="80000">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Dernier CT (date)</label>
+                                    <input type="date" id="vLastCtDate">
+                                </div>
+                                <div class="form-group">
+                                    <label>Résultat CT</label>
+                                    <select id="vCtResult">
+                                        <option value="">— Non renseigné —</option>
+                                        <option value="Favorable">Favorable</option>
+                                        <option value="Défavorable">Défavorable (majeur)</option>
+                                        <option value="Critique">Défavorable (critique)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label>Notes</label>
                             <input type="text" id="vNotes" placeholder="Infos complémentaires...">
@@ -1358,6 +1415,14 @@
         document.getElementById('vLocationLat').value = '';
         document.getElementById('vLocationLng').value = '';
         document.getElementById('vNotes').value = '';
+        document.getElementById('vFuelType').value = 'essence';
+        document.getElementById('vFirstReg').value = '';
+        document.getElementById('vServiceKm').value = 15000;
+        document.getElementById('vServiceMonths').value = 24;
+        document.getElementById('vLastServiceDate').value = '';
+        document.getElementById('vLastServiceKm').value = '';
+        document.getElementById('vLastCtDate').value = '';
+        document.getElementById('vCtResult').value = '';
         document.getElementById('vStatus').value = 'libre';
         document.getElementById('btnSaveVehicle').innerHTML = '<i class="fas fa-save"></i> Enregistrer le véhicule';
     }
@@ -1375,6 +1440,14 @@
         document.getElementById('vLocationLat').value = v.location_lat || '';
         document.getElementById('vLocationLng').value = v.location_lng || '';
         document.getElementById('vNotes').value = v.notes || '';
+        document.getElementById('vFuelType').value = v.fuel_type || 'essence';
+        document.getElementById('vFirstReg').value = v.first_registration_date || '';
+        document.getElementById('vServiceKm').value = v.service_interval_km || 15000;
+        document.getElementById('vServiceMonths').value = v.service_interval_months || 24;
+        document.getElementById('vLastServiceDate').value = v.last_service_date || '';
+        document.getElementById('vLastServiceKm').value = v.last_service_km || '';
+        document.getElementById('vLastCtDate').value = v.last_ct_date || '';
+        document.getElementById('vCtResult').value = v.ct_result || '';
         document.getElementById('vStatus').value = v.status || 'libre';
         document.getElementById('btnSaveVehicle').innerHTML = '<i class="fas fa-save"></i> Mettre à jour';
         window.scrollTo({ top: document.getElementById('vehicleFormWrap').offsetTop - 100, behavior: 'smooth' });
@@ -1390,6 +1463,21 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
 
         const editId = document.getElementById('vEditId').value;
+        // Calcul auto next_ct_date
+        let nextCtDate = null;
+        const lastCt = document.getElementById('vLastCtDate').value;
+        const firstReg = document.getElementById('vFirstReg').value;
+        if (lastCt) {
+            const d = new Date(lastCt);
+            d.setFullYear(d.getFullYear() + 2);
+            nextCtDate = d.toISOString().split('T')[0];
+        } else if (firstReg) {
+            const d = new Date(firstReg);
+            d.setFullYear(d.getFullYear() + 4);
+            d.setMonth(d.getMonth() - 6);
+            nextCtDate = d.toISOString().split('T')[0];
+        }
+
         const payload = {
             plate: document.getElementById('vPlate').value.trim(),
             brand: document.getElementById('vBrand').value.trim() || null,
@@ -1400,6 +1488,15 @@
             location_lat: document.getElementById('vLocationLat').value ? parseFloat(document.getElementById('vLocationLat').value) : null,
             location_lng: document.getElementById('vLocationLng').value ? parseFloat(document.getElementById('vLocationLng').value) : null,
             notes: document.getElementById('vNotes').value.trim() || null,
+            fuel_type: document.getElementById('vFuelType').value,
+            first_registration_date: firstReg || null,
+            service_interval_km: document.getElementById('vServiceKm').value ? parseInt(document.getElementById('vServiceKm').value) : 15000,
+            service_interval_months: document.getElementById('vServiceMonths').value ? parseInt(document.getElementById('vServiceMonths').value) : 24,
+            last_service_date: document.getElementById('vLastServiceDate').value || null,
+            last_service_km: document.getElementById('vLastServiceKm').value ? parseInt(document.getElementById('vLastServiceKm').value) : null,
+            last_ct_date: lastCt || null,
+            ct_result: document.getElementById('vCtResult').value || null,
+            next_ct_date: nextCtDate,
         };
 
         try {
@@ -2132,6 +2229,22 @@ async function estimateConvoyageCost() {
                 document.querySelectorAll('.ac-dropdown').forEach(d => d.classList.remove('show'));
             }
         });
+
+        // ===== FUEL TYPE → SERVICE INTERVAL =====
+function updateServiceInterval() {
+    const fuel = document.getElementById('vFuelType').value;
+    const kmInput = document.getElementById('vServiceKm');
+    const monthsInput = document.getElementById('vServiceMonths');
+    const intervals = {
+        'essence': { km: 15000, months: 24 },
+        'diesel': { km: 20000, months: 24 },
+        'electrique': { km: 30000, months: 24 },
+        'hybride': { km: 15000, months: 24 }
+    };
+    const i = intervals[fuel] || intervals['essence'];
+    kmInput.value = i.km;
+    monthsInput.value = i.months;
+}
 
         // ===== CHARTE =====
 document.getElementById('charterCheck').addEventListener('change', function() {
