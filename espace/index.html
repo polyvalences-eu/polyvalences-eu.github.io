@@ -533,7 +533,7 @@
             <li><a href="#profil" class="active" onclick="showSection('profil', this)"><i class="fas fa-user"></i> Mon Profil</a></li>
             <li><a href="#securite" onclick="showSection('securite', this)"><i class="fas fa-lock"></i> Sécurité</a></li>
             <li><a href="#entreprise" onclick="showSection('entreprise', this)" id="navEntreprise" style="display:none"><i class="fas fa-building"></i> Entreprise</a></li>
-            <li><a href="#vehicules" class="disabled-link"><i class="fas fa-car"></i> Véhicules <span class="badge-soon">Bientôt</span></a></li>
+            <li><a href="#vehicules" onclick="showSection('vehicules', this)"><i class="fas fa-car"></i> Véhicules</a></li>
             <li><a href="#demandes" class="disabled-link"><i class="fas fa-file-alt"></i> Demandes <span class="badge-soon">Bientôt</span></a></li>
         </ul>
     </nav>
@@ -611,6 +611,81 @@
                     <i class="fas fa-key"></i> Changer le mot de passe
                 </button>
             </form>
+        </div>
+
+        <!-- VEHICULES -->
+        <div class="section-card" id="section-vehicules">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; flex-wrap:wrap; gap:12px;">
+                <h2>Mes Véhicules</h2>
+                <button class="btn-primary" onclick="showAddVehicleForm()">
+                    <i class="fas fa-plus"></i> Ajouter un véhicule
+                </button>
+            </div>
+            <p class="subtitle">Gérez votre parc automobile. Ajoutez, modifiez et affectez vos véhicules.</p>
+
+            <!-- ADD/EDIT FORM (hidden by default) -->
+            <div id="vehicleFormWrap" style="display:none; margin-bottom:24px;">
+                <div style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:var(--radius); padding:24px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                        <h3 style="font-size:16px; font-weight:700; color:var(--slate-900); font-family:'DM Sans',sans-serif;" id="vehicleFormTitle">Ajouter un véhicule</h3>
+                        <button onclick="hideVehicleForm()" style="background:none; border:none; cursor:pointer; color:var(--slate-400); font-size:18px;"><i class="fas fa-times"></i></button>
+                    </div>
+                    <form onsubmit="event.preventDefault(); saveVehicle()">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Plaque d'immatriculation *</label>
+                                <input type="text" id="vPlate" placeholder="AA-123-BB" required style="text-transform:uppercase">
+                            </div>
+                            <div class="form-group">
+                                <label>Statut</label>
+                                <select id="vStatus">
+                                    <option value="libre">Libre</option>
+                                    <option value="affecté">Affecté</option>
+                                    <option value="en_réparation">En réparation</option>
+                                    <option value="en_stockage">En stockage</option>
+                                    <option value="en_transit">En transit</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Marque</label>
+                                <input type="text" id="vBrand" placeholder="Renault, Peugeot...">
+                            </div>
+                            <div class="form-group">
+                                <label>Modèle</label>
+                                <input type="text" id="vModel" placeholder="Kangoo, 308...">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Kilométrage</label>
+                                <input type="number" id="vMileage" placeholder="85000">
+                            </div>
+                            <div class="form-group">
+                                <label>Localisation actuelle</label>
+                                <input type="text" id="vLocation" placeholder="Paris, Lille, Dépôt Nord...">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input type="text" id="vNotes" placeholder="Infos complémentaires...">
+                        </div>
+                        <input type="hidden" id="vEditId" value="">
+                        <button type="submit" class="btn-primary" id="btnSaveVehicle">
+                            <i class="fas fa-save"></i> Enregistrer le véhicule
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VEHICLES LIST -->
+            <div id="vehiclesList">
+                <div style="text-align:center; padding:40px; color:var(--slate-400);">
+                    <i class="fas fa-spinner fa-spin" style="font-size:24px; margin-bottom:12px; display:block;"></i>
+                    Chargement...
+                </div>
+            </div>
         </div>
 
         <!-- ENTREPRISE -->
