@@ -3002,9 +3002,9 @@ async function signCharter() {
                         <!-- MENTION TVA -->
                         <div style="font-size:11px; font-style:italic; color:var(--slate-400); margin-bottom:16px; text-align:center;">
                             « TVA non-applicable, article 293 B du Code Général des Impôts »
-                        </div>
+                        </div>`;
 
-                        // DATES SOUHAITÉES / DATE CONFIRMÉE
+        // DATES SOUHAITÉES / DATE CONFIRMÉE
         if (q.preferred_date_1 || q.confirmed_date) {
             html += `
                     <div style="padding:16px 18px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:20px;">`;
@@ -3036,6 +3036,7 @@ async function signCharter() {
                     </div>`;
         }
 
+        html += `
                         <!-- LIGNES -->
                         <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
                             <thead>
