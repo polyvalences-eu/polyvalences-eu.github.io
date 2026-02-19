@@ -341,8 +341,8 @@
             if (!res.ok) { logout(); return; }
 
             const data = await res.json();
-            if (data.user.role !== 'driver') {
-                // Pas un chauffeur → rediriger
+            if (data.user.role !== 'driver' && data.user.role !== 'admin') {
+                // Ni chauffeur ni admin → rediriger
                 window.location.href = '/espace/';
                 return;
             }
