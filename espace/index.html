@@ -2985,6 +2985,38 @@ async function signCharter() {
                             « TVA non-applicable, article 293 B du Code Général des Impôts »
                         </div>
 
+                        // DATES SOUHAITÉES / DATE CONFIRMÉE
+        if (q.preferred_date_1 || q.confirmed_date) {
+            html += `
+                    <div style="padding:16px 18px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:20px;">`;
+
+            if (q.confirmed_date) {
+                html += `
+                        <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#dcfce7; border-radius:8px; margin-bottom:${q.preferred_date_1 ? '12px' : '0'};">
+                            <i class="fas fa-calendar-check" style="color:#059669; font-size:20px;"></i>
+                            <div>
+                                <div style="font-size:11px; font-weight:700; color:#059669; text-transform:uppercase;">Date de convoyage confirmée</div>
+                                <div style="font-size:18px; font-weight:800; color:#059669;">${formatDate(q.confirmed_date)}</div>
+                            </div>
+                        </div>`;
+            }
+
+            if (q.preferred_date_1) {
+                html += `
+                        <div style="font-size:11px; font-weight:700; color:#059669; text-transform:uppercase; margin-bottom:6px;">
+                            <i class="fas fa-calendar-alt" style="margin-right:4px;"></i> ${q.confirmed_date ? 'Dates proposées' : 'Vos dates souhaitées'}
+                        </div>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                            <span style="padding:6px 12px; background:white; border:1px solid #bbf7d0; border-radius:6px; font-size:13px; font-weight:600; color:var(--slate-700);${q.confirmed_date === q.preferred_date_1 ? ' border-color:#059669; background:#dcfce7;' : ''}">${formatDate(q.preferred_date_1)}${q.confirmed_date === q.preferred_date_1 ? ' ✓' : ''}</span>
+                            ${q.preferred_date_2 ? '<span style="padding:6px 12px; background:white; border:1px solid #bbf7d0; border-radius:6px; font-size:13px; font-weight:600; color:var(--slate-700);' + (q.confirmed_date === q.preferred_date_2 ? ' border-color:#059669; background:#dcfce7;' : '') + '">' + formatDate(q.preferred_date_2) + (q.confirmed_date === q.preferred_date_2 ? ' ✓' : '') + '</span>' : ''}
+                            ${q.preferred_date_3 ? '<span style="padding:6px 12px; background:white; border:1px solid #bbf7d0; border-radius:6px; font-size:13px; font-weight:600; color:var(--slate-700);' + (q.confirmed_date === q.preferred_date_3 ? ' border-color:#059669; background:#dcfce7;' : '') + '">' + formatDate(q.preferred_date_3) + (q.confirmed_date === q.preferred_date_3 ? ' ✓' : '') + '</span>' : ''}
+                        </div>`;
+            }
+
+            html += `
+                    </div>`;
+        }
+
                         <!-- LIGNES -->
                         <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
                             <thead>
