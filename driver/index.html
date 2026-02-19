@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devenez chauffeur-convoyeur | PolyValences — Missions France & Europe</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7W30WDQNB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z7W30WDQNB');
+    </script>
+    <meta name="description" content="Rejoignez PolyValences comme chauffeur-convoyeur indépendant. Missions de convoyage automobile en France et Europe. Rémunération 130€ à 160€ par mission + frais remboursés.">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        "title": "Chauffeur-convoyeur automobile indépendant",
+        "description": "Missions de convoyage automobile en France et Europe. Rémunération attractive par mission + frais remboursés.",
+        "hiringOrganization": {
+            "@type": "Organization",
+            "name": "PolyValences",
+            "sameAs": "https://polyvalences.eu"
+        },
+        "jobLocation": {
+            "@type": "Place",
+            "address": { "@type": "PostalAddress", "addressCountry": "FR" }
+        },
+        "employmentType": "CONTRACTOR"
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1a2e;
+            --navy-light: #132743;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --blue-pale: #dbeafe;
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --emerald: #059669;
+            --amber: #d97706;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --radius: 12px;
+            --radius-lg: 20px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ===== NAV ===== */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--slate-200);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0 24px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-link {
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            color: var(--slate-600); transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--blue); }
+        .nav-link.active { color: var(--blue); font-weight: 700; }
+        .nav-email {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--navy);
+            text-decoration: none;
+        }
+        .nav-email i { color: var(--blue); font-size: 12px; }
+        .nav-email:hover { color: var(--blue); }
+        .nav-cta {
+            background: var(--navy); color: white;
+            padding: 10px 22px; border-radius: 10px;
+            font-size: 14px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+            border: none; cursor: pointer;
+        }
+        .nav-cta:hover { background: var(--blue); }
+        .nav-sep { width: 1px; height: 24px; background: var(--slate-200); }
+        .nav-burger {
+            display: none; width: 44px; height: 44px;
+            border: 1px solid var(--slate-200); border-radius: 10px;
+            background: white; cursor: pointer;
+            align-items: center; justify-content: center;
+            font-size: 18px; color: var(--slate-700);
+        }
+        .nav-burger:hover { background: var(--slate-50); }
+
+        /* Mobile menu */
+        .mobile-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(11,26,46,0.6); backdrop-filter: blur(4px);
+        }
+        .mobile-overlay.active { display: block; }
+        .mobile-menu {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 300px; max-width: 85vw; z-index: 201;
+            background: white; padding: 24px;
+            box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .mobile-menu-close {
+            width: 40px; height: 40px; border-radius: 10px;
+            border: 1px solid var(--slate-200); background: white;
+            cursor: pointer; font-size: 16px; color: var(--slate-500);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mobile-menu-links { list-style: none; margin-bottom: 32px; }
+        .mobile-menu-links li { border-bottom: 1px solid var(--slate-100); }
+        .mobile-menu-links a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 4px; font-size: 15px; font-weight: 500;
+            color: var(--slate-700); text-decoration: none;
+        }
+        .mobile-menu-links i { width: 20px; text-align: center; color: var(--slate-400); font-size: 14px; }
+        .mobile-menu-cta {
+            width: 100%; padding: 14px; margin-top: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .mobile-menu-cta:hover { background: var(--blue); }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative; padding: 120px 24px 80px;
+            overflow: hidden; min-height: 90vh;
+            display: flex; align-items: center;
+        }
+        .hero-bg {
+            position: absolute; inset: 0; z-index: 0;
+        }
+        .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(11,26,46,0.95) 0%, rgba(19,39,67,0.9) 50%, rgba(37,99,235,0.65) 100%);
+        }
+        .hero-inner {
+            position: relative; z-index: 1;
+            max-width: 1200px; margin: 0 auto; width: 100%;
+            display: flex; gap: 64px; align-items: center;
+        }
+        .hero-content { flex: 1; color: white; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 14px; border-radius: 999px;
+            background: rgba(59,130,246,0.15);
+            border: 1px solid rgba(59,130,246,0.3);
+            color: #93c5fd; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 24px;
+        }
+        .hero-badge-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #60a5fa; animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+        }
+        .hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 800; line-height: 1.1; margin-bottom: 20px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub {
+            font-size: 18px; color: #94a3b8;
+            margin-bottom: 36px; max-width: 520px; line-height: 1.7;
+        }
+        .btn-primary {
+            background: var(--blue); color: white;
+            padding: 16px 32px; border-radius: var(--radius);
+            font-size: 15px; font-weight: 700; border: none; cursor: pointer;
+            transition: all 0.25s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(37,99,235,0.35); }
+        .btn-outline {
+            background: transparent; color: white;
+            padding: 16px 32px; border-radius: var(--radius);
+            font-size: 15px; font-weight: 600; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.25);
+            transition: all 0.25s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-outline:hover { border-color: white; background: rgba(255,255,255,0.08); }
+
+        /* ===== APPLY CARD (hero right) ===== */
+        .apply-card { flex: 0 0 440px; }
+        .apply-panel {
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg); padding: 36px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .apply-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px;
+        }
+        .apply-header h3 {
+            font-size: 22px; font-weight: 700; color: var(--slate-900);
+            font-family: 'Playfair Display', serif;
+        }
+        .apply-badge {
+            font-size: 11px; font-weight: 700;
+            background: #dcfce7; color: #166534;
+            padding: 4px 10px; border-radius: 6px;
+        }
+        .apply-input-group { margin-bottom: 12px; }
+        .apply-input-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: var(--slate-700); margin-bottom: 5px;
+        }
+        .apply-input-group input {
+            width: 100%; padding: 12px 14px;
+            border: 1px solid var(--slate-200);
+            border-radius: 10px; font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            background: white; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: var(--slate-800);
+        }
+        .apply-input-group input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px var(--blue-glow);
+        }
+        .apply-row { display: flex; gap: 12px; }
+        .apply-row > * { flex: 1; }
+        .apply-submit {
+            width: 100%; padding: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: var(--radius);
+            font-size: 15px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 8px;
+        }
+        .apply-submit:hover { background: var(--blue); }
+        .apply-note {
+            text-align: center; font-size: 12px;
+            color: var(--slate-400); margin-top: 12px; line-height: 1.5;
+        }
+        .apply-note i { color: var(--emerald); margin-right: 4px; }
+        .apply-error {
+            display: none; padding: 12px 14px;
+            background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 8px; margin-bottom: 14px;
+            font-size: 13px; color: #dc2626; font-weight: 500;
+            animation: modal-in 0.2s ease-out;
+        }
+        .apply-error.show { display: flex; align-items: center; gap: 8px; }
+        .apply-error i { flex-shrink: 0; }
+        .apply-success {
+            display: none; text-align: center; padding: 20px 0;
+        }
+        .apply-success.show { display: block; }
+        .password-wrap { position: relative; }
+        .password-wrap input { padding-right: 44px; }
+        .password-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--slate-400); font-size: 15px; padding: 4px;
+        }
+        .password-toggle:hover { color: var(--slate-600); }
+
+        @keyframes modal-in {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ===== TRUST BAR ===== */
+        .trust-bar {
+            background: white; border-bottom: 1px solid var(--slate-100);
+            padding: 32px 24px;
+        }
+        .trust-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 32px; text-align: center;
+        }
+        .trust-item { position: relative; }
+        .trust-item + .trust-item::before {
+            content: ''; position: absolute; left: -16px; top: 10%;
+            height: 80%; width: 1px; background: var(--slate-100);
+        }
+        .trust-number {
+            font-size: 36px; font-weight: 800; color: var(--navy);
+            font-family: 'Playfair Display', serif;
+        }
+        .trust-label {
+            font-size: 12px; font-weight: 700;
+            color: var(--slate-400); text-transform: uppercase;
+            letter-spacing: 0.06em; margin-top: 4px;
+        }
+
+        /* ===== HOW IT WORKS ===== */
+        .steps { padding: 100px 24px; background: white; }
+        .steps-inner { max-width: 1000px; margin: 0 auto; }
+        .steps-header { text-align: center; margin-bottom: 64px; }
+        .steps-header h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .steps-header p { font-size: 17px; color: var(--slate-500); }
+        .steps-grid { display: flex; gap: 32px; }
+        .step-card {
+            flex: 1; text-align: center; padding: 32px 24px;
+            position: relative;
+        }
+        .step-card + .step-card::before {
+            content: ''; position: absolute; left: -16px; top: 40px;
+            width: 1px; height: 60px; background: var(--slate-200);
+        }
+        .step-number {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: var(--blue-pale); color: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 800; margin: 0 auto 20px;
+            font-family: 'Playfair Display', serif;
+        }
+        .step-card h3 {
+            font-size: 18px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 8px; font-family: 'DM Sans', sans-serif;
+        }
+        .step-card p {
+            font-size: 14px; color: var(--slate-500); line-height: 1.7;
+        }
+
+        /* ===== RÉMUNÉRATION ===== */
+        .remuneration { padding: 100px 24px; background: var(--slate-50); }
+        .remuneration-inner { max-width: 1000px; margin: 0 auto; }
+        .remuneration-header { text-align: center; margin-bottom: 56px; }
+        .remuneration-header h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .remuneration-header p { font-size: 17px; color: var(--slate-500); }
+        .remuneration-cards { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+        .rem-card {
+            flex: 0 0 340px; padding: 36px;
+            background: white; border-radius: var(--radius-lg);
+            border: 1px solid var(--slate-100);
+            text-align: center; position: relative; overflow: hidden;
+            transition: all 0.3s;
+        }
+        .rem-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
+        .rem-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        }
+        .rem-card.blue::before { background: var(--blue); }
+        .rem-card.green::before { background: var(--emerald); }
+        .rem-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin: 0 auto 16px;
+        }
+        .rem-card.blue .rem-icon { background: var(--blue-pale); color: var(--blue); }
+        .rem-card.green .rem-icon { background: #d1fae5; color: var(--emerald); }
+        .rem-card-label {
+            font-size: 12px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; margin-bottom: 8px;
+        }
+        .rem-card.blue .rem-card-label { color: var(--blue); }
+        .rem-card.green .rem-card-label { color: var(--emerald); }
+        .rem-card-title {
+            font-size: 16px; font-weight: 600; color: var(--slate-700);
+            margin-bottom: 12px;
+        }
+        .rem-card-price {
+            font-size: 48px; font-weight: 800;
+            font-family: 'Playfair Display', serif; margin-bottom: 4px;
+        }
+        .rem-card.blue .rem-card-price { color: var(--blue); }
+        .rem-card.green .rem-card-price { color: var(--emerald); }
+        .rem-card-freq { font-size: 14px; color: var(--slate-500); margin-bottom: 16px; }
+        .rem-card-detail { font-size: 13px; color: var(--slate-500); line-height: 1.7; }
+
+        .rem-extras {
+            margin-top: 48px; text-align: center;
+            background: white; border-radius: var(--radius-lg);
+            padding: 32px; border: 1px solid var(--slate-100);
+            max-width: 700px; margin-left: auto; margin-right: auto;
+        }
+        .rem-extras h4 {
+            font-size: 16px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 16px; font-family: 'DM Sans', sans-serif;
+        }
+        .rem-extras-list {
+            list-style: none; display: flex; flex-wrap: wrap;
+            justify-content: center; gap: 16px 32px;
+        }
+        .rem-extras-list li {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 14px; color: var(--slate-600);
+        }
+        .rem-extras-list li i { color: var(--emerald); font-size: 13px; }
+
+        /* ===== AVANTAGES ===== */
+        .avantages { padding: 100px 24px; background: white; }
+        .avantages-inner { max-width: 1200px; margin: 0 auto; }
+        .avantages-header { text-align: center; margin-bottom: 56px; }
+        .avantages-header h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .avantages-header p { font-size: 17px; color: var(--slate-500); }
+        .avantages-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+        }
+        .av-card {
+            background: var(--slate-50); border-radius: var(--radius-lg);
+            padding: 32px; border: 1px solid var(--slate-100);
+        }
+        .av-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-bottom: 16px;
+            background: var(--blue-pale); color: var(--blue);
+        }
+        .av-card h3 {
+            font-size: 17px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 8px; font-family: 'DM Sans', sans-serif;
+        }
+        .av-card p { font-size: 14px; color: var(--slate-500); line-height: 1.7; }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 80px 24px; text-align: center;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: white;
+        }
+        .cta-section h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            margin-bottom: 16px;
+        }
+        .cta-section p {
+            font-size: 17px; color: #94a3b8; margin-bottom: 32px;
+            max-width: 500px; margin-inline: auto;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--navy); color: var(--slate-400);
+            padding: 64px 24px 32px;
+        }
+        .footer-inner { max-width: 1200px; margin: 0 auto; }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr;
+            gap: 48px; margin-bottom: 48px;
+        }
+        .footer-brand {
+            font-size: 22px; font-weight: 700; color: white;
+            font-family: 'Playfair Display', serif; margin-bottom: 12px;
+        }
+        .footer-desc { font-size: 14px; max-width: 320px; line-height: 1.7; }
+        .footer h4 {
+            color: white; font-size: 14px; font-weight: 700;
+            margin-bottom: 16px; font-family: 'DM Sans', sans-serif;
+        }
+        .footer ul { list-style: none; }
+        .footer ul li { margin-bottom: 8px; }
+        .footer ul li a, .footer ul li span {
+            color: var(--slate-400); font-size: 13px;
+            text-decoration: none; transition: color 0.2s;
+        }
+        .footer ul li a:hover { color: white; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 24px;
+            display: flex; justify-content: space-between;
+            font-size: 12px; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-bottom a {
+            color: var(--slate-400); text-decoration: none; margin-left: 16px;
+        }
+        .footer-bottom a:hover { color: white; }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 32px; right: 32px;
+            background: var(--navy); color: white;
+            padding: 16px 24px; border-radius: var(--radius);
+            font-size: 14px; font-weight: 600;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            z-index: 300; display: flex; align-items: center; gap: 10px;
+            animation: toast-in 0.3s ease-out;
+        }
+        .toast i { color: #4ade80; }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero-inner { flex-direction: column; gap: 40px; }
+            .apply-card { flex: auto; width: 100%; max-width: 480px; }
+            .avantages-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+            .remuneration-cards { flex-direction: column; align-items: center; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none !important; }
+            .nav-burger { display: flex; }
+            .trust-inner { grid-template-columns: repeat(2, 1fr); }
+            .trust-item + .trust-item::before { display: none; }
+            .steps-grid { flex-direction: column; }
+            .step-card + .step-card::before { display: none; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">
+            <img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:56px;width:auto;">
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Accueil</a>
+            <a href="#comment-ca-marche" class="nav-link">Comment ça marche</a>
+            <a href="#remuneration" class="nav-link">Rémunération</a>
+            <a href="#avantages" class="nav-link">Avantages</a>
+            <div class="nav-sep"></div>
+            <a href="mailto:support@polyvalences.eu" class="nav-email">
+                <i class="fas fa-envelope"></i> support@polyvalences.eu
+            </a>
+            <a href="#postuler" class="nav-cta">
+                <i class="fas fa-paper-plane"></i> Postuler
+            </a>
+        </div>
+        <button class="nav-burger" onclick="openMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+        <a href="/"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;"></a>
+        <button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <ul class="mobile-menu-links">
+        <li><a href="/" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Accueil</a></li>
+        <li><a href="#comment-ca-marche" onclick="closeMobileMenu()"><i class="fas fa-list-ol"></i> Comment ça marche</a></li>
+        <li><a href="#remuneration" onclick="closeMobileMenu()"><i class="fas fa-euro-sign"></i> Rémunération</a></li>
+        <li><a href="#avantages" onclick="closeMobileMenu()"><i class="fas fa-star"></i> Avantages</a></li>
+        <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <button class="mobile-menu-cta" onclick="closeMobileMenu(); document.getElementById('postuler').scrollIntoView({behavior:'smooth'})">
+        <i class="fas fa-paper-plane"></i> Postuler maintenant
+    </button>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="postuler">
+    <div class="hero-bg">
+        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop" alt="Voiture sur route" loading="eager">
+    </div>
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Recrutement ouvert — France & Europe
+            </div>
+            <h1>Devenez chauffeur-<em>convoyeur</em> PolyValences</h1>
+            <p class="hero-sub">
+                Vous aimez conduire ? Rejoignez notre réseau de chauffeurs indépendants. Missions de convoyage automobile en France et en Europe, rémunération transparente, liberté totale.
+            </p>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                <a href="#remuneration" class="btn-outline">
+                    <i class="fas fa-euro-sign"></i> Voir la rémunération
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== FORMULAIRE INSCRIPTION ===== -->
+        <div class="apply-card">
+            <div class="apply-panel">
+                <div class="apply-header">
+                    <h3>Postuler maintenant</h3>
+                    <span class="apply-badge">Gratuit</span>
+                </div>
+
+                <form id="applyForm" onsubmit="event.preventDefault(); handleApply()">
+                    <div class="apply-error" id="applyError"><i class="fas fa-exclamation-circle"></i><span></span></div>
+
+                    <div class="apply-row">
+                        <div class="apply-input-group">
+                            <label>Prénom</label>
+                            <input type="text" id="applyFirstName" placeholder="Jean" required>
+                        </div>
+                        <div class="apply-input-group">
+                            <label>Nom</label>
+                            <input type="text" id="applyLastName" placeholder="Dupont" required>
+                        </div>
+                    </div>
+                    <div class="apply-input-group">
+                        <label>Email</label>
+                        <input type="email" id="applyEmail" placeholder="jean.dupont@email.com" required>
+                    </div>
+                    <div class="apply-input-group">
+                        <label>Téléphone</label>
+                        <input type="tel" id="applyPhone" placeholder="06 XX XX XX XX" required>
+                    </div>
+                    <div class="apply-input-group">
+                        <label>Adresse</label>
+                        <input type="text" id="applyAddress" placeholder="Votre ville ou adresse">
+                    </div>
+                    <div class="apply-input-group">
+                        <label>Date de naissance</label>
+                        <input type="date" id="applyBirthDate">
+                    </div>
+                    <div class="apply-input-group">
+                        <label>Mot de passe</label>
+                        <div class="password-wrap">
+                            <input type="password" id="applyPassword" placeholder="8 caractères minimum" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="apply-submit" id="applyBtn">
+                        Envoyer ma candidature <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <p class="apply-note">
+                        <i class="fas fa-shield-alt"></i>
+                        Vos documents seront demandés après inscription.<br>
+                        Validation sous 48h.
+                    </p>
+                </form>
+
+                <!-- SUCCESS STATE -->
+                <div class="apply-success" id="applySuccess">
+                    <div style="width:72px;height:72px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+                        <i class="fas fa-check" style="font-size:32px;color:#16a34a"></i>
+                    </div>
+                    <h3 style="font-size:20px;font-weight:700;color:var(--slate-900);margin-bottom:8px;font-family:'Playfair Display',serif">Candidature envoyée !</h3>
+                    <p style="font-size:14px;color:var(--slate-500);line-height:1.7;margin-bottom:20px">
+                        Connectez-vous dès maintenant pour uploader vos documents (pièce d'identité, permis, etc.).<br>
+                        Notre équipe vérifiera votre dossier <strong>sous 48h</strong>.
+                    </p>
+                    <a href="/driver/espace/" class="apply-submit" style="text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--emerald)">
+                        <i class="fas fa-upload"></i> Uploader mes documents
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TRUST BAR ===== -->
+<div class="trust-bar">
+    <div class="trust-inner">
+        <div class="trust-item">
+            <div class="trust-number">130-160 €</div>
+            <div class="trust-label">Par mission</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">100%</div>
+            <div class="trust-label">Frais remboursés</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">17 ans</div>
+            <div class="trust-label">D'activité</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">FR & EU</div>
+            <div class="trust-label">Zone de missions</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== COMMENT ÇA MARCHE ===== -->
+<section class="steps" id="comment-ca-marche">
+    <div class="steps-inner">
+        <div class="steps-header">
+            <h2>Comment ça marche ?</h2>
+            <p>De l'inscription à votre première mission, en 3 étapes simples.</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Inscrivez-vous</h3>
+                <p>Remplissez le formulaire ci-dessus et créez votre compte en 2 minutes. C'est gratuit.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Uploadez vos documents</h3>
+                <p>Pièce d'identité, permis de conduire, justificatif de domicile, RIB. Notre équipe vérifie sous 48h.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Recevez vos missions</h3>
+                <p>Une fois validé, vous recevez des missions de convoyage par email. Acceptez celles qui vous conviennent.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== RÉMUNÉRATION ===== -->
+<section class="remuneration" id="remuneration">
+    <div class="remuneration-inner">
+        <div class="remuneration-header">
+            <h2>Rémunération transparente</h2>
+            <p>Vous savez exactement combien vous gagnez avant d'accepter une mission.</p>
+        </div>
+        <div class="remuneration-cards">
+            <div class="rem-card blue">
+                <div class="rem-icon"><i class="fas fa-road"></i></div>
+                <div class="rem-card-label">Convoyage court</div>
+                <div class="rem-card-title">Moins de 300 km</div>
+                <div class="rem-card-price">130 €</div>
+                <div class="rem-card-freq">net par mission</div>
+                <div class="rem-card-detail">Missions urbaines et péri-urbaines.<br>Idéal pour les trajets à la journée.</div>
+            </div>
+            <div class="rem-card green">
+                <div class="rem-icon"><i class="fas fa-route"></i></div>
+                <div class="rem-card-label">Convoyage long</div>
+                <div class="rem-card-title">300 km et plus</div>
+                <div class="rem-card-price">160 €</div>
+                <div class="rem-card-freq">net par mission</div>
+                <div class="rem-card-detail">Missions longue distance, France et Europe.<br>Avec train de retour remboursé.</div>
+            </div>
+        </div>
+
+        <div class="rem-extras">
+            <h4>En plus de votre rémunération, vos frais sont remboursés :</h4>
+            <ul class="rem-extras-list">
+                <li><i class="fas fa-check"></i> Péages (sur justificatif)</li>
+                <li><i class="fas fa-check"></i> Carburant (sur justificatif)</li>
+                <li><i class="fas fa-check"></i> Train de retour</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ===== AVANTAGES ===== -->
+<section class="avantages" id="avantages">
+    <div class="avantages-inner">
+        <div class="avantages-header">
+            <h2>Pourquoi rejoindre PolyValences ?</h2>
+            <p>Un réseau professionnel, une liberté totale.</p>
+        </div>
+        <div class="avantages-grid">
+            <div class="av-card">
+                <div class="av-icon"><i class="fas fa-clock"></i></div>
+                <h3>Liberté totale</h3>
+                <p>Vous choisissez vos missions, vos horaires, votre rythme. Pas de minimum, pas d'obligation.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon"><i class="fas fa-map-marked-alt"></i></div>
+                <h3>France & Europe</h3>
+                <p>Des missions partout en France et en Europe. Découvrez de nouvelles routes et de nouvelles régions.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Espace dédié</h3>
+                <p>Un espace chauffeur simple et mobile pour gérer vos missions, EDL et frais en quelques clics.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon"><i class="fas fa-euro-sign"></i></div>
+                <h3>Paiement rapide</h3>
+                <p>Rémunération par virement après validation de la mission. Frais remboursés sur justificatif.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Véhicules assurés</h3>
+                <p>Chaque véhicule convoyé est couvert par notre assurance tous risques pendant toute la mission.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon"><i class="fas fa-handshake"></i></div>
+                <h3>Depuis 2009</h3>
+                <p>Rejoignez une entreprise établie avec 17 ans d'expérience dans le convoyage automobile.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA FINAL ===== -->
+<section class="cta-section">
+    <h2>Prêt à rouler avec nous ?</h2>
+    <p>Inscription gratuite en 2 minutes. Première mission dès validation de votre dossier.</p>
+    <a href="#postuler" class="btn-primary" style="font-size:17px;padding:18px 40px;">
+        <i class="fas fa-paper-plane"></i> Postuler maintenant
+    </a>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:48px;width:auto;"></div>
+                <p class="footer-desc">Simplifiez la vie de votre parc automobile. Une solution technologique pour des besoins logistiques réels. Depuis 2009.</p>
+            </div>
+            <div>
+                <h4>Liens</h4>
+                <ul>
+                    <li><a href="/">Site client</a></li>
+                    <li><a href="#comment-ca-marche">Comment ça marche</a></li>
+                    <li><a href="#remuneration">Rémunération</a></li>
+                    <li><a href="#avantages">Avantages</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul>
+                    <li><span>1 Place Paul Verlaine</span></li>
+                    <li><span>92100 Boulogne-Billancourt</span></li>
+                    <li style="margin-top:12px"><a href="mailto:support@polyvalences.eu" style="color:#3b82f6;font-weight:600"><i class="fas fa-envelope" style="margin-right:6px"></i>support@polyvalences.eu</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 PolyValences SAS. Tous droits réservés.</span>
+            <div>
+                <a href="#">Mentions Légales</a>
+                <a href="#">CGV</a>
+                <a href="#">Politique de confidentialité</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const API = 'https://api.polyvalences.eu';
+
+    // ===== MOBILE MENU =====
+    function openMobileMenu() {
+        document.getElementById('mobileOverlay').classList.add('active');
+        document.getElementById('mobileMenu').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+        document.getElementById('mobileOverlay').classList.remove('active');
+        document.getElementById('mobileMenu').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
+
+    // ===== PASSWORD TOGGLE =====
+    function togglePassword(btn) {
+        const input = btn.parentElement.querySelector('input');
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') { input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+        else { input.type = 'password'; icon.className = 'fas fa-eye'; }
+    }
+
+    // ===== TOAST =====
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = '<i class="fas fa-check-circle"></i> ' + message;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(20px)'; toast.style.transition = 'all 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    // ===== SHOW ERROR =====
+    function showApplyError(message) {
+        const el = document.getElementById('applyError');
+        el.querySelector('span').textContent = message;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 6000);
+    }
+
+    // ===== APPLY =====
+    async function handleApply() {
+        const firstName = document.getElementById('applyFirstName').value.trim();
+        const lastName = document.getElementById('applyLastName').value.trim();
+        const email = document.getElementById('applyEmail').value.trim();
+        const phone = document.getElementById('applyPhone').value.trim();
+        const address = document.getElementById('applyAddress').value.trim();
+        const birthDate = document.getElementById('applyBirthDate').value;
+        const password = document.getElementById('applyPassword').value;
+
+        if (!firstName || !lastName || !email || !phone || !password) {
+            showApplyError('Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+        if (password.length < 8) {
+            showApplyError('Le mot de passe doit contenir au moins 8 caractères.');
+            return;
+        }
+
+        const btn = document.getElementById('applyBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+        try {
+            const res = await fetch(API + '/api/driver/apply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email, password, first_name: firstName, last_name: lastName,
+                    phone, address: address || null, birth_date: birthDate || null
+                })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                showApplyError(data.error || 'Erreur lors de l\'envoi.');
+                return;
+            }
+
+            // Stocker le token si auto-login
+            if (data.token) {
+                localStorage.setItem('pv_token', data.token);
+            }
+
+            // Connexion auto après inscription
+            try {
+                const loginRes = await fetch(API + '/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const loginData = await loginRes.json();
+                if (loginRes.ok && loginData.token) {
+                    localStorage.setItem('pv_token', loginData.token);
+                }
+            } catch (e) { /* silencieux */ }
+
+            // Afficher succès
+            document.getElementById('applyForm').style.display = 'none';
+            document.getElementById('applySuccess').classList.add('show');
+
+        } catch (err) {
+            showApplyError('Impossible de contacter le serveur. Réessayez.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Envoyer ma candidature <i class="fas fa-arrow-right"></i>';
+        }
+    }
+
+    // Redirect si déjà connecté en tant que driver
+    async function checkDriverSession() {
+        const token = localStorage.getItem('pv_token');
+        if (!token) return;
+        try {
+            const res = await fetch(API + '/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.user.role === 'driver' && data.user.driver_status !== 'rejected') {
+                    // Déjà connecté en tant que chauffeur → rediriger
+                    window.location.href = '/driver/espace/';
+                }
+            }
+        } catch (e) { /* silencieux */ }
+    }
+    checkDriverSession();
+</script>
+
+</body>
+</html>
