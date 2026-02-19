@@ -756,6 +756,7 @@
     let originData = null;
     let destData = null;
     let acTimeout = null;
+    const acCache = new Map(); // Cache autocomplete pour économiser les appels HERE
 
     // ===== AUTH CHECK =====
     async function checkSession() {
@@ -852,7 +853,7 @@
     }
 
     async function handleAutocomplete(input, type) {
-        const q = input.value.trim();
+        const q = input.value.trim().toLowerCase();
         const dropdown = input.parentElement.querySelector('.ac-dropdown');
 
         if (q.length < 2) { dropdown.classList.remove('show'); return; }
@@ -860,14 +861,28 @@
         clearTimeout(acTimeout);
         acTimeout = setTimeout(async () => {
             try {
-                const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
-                const data = await res.json();
+                let items;
 
-                if (!data.items || data.items.length === 0) {
+                // Vérifier le cache d'abord
+                if (acCache.has(q)) {
+                    items = acCache.get(q);
+                } else {
+                    const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+                    const data = await res.json();
+                    items = data.items || [];
+                    // Stocker en cache (max 200 entrées pour limiter la mémoire)
+                    if (acCache.size > 200) {
+                        const firstKey = acCache.keys().next().value;
+                        acCache.delete(firstKey);
+                    }
+                    acCache.set(q, items);
+                }
+
+                if (items.length === 0) {
                     dropdown.classList.remove('show'); return;
                 }
 
-                dropdown.innerHTML = data.items.map(item =>
+                dropdown.innerHTML = items.map(item =>
                     `<div class="ac-item" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
                 ).join('');
                 dropdown.classList.add('show');
