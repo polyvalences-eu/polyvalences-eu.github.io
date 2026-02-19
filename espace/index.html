@@ -621,6 +621,7 @@
             <li><a href="#dossiers" onclick="showSection('dossiers', this)" id="navDossiers" style="display:none"><i class="fas fa-folder-open"></i> Dossiers</a></li>
             <li><a href="#factures" onclick="showSection('factures', this)"><i class="fas fa-file-invoice-dollar"></i> Factures</a></li>
             <li><a href="#devis" onclick="showSection('devis', this)"><i class="fas fa-file-alt"></i> Devis</a></li>
+            <li><a href="#alertes" onclick="showSection('alertes', this)"><i class="fas fa-bell"></i> Alertes <span id="alertsBadge" style="font-size:10px; font-weight:700; padding:2px 8px; border-radius:6px; background:#dc262615; color:#dc2626; margin-left:auto; display:none;">0</span></a></li>
         </ul>
     </nav>
 
@@ -1068,7 +1069,17 @@
                 </div>
             </div>
         </div>
-
+        <!-- ALERTES -->
+        <div class="section-card" id="section-alertes">
+            <h2><i class="fas fa-bell" style="color:var(--amber); font-size:20px; margin-right:8px;"></i> Alertes</h2>
+            <p class="subtitle">Devis à valider, factures impayées et alertes véhicules au même endroit.</p>
+            <div id="alertesContent">
+                <div style="text-align:center; padding:40px; color:var(--slate-400);">
+                    <i class="fas fa-spinner fa-spin" style="font-size:24px; margin-bottom:12px; display:block;"></i>
+                    Chargement des alertes...
+                </div>
+            </div>
+        </div>
         <!-- ENTREPRISE -->
         <div class="section-card" id="section-entreprise">
             <h2>Mon Entreprise</h2>
@@ -1285,6 +1296,7 @@
         if (id === 'dossiers') loadFolders();
         if (id === 'factures') loadInvoices();
         if (id === 'devis') loadQuotes();
+        if (id === 'alertes') loadAlertes();
     }
 
     // ===== INIT =====
@@ -1329,6 +1341,8 @@
                 document.getElementById('charterModal').style.display = 'flex';
             }
 
+            // Load alertes badge
+            loadAlertes();
             // Show UI
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('pageHeader').style.display = '';
@@ -2851,7 +2865,7 @@ async function signCharter() {
                         <i class="fas fa-exclamation-circle" style="color:#dc2626; font-size:18px; flex-shrink:0;"></i>
                         <div style="flex:1;">
                             <div style="font-size:14px; font-weight:700; color:#dc2626;">${pending.length} facture${pending.length > 1 ? 's' : ''} en attente de paiement</div>
-                            <div style="font-size:13px; color:var(--slate-500);">Montant total : ${totalPending.toLocaleString('fr-FR', {minimumFractionDigits: 2})} € TTC</div>
+                            <div style="font-size:13px; color:var(--slate-500);">Montant total : ${totalPending.toLocaleString('fr-FR', {minimumFractionDigits: 2})} € Net à payer</div>
                         </div>
                     </div>`;
             }
@@ -2882,7 +2896,7 @@ async function signCharter() {
                         <div style="font-size:18px; font-weight:800; color:${inv.status === 'pending' ? '#dc2626' : 'var(--slate-900)'}; font-family:'Playfair Display',serif;">
                             ${inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €
                         </div>
-                        <div style="font-size:11px; color:var(--slate-400);">TTC</div>
+                        <div style="font-size:11px; color:var(--slate-400);">Net à payer</div>
                     </div>
                     <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:12px; flex-shrink:0;"></i>
                 </div>`;
@@ -3013,7 +3027,7 @@ async function signCharter() {
                                     <span style="font-size:13px; color:var(--slate-400);">0,00 €</span>
                                 </div>
                                 <div style="display:flex; justify-content:space-between; padding:10px 0;">
-                                    <span style="font-size:15px; font-weight:800; color:var(--slate-900);">Total TTC</span>
+                                    <span style="font-size:15px; font-weight:800; color:var(--slate-900);">Total Net à payer</span>
                                     <span style="font-size:15px; font-weight:800; color:var(--navy);">${inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</span>
                                 </div>
                             </div>
@@ -3890,6 +3904,186 @@ async function respondQuote(quoteId, action) {
         showToast('Erreur de connexion', 'error');
     }
 }
+
+// ===== ALERTES =====
+    async function loadAlertes() {
+        const container = document.getElementById('alertesContent');
+        let html = '';
+        let totalAlerts = 0;
+
+        try {
+            // 1. DEVIS EN ATTENTE DE RÉPONSE (status = validated)
+            const qRes = await fetch(API + '/api/quotes', { headers: { 'Authorization': 'Bearer ' + authToken } });
+            let pendingQuotes = [];
+            if (qRes.ok) {
+                const qData = await qRes.json();
+                pendingQuotes = (qData.quotes || []).filter(q => q.status === 'validated');
+            }
+
+            if (pendingQuotes.length > 0) {
+                totalAlerts += pendingQuotes.length;
+                html += `
+                    <div style="margin-bottom:24px;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                            <i class="fas fa-file-alt" style="color:var(--blue); font-size:14px;"></i>
+                            <span style="font-size:14px; font-weight:700; color:var(--slate-800);">Devis en attente de votre réponse</span>
+                            <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; background:var(--blue-pale); color:var(--blue);">${pendingQuotes.length}</span>
+                        </div>
+                        ${pendingQuotes.map(q => `
+                        <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:10px; border:1px solid #2563eb30; background:#2563eb08; margin-bottom:8px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='#2563eb12'" onmouseout="this.style.background='#2563eb08'" onclick="showSection('devis', document.querySelector('[href=\\'#devis\\']')); setTimeout(()=>openQuoteDetail(${q.id}), 200)">
+                            <div style="width:40px; height:40px; border-radius:10px; background:var(--blue-pale); display:flex; align-items:center; justify-content:center; color:var(--blue); font-size:16px; flex-shrink:0;">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <div style="flex:1; min-width:0;">
+                                <div style="font-size:14px; font-weight:700; color:var(--slate-900);">${q.quote_number}</div>
+                                <div style="font-size:12px; color:var(--slate-500);">${q.origin_address ? q.origin_address.split(',')[0] + ' → ' + (q.destination_address || '').split(',')[0] : 'Devis multi-services'}</div>
+                            </div>
+                            <div style="text-align:right; flex-shrink:0;">
+                                <div style="font-size:16px; font-weight:800; color:var(--blue);">${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</div>
+                            </div>
+                            <div style="background:var(--blue); color:white; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:700; flex-shrink:0;">
+                                Répondre <i class="fas fa-arrow-right" style="margin-left:4px; font-size:10px;"></i>
+                            </div>
+                        </div>`).join('')}
+                    </div>`;
+            }
+
+            // 2. FACTURES IMPAYÉES
+            const iRes = await fetch(API + '/api/invoices', { headers: { 'Authorization': 'Bearer ' + authToken } });
+            let unpaidInvoices = [];
+            if (iRes.ok) {
+                const iData = await iRes.json();
+                unpaidInvoices = (iData.invoices || []).filter(i => i.status === 'pending');
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+
+            if (unpaidInvoices.length > 0) {
+                totalAlerts += unpaidInvoices.length;
+                html += `
+                    <div style="margin-bottom:24px;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                            <i class="fas fa-file-invoice-dollar" style="color:var(--red); font-size:14px;"></i>
+                            <span style="font-size:14px; font-weight:700; color:var(--slate-800);">Factures en attente de paiement</span>
+                            <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; background:#dc262615; color:#dc2626;">${unpaidInvoices.length}</span>
+                        </div>
+                        ${unpaidInvoices.map(inv => {
+                            const isOverdue = inv.due_date && inv.due_date < today;
+                            return `
+                        <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:10px; border:1px solid ${isOverdue ? '#dc262630' : '#d9770630'}; background:${isOverdue ? '#dc262608' : '#d9770608'}; margin-bottom:8px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'" onclick="showSection('factures', document.querySelector('[href=\\'#factures\\']')); setTimeout(()=>openInvoiceDetail(${inv.id}), 200)">
+                            <div style="width:40px; height:40px; border-radius:10px; background:${isOverdue ? '#dc262615' : '#d9770615'}; display:flex; align-items:center; justify-content:center; color:${isOverdue ? '#dc2626' : '#d97706'}; font-size:16px; flex-shrink:0;">
+                                <i class="fas fa-${isOverdue ? 'exclamation-triangle' : 'clock'}"></i>
+                            </div>
+                            <div style="flex:1; min-width:0;">
+                                <div style="font-size:14px; font-weight:700; color:var(--slate-900);">${inv.invoice_number}</div>
+                                <div style="font-size:12px; color:var(--slate-500);">
+                                    ${inv.client_name} · Échéance ${formatDate(inv.due_date)}
+                                    ${isOverdue ? '<span style="color:#dc2626; font-weight:700;"> — EN RETARD</span>' : ''}
+                                </div>
+                            </div>
+                            <div style="font-size:16px; font-weight:800; color:${isOverdue ? '#dc2626' : '#d97706'}; flex-shrink:0;">
+                                ${inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €
+                            </div>
+                        </div>`;
+                        }).join('')}
+                    </div>`;
+            }
+
+            // 3. ALERTES VÉHICULES (CT, révision)
+            const vRes = await fetch(API + '/api/vehicles', { headers: { 'Authorization': 'Bearer ' + authToken } });
+            let vehicleAlerts = [];
+            if (vRes.ok) {
+                const vData = await vRes.json();
+                const vehicles = vData.vehicles || [];
+                const nowMs = Date.now();
+                const twoMonthsMs = 60 * 24 * 60 * 60 * 1000;
+
+                vehicles.forEach(v => {
+                    // CT expiré ou bientôt
+                    if (v.next_ct_date) {
+                        const ctDate = new Date(v.next_ct_date);
+                        const diff = ctDate.getTime() - nowMs;
+                        if (diff < 0) {
+                            vehicleAlerts.push({ vehicle: v, type: 'ct_expired', label: 'CT expiré', color: '#dc2626', icon: 'exclamation-triangle', detail: 'Échéance dépassée le ' + formatDate(v.next_ct_date) });
+                        } else if (diff < twoMonthsMs) {
+                            vehicleAlerts.push({ vehicle: v, type: 'ct_soon', label: 'CT bientôt', color: '#d97706', icon: 'clock', detail: 'Prochain CT le ' + formatDate(v.next_ct_date) });
+                        }
+                    }
+                    // Révision (basée sur km)
+                    if (v.mileage && v.last_service_km && v.service_interval_km) {
+                        const kmSince = v.mileage - v.last_service_km;
+                        if (kmSince >= v.service_interval_km) {
+                            vehicleAlerts.push({ vehicle: v, type: 'service_overdue', label: 'Révision dépassée', color: '#dc2626', icon: 'wrench', detail: kmSince.toLocaleString('fr-FR') + ' km depuis dernier entretien (intervalle : ' + v.service_interval_km.toLocaleString('fr-FR') + ' km)' });
+                        } else if (kmSince >= v.service_interval_km * 0.9) {
+                            vehicleAlerts.push({ vehicle: v, type: 'service_soon', label: 'Révision proche', color: '#d97706', icon: 'wrench', detail: kmSince.toLocaleString('fr-FR') + ' km depuis dernier entretien' });
+                        }
+                    }
+                    // Révision (basée sur date)
+                    if (v.last_service_date && v.service_interval_months) {
+                        const lastService = new Date(v.last_service_date);
+                        const nextService = new Date(lastService);
+                        nextService.setMonth(nextService.getMonth() + v.service_interval_months);
+                        const diff = nextService.getTime() - nowMs;
+                        if (diff < 0) {
+                            vehicleAlerts.push({ vehicle: v, type: 'service_date_overdue', label: 'Révision échue', color: '#dc2626', icon: 'calendar-times', detail: 'Prévue le ' + formatDate(nextService.toISOString().split('T')[0]) });
+                        } else if (diff < twoMonthsMs) {
+                            vehicleAlerts.push({ vehicle: v, type: 'service_date_soon', label: 'Révision prochaine', color: '#d97706', icon: 'calendar-times', detail: 'Prévue le ' + formatDate(nextService.toISOString().split('T')[0]) });
+                        }
+                    }
+                });
+            }
+
+            if (vehicleAlerts.length > 0) {
+                totalAlerts += vehicleAlerts.length;
+                html += `
+                    <div style="margin-bottom:24px;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                            <i class="fas fa-car" style="color:var(--amber); font-size:14px;"></i>
+                            <span style="font-size:14px; font-weight:700; color:var(--slate-800);">Alertes véhicules</span>
+                            <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; background:var(--amber-pale); color:var(--amber);">${vehicleAlerts.length}</span>
+                        </div>
+                        ${vehicleAlerts.map(a => `
+                        <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:10px; border:1px solid ${a.color}30; background:${a.color}08; margin-bottom:8px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'" onclick="showSection('vehicules', document.querySelector('[href=\\'#vehicules\\']')); setTimeout(()=>loadVehicleDetail(${a.vehicle.id}), 200)">
+                            <div style="width:40px; height:40px; border-radius:10px; background:${a.color}15; display:flex; align-items:center; justify-content:center; color:${a.color}; font-size:16px; flex-shrink:0;">
+                                <i class="fas fa-${a.icon}"></i>
+                            </div>
+                            <div style="flex:1; min-width:0;">
+                                <div style="font-size:14px; font-weight:700; color:var(--slate-900);">
+                                    ${a.vehicle.plate} <span style="font-weight:400; color:var(--slate-500);">${[a.vehicle.brand, a.vehicle.model].filter(Boolean).join(' ')}</span>
+                                </div>
+                                <div style="font-size:12px; color:var(--slate-500);">${a.detail}</div>
+                            </div>
+                            <span style="font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px; background:${a.color}15; color:${a.color}; white-space:nowrap;">${a.label}</span>
+                        </div>`).join('')}
+                    </div>`;
+            }
+
+            // NO ALERTS
+            if (totalAlerts === 0) {
+                html = `
+                    <div style="text-align:center; padding:48px 20px; color:var(--slate-400);">
+                        <i class="fas fa-check-circle" style="font-size:42px; margin-bottom:12px; display:block; color:var(--emerald);"></i>
+                        <p style="font-size:16px; font-weight:700; color:var(--emerald); margin-bottom:4px;">Tout est en ordre !</p>
+                        <p style="font-size:13px;">Aucun devis en attente, aucune facture impayée et aucune alerte véhicule.</p>
+                    </div>`;
+            }
+
+            // Update badge
+            const badge = document.getElementById('alertsBadge');
+            if (totalAlerts > 0) {
+                badge.textContent = totalAlerts;
+                badge.style.display = '';
+            } else {
+                badge.style.display = 'none';
+            }
+
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error('Load alertes failed:', err);
+            container.innerHTML = '<p style="color:var(--red); padding:20px;">Erreur de chargement des alertes.</p>';
+        }
+    }
 
     // ===== START =====
 init();
