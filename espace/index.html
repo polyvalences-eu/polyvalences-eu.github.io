@@ -1232,6 +1232,7 @@
     const API = 'https://api.polyvalences.eu';
     let authToken = localStorage.getItem('pv_token');
     let currentUser = null;
+    const acCache = new Map();
 
     // ===== TOAST =====
     function showToast(msg, type = 'success') {
@@ -2620,11 +2621,20 @@ async function deleteMaintenance(id) {
                 clearTimeout(acTimeout);
                 acTimeout = setTimeout(async () => {
                     try {
-                        const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
-                        const data = await res.json();
-                        if (!data.items || data.items.length === 0) { dropdown.classList.remove('show'); return; }
+                        let items;
+                        const cacheKey = q.toLowerCase();
+                        if (acCache.has(cacheKey)) {
+                            items = acCache.get(cacheKey);
+                        } else {
+                            const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+                            const data = await res.json();
+                            items = data.items || [];
+                            if (acCache.size > 200) { acCache.delete(acCache.keys().next().value); }
+                            acCache.set(cacheKey, items);
+                        }
+                        if (items.length === 0) { dropdown.classList.remove('show'); return; }
 
-                        dropdown.innerHTML = data.items.map(item =>
+                        dropdown.innerHTML = items.map(item =>
                             `<div class="ac-item" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
                         ).join('');
                         dropdown.classList.add('show');
@@ -2655,11 +2665,20 @@ async function deleteMaintenance(id) {
         clearTimeout(acTimeout);
         acTimeout = setTimeout(async () => {
             try {
-                const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
-                const data = await res.json();
-                if (!data.items || data.items.length === 0) { dropdown.classList.remove('show'); return; }
+                let items;
+                const cacheKey = q.toLowerCase();
+                if (acCache.has(cacheKey)) {
+                    items = acCache.get(cacheKey);
+                } else {
+                    const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+                    const data = await res.json();
+                    items = data.items || [];
+                    if (acCache.size > 200) { acCache.delete(acCache.keys().next().value); }
+                    acCache.set(cacheKey, items);
+                }
+                if (items.length === 0) { dropdown.classList.remove('show'); return; }
 
-                dropdown.innerHTML = data.items.map(item =>
+                dropdown.innerHTML = items.map(item =>
                     `<div class="ac-item" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
                 ).join('');
                 dropdown.classList.add('show');
