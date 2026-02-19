@@ -743,7 +743,7 @@
 
 <!-- ===== FOOTER ===== -->
 <footer class="footer">
-    &copy; 2026 PolyValences SAS &bull;
+    &copy; 2026 PolyValences.eu &bull;
     <a href="../mentions-legales">Mentions légales</a> &bull;
     <a href="../cgv">CGV</a>
 </footer>
@@ -939,8 +939,11 @@
         }
     }
 
+    let lastQuoteData = null;
+
     function displayQuoteResult(data) {
         const resultDiv = document.getElementById('quoteResult');
+        lastQuoteData = data;
 
         if (data.contact_required) {
             resultDiv.innerHTML = `
@@ -965,11 +968,9 @@
                          line.includes('Restitution') ? 'fa-sync-alt' :
                          line.includes('péage') ? 'fa-truck-pickup' :
                          line.includes('départ') || line.includes('arrivée') ? 'fa-train' : 'fa-tag';
-
             const parts = line.split(' : ');
             const label = parts[0];
             const price = parts[1] || '';
-
             detailsHtml += `<li><span class="label"><i class="fas ${icon}"></i> ${label}</span><span class="price">${price}</span></li>`;
         });
 
@@ -981,15 +982,107 @@
                     </div>
                     <span class="sim-result-grid-tag">Grille ${data.grid}</span>
                 </div>
-                <div class="sim-result-price-wrap">
-                    <div class="sim-result-price">${data.amount.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</div>
+                <div class="sim-result-price-wrap" id="priceWrap">
+                    <div class="sim-result-price" id="totalPrice">${data.amount.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</div>
                     <div class="sim-result-price-note">TTC — Devis valable 30 jours</div>
                 </div>
-                <ul class="sim-result-details">
+                <ul class="sim-result-details" id="detailsList">
                     ${detailsHtml}
                 </ul>
-                <button class="sim-result-cta" onclick="alert('Fonctionnalité disponible prochainement. Contactez-nous pour confirmer ce devis.')">
-                    <i class="fas fa-check-circle"></i> Confirmer ce devis
+
+                <!-- COMPLEMENTS -->
+                <div style="margin-top:20px; padding-top:20px; border-top:2px solid var(--slate-100);">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                        <div style="width:32px; height:32px; border-radius:8px; background:#dbeafe; display:flex; align-items:center; justify-content:center; color:var(--blue); font-size:14px;">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:15px; font-weight:700; color:var(--slate-800);">Prestations complémentaires</div>
+                            <div style="font-size:12px; color:var(--slate-400);">Optionnel — ajoutez des services à votre demande</div>
+                        </div>
+                    </div>
+
+                    <!-- Stationnement -->
+                    <div style="background:var(--slate-50); padding:14px 16px; border-radius:var(--radius); border:1px solid var(--slate-100); margin-bottom:8px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleComplement('stationnement')">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" class="sim-checkbox" id="cbStationnement" onclick="event.stopPropagation(); toggleComplement('stationnement')">
+                                <div>
+                                    <div style="font-size:14px; font-weight:600; color:var(--slate-700);"><i class="fas fa-parking" style="color:var(--blue); margin-right:6px;"></i>Stationnement</div>
+                                    <div style="font-size:12px; color:var(--slate-400);">5 € / jour / véhicule</div>
+                                </div>
+                            </div>
+                            <span id="stationnementPrice" style="font-size:14px; font-weight:700; color:var(--slate-300);">—</span>
+                        </div>
+                        <div id="stationnementDetails" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--slate-200);">
+                            <label style="font-size:12px; font-weight:600; color:var(--slate-500);">Nombre de jours</label>
+                            <input type="number" id="stationnementJours" min="1" value="1" style="width:100%; margin-top:4px; padding:10px 14px; border:2px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif; outline:none;" oninput="updateComplementTotal()">
+                        </div>
+                    </div>
+
+                    <!-- Lavage -->
+                    <div style="background:var(--slate-50); padding:14px 16px; border-radius:var(--radius); border:1px solid var(--slate-100); margin-bottom:8px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleComplement('lavage')">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" class="sim-checkbox" id="cbLavage" onclick="event.stopPropagation(); toggleComplement('lavage')">
+                                <div>
+                                    <div style="font-size:14px; font-weight:600; color:var(--slate-700);"><i class="fas fa-shower" style="color:var(--blue); margin-right:6px;"></i>Lavage</div>
+                                    <div style="font-size:12px; color:var(--slate-400);">Simple 40 € / Complet 120 €</div>
+                                </div>
+                            </div>
+                            <span id="lavagePrice" style="font-size:14px; font-weight:700; color:var(--slate-300);">—</span>
+                        </div>
+                        <div id="lavageDetails" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--slate-200);">
+                            <div style="display:flex; gap:8px;">
+                                <div onclick="selectLavage('simple')" id="lavageSimple" style="flex:1; padding:12px; border-radius:8px; border:2px solid var(--blue); background:#dbeafe15; text-align:center; cursor:pointer; transition:all 0.15s;">
+                                    <div style="font-size:14px; font-weight:700; color:var(--blue);">Simple</div>
+                                    <div style="font-size:12px; color:var(--slate-500);">Aspirateur + lavage auto</div>
+                                    <div style="font-size:16px; font-weight:800; color:var(--slate-800); margin-top:4px;">40 €</div>
+                                </div>
+                                <div onclick="selectLavage('complet')" id="lavageComplet" style="flex:1; padding:12px; border-radius:8px; border:2px solid var(--slate-200); text-align:center; cursor:pointer; transition:all 0.15s;">
+                                    <div style="font-size:14px; font-weight:700; color:var(--slate-600);">Complet</div>
+                                    <div style="font-size:12px; color:var(--slate-500);">Nettoyage approfondi</div>
+                                    <div style="font-size:16px; font-weight:800; color:var(--slate-800); margin-top:4px;">120 €</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conciergerie -->
+                    <div style="background:var(--slate-50); padding:14px 16px; border-radius:var(--radius); border:1px solid var(--slate-100); margin-bottom:8px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleComplement('conciergerie')">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" class="sim-checkbox" id="cbConciergerie" onclick="event.stopPropagation(); toggleComplement('conciergerie')">
+                                <div>
+                                    <div style="font-size:14px; font-weight:600; color:var(--slate-700);"><i class="fas fa-tools" style="color:var(--blue); margin-right:6px;"></i>Conciergerie technique</div>
+                                    <div style="font-size:12px; color:var(--slate-400);">Acheminement partenaire — 80 € / trajet</div>
+                                </div>
+                            </div>
+                            <span id="conciergeriePrice" style="font-size:14px; font-weight:700; color:var(--slate-300);">—</span>
+                        </div>
+                        <div id="conciergerieDetails" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--slate-200);">
+                            <div style="padding:10px 14px; background:#fef3c7; border-radius:8px; margin-bottom:8px;">
+                                <div style="font-size:12px; font-weight:600; color:#92400e;"><i class="fas fa-info-circle" style="margin-right:4px;"></i> Zone Paris / Île-de-France Ouest uniquement</div>
+                                <div style="font-size:11px; color:#a16207; margin-top:2px;">CT, réparations, entretien via notre réseau partenaire. Sans avance de frais.</div>
+                            </div>
+                            <label style="font-size:12px; font-weight:600; color:var(--slate-500);">Nombre de trajets</label>
+                            <input type="number" id="conciergerieTrajets" min="1" value="1" style="width:100%; margin-top:4px; padding:10px 14px; border:2px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif; outline:none;" oninput="updateComplementTotal()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECAP TOTAL -->
+                <div style="margin-top:20px; padding:20px; background:var(--slate-50); border-radius:var(--radius); border:1px solid var(--slate-100);" id="recapBlock">
+                    <div style="font-size:12px; font-weight:700; color:var(--slate-400); text-transform:uppercase; margin-bottom:10px;">Récapitulatif</div>
+                    <div id="recapLines"></div>
+                    <div style="display:flex; justify-content:space-between; padding-top:12px; border-top:2px solid var(--slate-200); margin-top:10px;">
+                        <span style="font-size:16px; font-weight:800; color:var(--slate-900);">Total estimé</span>
+                        <span style="font-size:20px; font-weight:800; color:#16a34a; font-family:'Playfair Display',serif;" id="recapTotal">${data.amount.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</span>
+                    </div>
+                </div>
+
+                <button class="sim-result-cta" style="margin-top:16px;" onclick="submitQuote()">
+                    <i class="fas fa-paper-plane"></i> Envoyer ma demande de devis
                 </button>
                 <button class="sim-result-secondary" onclick="resetSimulator()">
                     <i class="fas fa-redo"></i> Nouveau calcul
@@ -998,6 +1091,209 @@
 
         resultDiv.classList.add('show');
         resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        updateComplementTotal();
+    }
+
+    let selectedLavage = 'simple';
+
+    function toggleComplement(type) {
+        const cb = document.getElementById('cb' + type.charAt(0).toUpperCase() + type.slice(1));
+        const details = document.getElementById(type + 'Details');
+        // If called from the row click (not checkbox click), toggle the checkbox
+        if (!event || event.target.type !== 'checkbox') {
+            cb.checked = !cb.checked;
+        }
+        details.style.display = cb.checked ? 'block' : 'none';
+        updateComplementTotal();
+    }
+
+    function selectLavage(type) {
+        selectedLavage = type;
+        const simple = document.getElementById('lavageSimple');
+        const complet = document.getElementById('lavageComplet');
+        if (type === 'simple') {
+            simple.style.borderColor = 'var(--blue)';
+            simple.style.background = '#dbeafe15';
+            complet.style.borderColor = 'var(--slate-200)';
+            complet.style.background = 'transparent';
+        } else {
+            complet.style.borderColor = 'var(--blue)';
+            complet.style.background = '#dbeafe15';
+            simple.style.borderColor = 'var(--slate-200)';
+            simple.style.background = 'transparent';
+        }
+        updateComplementTotal();
+    }
+
+    function updateComplementTotal() {
+        if (!lastQuoteData) return;
+
+        let total = lastQuoteData.amount;
+        let lines = [`<div style="display:flex; justify-content:space-between; padding:4px 0; font-size:13px;"><span style="color:var(--slate-600);"><i class="fas fa-road" style="color:var(--slate-400); margin-right:6px; width:14px;"></i>Convoyage ${lastQuoteData.grid}</span><span style="font-weight:600;">${lastQuoteData.amount.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</span></div>`];
+
+        // Stationnement
+        const statPriceEl = document.getElementById('stationnementPrice');
+        if (document.getElementById('cbStationnement') && document.getElementById('cbStationnement').checked) {
+            const jours = parseInt(document.getElementById('stationnementJours').value) || 1;
+            const montant = jours * 5;
+            total += montant;
+            statPriceEl.style.color = 'var(--slate-800)';
+            statPriceEl.textContent = montant.toLocaleString('fr-FR') + ' €';
+            lines.push(`<div style="display:flex; justify-content:space-between; padding:4px 0; font-size:13px;"><span style="color:var(--slate-600);"><i class="fas fa-parking" style="color:var(--slate-400); margin-right:6px; width:14px;"></i>Stationnement (${jours}j)</span><span style="font-weight:600;">${montant.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</span></div>`);
+        } else if (statPriceEl) {
+            statPriceEl.style.color = 'var(--slate-300)';
+            statPriceEl.textContent = '—';
+        }
+
+        // Lavage
+        const lavPriceEl = document.getElementById('lavagePrice');
+        if (document.getElementById('cbLavage') && document.getElementById('cbLavage').checked) {
+            const montant = selectedLavage === 'complet' ? 120 : 40;
+            const label = selectedLavage === 'complet' ? 'Lavage complet' : 'Lavage simple';
+            total += montant;
+            lavPriceEl.style.color = 'var(--slate-800)';
+            lavPriceEl.textContent = montant.toLocaleString('fr-FR') + ' €';
+            lines.push(`<div style="display:flex; justify-content:space-between; padding:4px 0; font-size:13px;"><span style="color:var(--slate-600);"><i class="fas fa-shower" style="color:var(--slate-400); margin-right:6px; width:14px;"></i>${label}</span><span style="font-weight:600;">${montant.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</span></div>`);
+        } else if (lavPriceEl) {
+            lavPriceEl.style.color = 'var(--slate-300)';
+            lavPriceEl.textContent = '—';
+        }
+
+        // Conciergerie
+        const concPriceEl = document.getElementById('conciergeriePrice');
+        if (document.getElementById('cbConciergerie') && document.getElementById('cbConciergerie').checked) {
+            const trajets = parseInt(document.getElementById('conciergerieTrajets').value) || 1;
+            const montant = trajets * 80;
+            total += montant;
+            concPriceEl.style.color = 'var(--slate-800)';
+            concPriceEl.textContent = montant.toLocaleString('fr-FR') + ' €';
+            lines.push(`<div style="display:flex; justify-content:space-between; padding:4px 0; font-size:13px;"><span style="color:var(--slate-600);"><i class="fas fa-tools" style="color:var(--slate-400); margin-right:6px; width:14px;"></i>Conciergerie (${trajets} trajet${trajets > 1 ? 's' : ''})</span><span style="font-weight:600;">${montant.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</span></div>`);
+        } else if (concPriceEl) {
+            concPriceEl.style.color = 'var(--slate-300)';
+            concPriceEl.textContent = '—';
+        }
+
+        document.getElementById('recapLines').innerHTML = lines.join('');
+        document.getElementById('recapTotal').textContent = total.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+        document.getElementById('totalPrice').textContent = total.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+    }
+
+    async function submitQuote() {
+        if (!lastQuoteData || !originData || !destData) return;
+
+        const quoteLines = [];
+
+        // Ligne convoyage
+        quoteLines.push({
+            type: 'convoyage',
+            description: 'Convoyage ' + originData.address + ' → ' + destData.address + ' (' + lastQuoteData.distance_km + ' km, grille ' + lastQuoteData.grid + ')' + (lastQuoteData.restitution ? ' — Restitution' : '') + (lastQuoteData.peage ? ' — Péage cl.2' : ''),
+            quantity: 1,
+            unit: 'Ens.',
+            unit_price: lastQuoteData.amount
+        });
+
+        // Stationnement
+        if (document.getElementById('cbStationnement').checked) {
+            const jours = parseInt(document.getElementById('stationnementJours').value) || 1;
+            quoteLines.push({
+                type: 'stationnement',
+                description: 'Stationnement véhicule — ' + jours + ' jour' + (jours > 1 ? 's' : ''),
+                quantity: jours,
+                unit: 'Jour',
+                unit_price: 5
+            });
+        }
+
+        // Lavage
+        if (document.getElementById('cbLavage').checked) {
+            const isComplet = selectedLavage === 'complet';
+            quoteLines.push({
+                type: isComplet ? 'lavage_complet' : 'lavage_simple',
+                description: isComplet ? 'Lavage complet (nettoyage approfondi)' : 'Lavage simple (aspirateur + lavage auto)',
+                quantity: 1,
+                unit: 'Ens.',
+                unit_price: isComplet ? 120 : 40
+            });
+        }
+
+        // Conciergerie
+        if (document.getElementById('cbConciergerie').checked) {
+            const trajets = parseInt(document.getElementById('conciergerieTrajets').value) || 1;
+            quoteLines.push({
+                type: 'conciergerie',
+                description: 'Conciergerie technique — Acheminement partenaire (' + trajets + ' trajet' + (trajets > 1 ? 's' : '') + ')',
+                quantity: trajets,
+                unit: 'Trajet',
+                unit_price: 80
+            });
+        }
+
+        const btn = document.querySelector('.sim-result-cta');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+        try {
+            const res = await fetch(API + '/api/quotes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify({
+                    origin_address: originData.address,
+                    origin_lat: originData.lat,
+                    origin_lng: originData.lng,
+                    destination_address: destData.address,
+                    destination_lat: destData.lat,
+                    destination_lng: destData.lng,
+                    distance_km: lastQuoteData.distance_km,
+                    duration_minutes: lastQuoteData.duration_minutes,
+                    grid: lastQuoteData.grid,
+                    restitution: lastQuoteData.restitution,
+                    peage: lastQuoteData.peage,
+                    lines: quoteLines
+                })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                showToast(data.error || 'Erreur lors de l\'envoi du devis.');
+                return;
+            }
+
+            // Success
+            document.getElementById('quoteResult').innerHTML = `
+                <div class="sim-result-card" style="border-top-color: #16a34a;">
+                    <div style="text-align:center; padding:24px 0;">
+                        <div style="width:64px; height:64px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:28px; color:#16a34a;">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div style="font-size:20px; font-weight:800; color:var(--slate-900); margin-bottom:8px;">Demande envoyée !</div>
+                        <div style="font-size:14px; color:var(--slate-500); line-height:1.6;">
+                            Votre devis <strong style="color:var(--blue);">${data.quote_number}</strong> a été transmis.<br>
+                            Nous le validerons rapidement et vous pourrez l'accepter depuis votre espace client.
+                        </div>
+                        <div style="margin-top:20px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                            <a href="../espace/" style="display:inline-flex; align-items:center; gap:6px; padding:12px 24px; background:var(--navy); color:white; border-radius:var(--radius); font-size:14px; font-weight:700; text-decoration:none; transition:all 0.2s;">
+                                <i class="fas fa-th-large"></i> Mon Espace
+                            </a>
+                            <button onclick="resetSimulator()" style="padding:12px 24px; background:transparent; border:1px solid var(--slate-200); border-radius:var(--radius); font-size:14px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif;">
+                                <i class="fas fa-redo"></i> Nouveau devis
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+
+        } catch (err) {
+            console.error('Submit quote failed:', err);
+            showToast('Erreur de connexion. Réessayez.');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer ma demande de devis';
+            }
+        }
     }
 
     function resetSimulator() {
