@@ -311,6 +311,26 @@
         </div>
     </div>
 
+    <!-- STATS QUOTES -->
+    <div class="stats-row" id="statsQuotesRow">
+        <div class="stat-card">
+            <div class="stat-card-label">Devis à valider</div>
+            <div class="stat-card-value pending" id="statQuotesPending">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-label">Devis validés (en attente client)</div>
+            <div class="stat-card-value" style="color:var(--blue);" id="statQuotesValidated">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-label">Devis acceptés</div>
+            <div class="stat-card-value active" id="statQuotesAccepted">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-label">Total devis</div>
+            <div class="stat-card-value" id="statQuotesTotal">0</div>
+        </div>
+    </div>
+
     <!-- PENDING USERS -->
     <div class="section-header">
         <h2>
@@ -327,6 +347,40 @@
             <i class="fas fa-check-circle"></i>
             <p>Aucun compte en attente de validation.</p>
         </div>
+    </div>
+
+<!-- QUOTES SECTION -->
+    <div style="margin-top:40px;">
+        <div class="section-header">
+            <h2>
+                <i class="fas fa-file-alt" style="color:var(--blue)"></i>
+                Devis à valider
+                <span class="count" id="quotesCount" style="background:var(--blue-pale); color:var(--blue);">0</span>
+            </h2>
+            <div style="display:flex; gap:8px;">
+                <select id="quotesFilter" onchange="loadAdminQuotes()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                    <option value="submitted">En attente</option>
+                    <option value="validated">Validés</option>
+                    <option value="accepted">Acceptés</option>
+                    <option value="refused">Refusés</option>
+                    <option value="all">Tous</option>
+                </select>
+                <button class="btn-refresh" onclick="loadAdminQuotes()">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+            </div>
+        </div>
+        <div class="table-card" id="adminQuotesList">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                Chargement des devis...
+            </div>
+        </div>
+    </div>
+
+    <!-- QUOTE DETAIL (hidden) -->
+    <div id="quoteDetailWrap" style="display:none; margin-top:24px;">
+        <div class="table-card" style="padding:28px;" id="quoteDetailContent"></div>
     </div>
 
 </main>
@@ -386,6 +440,7 @@
 
             loadPending();
             loadStats();
+            loadAdminQuotes();
 
         } catch (err) {
             console.error('Admin check failed:', err);
@@ -519,6 +574,313 @@
             showToast('Erreur de connexion', 'error');
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-check"></i> Valider';
+        }
+    }
+
+    // ===== ADMIN QUOTES =====
+    let adminQuotesData = [];
+
+    function formatDate(d) {
+        if (!d) return '—';
+        const parts = d.split('-');
+        if (parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+        return d;
+    }
+
+    async function loadAdminQuotes() {
+        const container = document.getElementById('adminQuotesList');
+        const filter = document.getElementById('quotesFilter').value;
+        document.getElementById('quoteDetailWrap').style.display = 'none';
+
+        try {
+            const res = await fetch(API + '/api/admin/quotes', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de chargement.</p></div>'; return; }
+            const data = await res.json();
+            adminQuotesData = data.quotes || [];
+
+            // Stats
+            const submitted = adminQuotesData.filter(q => q.status === 'submitted').length;
+            const validated = adminQuotesData.filter(q => q.status === 'validated').length;
+            const accepted = adminQuotesData.filter(q => q.status === 'accepted').length;
+            document.getElementById('statQuotesPending').textContent = submitted;
+            document.getElementById('statQuotesValidated').textContent = validated;
+            document.getElementById('statQuotesAccepted').textContent = accepted;
+            document.getElementById('statQuotesTotal').textContent = adminQuotesData.length;
+
+            // Filter
+            let filtered = adminQuotesData;
+            if (filter !== 'all') {
+                filtered = adminQuotesData.filter(q => q.status === filter);
+            }
+            document.getElementById('quotesCount').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle" style="color:var(--emerald)"></i>
+                        <p>Aucun devis ${filter === 'submitted' ? 'en attente' : filter === 'all' ? '' : 'dans cette catégorie'}.</p>
+                    </div>`;
+                return;
+            }
+
+            const statusConf = {
+                'submitted': { label: 'En attente', color: '#d97706', bg: '#d9770615', icon: 'clock' },
+                'validated': { label: 'Validé', color: '#2563eb', bg: '#2563eb15', icon: 'paper-plane' },
+                'accepted': { label: 'Accepté', color: '#059669', bg: '#05966915', icon: 'check-circle' },
+                'refused': { label: 'Refusé', color: '#dc2626', bg: '#dc262615', icon: 'times-circle' },
+                'invoiced': { label: 'Facturé', color: '#059669', bg: '#05966915', icon: 'file-invoice-dollar' },
+                'cancelled': { label: 'Annulé', color: '#94a3b8', bg: '#94a3b815', icon: 'ban' }
+            };
+
+            container.innerHTML = filtered.map(q => {
+                const st = statusConf[q.status] || statusConf['submitted'];
+                const date = q.created_at ? formatDate(q.created_at.substring(0, 10)) : '—';
+                const route = q.origin_address
+                    ? (q.origin_address.split(',')[0] + ' → ' + (q.destination_address || '').split(',')[0])
+                    : '';
+
+                return `
+                <div class="user-card" style="cursor:pointer;" onclick="openAdminQuoteDetail(${q.id})">
+                    <div class="user-avatar" style="background:${st.bg}; color:${st.color};">
+                        <i class="fas fa-${st.icon}"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">
+                            ${q.quote_number}
+                            <span class="type-badge" style="background:${st.bg}; color:${st.color};">${st.label}</span>
+                        </div>
+                        <div class="user-email">${q.client_name || '—'} · ${q.client_email || ''}</div>
+                        <div class="user-details">
+                            <span><i class="fas fa-calendar"></i> ${date}</span>
+                            ${route ? '<span><i class="fas fa-route"></i> ' + route + '</span>' : ''}
+                            ${q.distance_km ? '<span><i class="fas fa-road"></i> ' + q.distance_km + ' km · Grille ' + (q.grid || '') + '</span>' : ''}
+                        </div>
+                    </div>
+                    <div style="text-align:right; flex-shrink:0;">
+                        <div style="font-size:20px; font-weight:800; color:var(--slate-900);">
+                            ${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:12px; flex-shrink:0;"></i>
+                </div>`;
+            }).join('');
+
+        } catch (err) {
+            console.error('Load quotes failed:', err);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de connexion.</p></div>';
+        }
+    }
+
+    async function openAdminQuoteDetail(quoteId) {
+        const wrap = document.getElementById('quoteDetailWrap');
+        const container = document.getElementById('quoteDetailContent');
+        wrap.style.display = '';
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+        wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        try {
+            const res = await fetch(API + '/api/admin/quotes/' + quoteId, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<p style="color:var(--red);">Erreur.</p>'; return; }
+            const data = await res.json();
+            const q = data.quote;
+            const lines = data.lines || [];
+            const history = data.logs || [];
+
+            const statusConf = {
+                'submitted': { label: 'En attente de validation admin', color: '#d97706', bg: '#d9770610' },
+                'validated': { label: 'Validé — en attente réponse client', color: '#2563eb', bg: '#2563eb10' },
+                'accepted': { label: 'Accepté par le client', color: '#059669', bg: '#05966910' },
+                'refused': { label: 'Refusé par le client', color: '#dc2626', bg: '#dc262610' },
+                'invoiced': { label: 'Facturé', color: '#059669', bg: '#05966910' },
+                'cancelled': { label: 'Annulé', color: '#94a3b8', bg: '#94a3b810' }
+            };
+            const st = statusConf[q.status] || statusConf['submitted'];
+
+            const typeLabels = {
+                'convoyage': 'Convoyage', 'stationnement': 'Stationnement',
+                'lavage_simple': 'Lavage simple', 'lavage_complet': 'Lavage complet',
+                'conciergerie': 'Conciergerie'
+            };
+            const unitLabels = {
+                'forfait': 'Forfait', 'jour': 'Jour(s)', 'trajet': 'Trajet(s)', 'km': 'Km'
+            };
+
+            let html = `
+                <button onclick="document.getElementById('quoteDetailWrap').style.display='none'" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:6px; margin-bottom:16px;">
+                    <i class="fas fa-arrow-left" style="font-size:11px;"></i> Retour à la liste
+                </button>
+
+                <!-- STATUS -->
+                <div style="padding:14px 18px; border-radius:12px; background:${st.bg}; border:1px solid ${st.color}30; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-${q.status === 'accepted' ? 'check-circle' : q.status === 'validated' ? 'paper-plane' : 'clock'}" style="color:${st.color}; font-size:20px;"></i>
+                    <span style="font-size:15px; font-weight:700; color:${st.color};">${st.label}</span>
+                </div>
+
+                <!-- HEADER -->
+                <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; margin-bottom:24px;">
+                    <div>
+                        <div style="font-size:22px; font-weight:800; color:var(--navy); margin-bottom:4px;">${q.quote_number}</div>
+                        <div style="font-size:13px; color:var(--slate-500);">Créé le ${formatDate(q.created_at ? q.created_at.substring(0, 10) : '')}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:28px; font-weight:800; color:var(--navy);">
+                            ${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
+                        </div>
+                        <div style="font-size:12px; color:var(--slate-400);">Montant HT</div>
+                    </div>
+                </div>
+
+                <!-- CLIENT -->
+                <div style="padding:16px 18px; background:var(--slate-50); border-radius:10px; margin-bottom:20px;">
+                    <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase; margin-bottom:6px;">Client</div>
+                    <div style="font-size:15px; font-weight:700; color:var(--slate-900);">${q.client_name || '—'}</div>
+                    ${q.client_email ? '<div style="font-size:13px; color:var(--slate-500);">' + q.client_email + '</div>' : ''}
+                    ${q.client_phone ? '<div style="font-size:13px; color:var(--slate-500);"><i class="fas fa-phone" style="font-size:11px; margin-right:4px;"></i>' + q.client_phone + '</div>' : ''}
+                    ${q.client_siret ? '<div style="font-size:12px; color:var(--slate-400); margin-top:4px;">SIRET : ' + q.client_siret + '</div>' : ''}
+                </div>`;
+
+            // Trajet
+            if (q.origin_address || q.destination_address) {
+                html += `
+                <div style="padding:16px 18px; background:var(--slate-50); border-radius:10px; margin-bottom:20px;">
+                    <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase; margin-bottom:8px;">Trajet</div>
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:150px;">
+                            <div style="font-size:12px; color:var(--slate-400);">Départ</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--slate-800);">${q.origin_address || '—'}</div>
+                        </div>
+                        <i class="fas fa-long-arrow-alt-right" style="color:var(--blue); font-size:16px;"></i>
+                        <div style="flex:1; min-width:150px;">
+                            <div style="font-size:12px; color:var(--slate-400);">Arrivée</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--slate-800);">${q.destination_address || '—'}</div>
+                        </div>
+                    </div>
+                    ${q.distance_km ? '<div style="font-size:12px; color:var(--slate-400); margin-top:8px;"><i class="fas fa-route" style="margin-right:4px;"></i>' + q.distance_km + ' km · Grille ' + (q.grid || '') + '</div>' : ''}
+                </div>`;
+            }
+
+            // Lines
+            html += `
+                <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
+                    <thead>
+                        <tr style="background:var(--navy); color:white;">
+                            <th style="padding:10px 12px; text-align:left; border-radius:8px 0 0 0; font-weight:600;">Prestation</th>
+                            <th style="padding:10px 12px; text-align:center; font-weight:600;">Qté</th>
+                            <th style="padding:10px 12px; text-align:center; font-weight:600;">Unité</th>
+                            <th style="padding:10px 12px; text-align:right; font-weight:600;">P.U.</th>
+                            <th style="padding:10px 12px; text-align:right; border-radius:0 8px 0 0; font-weight:600;">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${lines.map(l => `
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 12px;">
+                                <div style="font-weight:600; color:var(--slate-800);">${typeLabels[l.type] || l.type}</div>
+                                ${l.description ? '<div style="font-size:12px; color:var(--slate-400);">' + l.description + '</div>' : ''}
+                            </td>
+                            <td style="padding:10px 12px; text-align:center;">${l.quantity}</td>
+                            <td style="padding:10px 12px; text-align:center; color:var(--slate-500);">${unitLabels[l.unit] || l.unit}</td>
+                            <td style="padding:10px 12px; text-align:right;">${l.unit_price.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</td>
+                            <td style="padding:10px 12px; text-align:right; font-weight:700;">${l.amount_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+
+                <!-- TOTAL -->
+                <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
+                    <div style="min-width:220px; padding:12px 16px; background:var(--slate-50); border-radius:10px;">
+                        <div style="display:flex; justify-content:space-between; padding:6px 0;">
+                            <span style="font-size:15px; font-weight:800; color:var(--slate-900);">Total HT</span>
+                            <span style="font-size:15px; font-weight:800; color:var(--navy);">${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
+                        </div>
+                    </div>
+                </div>`;
+
+            // VALIDATE ACTION (only if submitted)
+            if (q.status === 'submitted') {
+                html += `
+                <div style="padding:20px; background:var(--amber-pale); border:1px solid #fde68a; border-radius:12px; margin-bottom:20px;">
+                    <div style="font-size:14px; font-weight:700; color:#92400e; margin-bottom:12px;">
+                        <i class="fas fa-gavel" style="margin-right:6px;"></i> Valider ce devis
+                    </div>
+                    <div style="font-size:13px; color:#92400e; margin-bottom:16px;">
+                        En validant, le client recevra un email et pourra accepter ou refuser le devis depuis son espace.
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:6px;">Notes admin (optionnel — visible par le client)</label>
+                        <textarea id="adminNotes" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--slate-200); border-radius:10px; font-size:14px; font-family:'DM Sans',sans-serif; resize:vertical; outline:none;" placeholder="Ex : Devis valable 30 jours, véhicule à récupérer au parking B2..."></textarea>
+                    </div>
+                    <button onclick="validateQuote(${q.id})" id="btnValidateQuote" style="background:var(--emerald); color:white; border:none; padding:12px 28px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px; transition:all 0.2s;">
+                        <i class="fas fa-check"></i> Valider et notifier le client
+                    </button>
+                </div>`;
+            }
+
+            // History
+            if (history.length > 0) {
+                const hLabels = {
+                    'submitted': 'Demande créée',
+                    'validated': 'Validé par PolyValences',
+                    'accepted': 'Accepté par le client',
+                    'refused': 'Refusé par le client',
+                    'invoiced': 'Facturé',
+                    'cancelled': 'Annulé'
+                };
+                html += `
+                <div style="padding-top:16px; border-top:1px solid var(--slate-200);">
+                    <div style="font-size:12px; font-weight:700; color:var(--slate-400); text-transform:uppercase; margin-bottom:10px;">Historique</div>
+                    ${history.map(h => `
+                    <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--slate-50);">
+                        <div style="width:8px; height:8px; border-radius:50%; background:var(--blue); flex-shrink:0;"></div>
+                        <span style="font-size:13px; font-weight:600; color:var(--slate-700);">${hLabels[h.new_status] || h.new_status}</span>
+                        ${h.note ? '<span style="font-size:12px; color:var(--slate-400);">· ' + h.note + '</span>' : ''}
+                        <span style="margin-left:auto; font-size:12px; color:var(--slate-400);">${h.changed_at ? formatDate(h.changed_at.substring(0, 10)) : ''}</span>
+                    </div>`).join('')}
+                </div>`;
+            }
+
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error('Quote detail failed:', err);
+            container.innerHTML = '<p style="color:var(--red);">Erreur de connexion.</p>';
+        }
+    }
+
+    async function validateQuote(quoteId) {
+        const btn = document.getElementById('btnValidateQuote');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validation en cours...';
+
+        try {
+            const res = await fetch(API + '/api/admin/quotes/' + quoteId + '/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify({
+                    admin_notes: document.getElementById('adminNotes').value.trim() || null
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Devis validé — email envoyé au client !');
+                openAdminQuoteDetail(quoteId);
+                loadAdminQuotes();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Valider et notifier le client';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Valider et notifier le client';
         }
     }
 
