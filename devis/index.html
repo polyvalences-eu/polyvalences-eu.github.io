@@ -984,7 +984,7 @@
                 </div>
                 <div class="sim-result-price-wrap" id="priceWrap">
                     <div class="sim-result-price" id="totalPrice">${data.amount.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</div>
-                    <div class="sim-result-price-note">TTC — Devis valable 30 jours</div>
+                    <div class="sim-result-price-note">Net à payer — Devis valable 30 jours</div>
                 </div>
                 <ul class="sim-result-details" id="detailsList">
                     ${detailsHtml}
@@ -1078,6 +1078,33 @@
                     <div style="display:flex; justify-content:space-between; padding-top:12px; border-top:2px solid var(--slate-200); margin-top:10px;">
                         <span style="font-size:16px; font-weight:800; color:var(--slate-900);">Total estimé</span>
                         <span style="font-size:20px; font-weight:800; color:#16a34a; font-family:'Playfair Display',serif;" id="recapTotal">${data.amount.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</span>
+                    </div>
+                </div>
+
+            <!-- DATES SOUHAITÉES -->
+                <div style="margin-top:20px; padding:20px; background:#f0fdf4; border-radius:var(--radius); border:1px solid #bbf7d0;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+                        <div style="width:32px; height:32px; border-radius:8px; background:#dcfce7; display:flex; align-items:center; justify-content:center; color:#059669; font-size:14px;">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:15px; font-weight:700; color:var(--slate-800);">Dates souhaitées de convoyage</div>
+                            <div style="font-size:12px; color:var(--slate-500);">Proposez jusqu'à 3 dates pour accélérer le traitement</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; color:#059669; text-transform:uppercase; letter-spacing:0.03em;">Date 1 <span style="color:#dc2626;">*</span></label>
+                            <input type="date" id="prefDate1" required style="width:100%; margin-top:4px; padding:12px 14px; border:2px solid #bbf7d0; border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif; outline:none; background:white; color:var(--slate-800); transition:all 0.2s;" onfocus="this.style.borderColor='#059669'; this.style.boxShadow='0 0 0 4px rgba(5,150,105,0.1)'" onblur="this.style.borderColor='#bbf7d0'; this.style.boxShadow='none'">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; color:var(--slate-400); text-transform:uppercase; letter-spacing:0.03em;">Date 2 <span style="font-weight:400; text-transform:none;">(optionnel)</span></label>
+                            <input type="date" id="prefDate2" style="width:100%; margin-top:4px; padding:12px 14px; border:2px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif; outline:none; background:white; color:var(--slate-800); transition:all 0.2s;" onfocus="this.style.borderColor='var(--blue)'; this.style.boxShadow='0 0 0 4px rgba(37,99,235,0.1)'" onblur="this.style.borderColor='var(--slate-200)'; this.style.boxShadow='none'">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; color:var(--slate-400); text-transform:uppercase; letter-spacing:0.03em;">Date 3 <span style="font-weight:400; text-transform:none;">(optionnel)</span></label>
+                            <input type="date" id="prefDate3" style="width:100%; margin-top:4px; padding:12px 14px; border:2px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif; outline:none; background:white; color:var(--slate-800); transition:all 0.2s;" onfocus="this.style.borderColor='var(--blue)'; this.style.boxShadow='0 0 0 4px rgba(37,99,235,0.1)'" onblur="this.style.borderColor='var(--slate-200)'; this.style.boxShadow='none'">
+                        </div>
                     </div>
                 </div>
 
@@ -1181,6 +1208,13 @@
     async function submitQuote() {
         if (!lastQuoteData || !originData || !destData) return;
 
+        const date1 = document.getElementById('prefDate1').value;
+        if (!date1) {
+            showToast('Veuillez indiquer au moins une date souhaitée de convoyage.');
+            document.getElementById('prefDate1').focus();
+            return;
+        }
+
         const quoteLines = [];
 
         // Ligne convoyage
@@ -1251,7 +1285,10 @@
                     grid: lastQuoteData.grid,
                     restitution: lastQuoteData.restitution,
                     peage: lastQuoteData.peage,
-                    lines: quoteLines
+                    lines: quoteLines,
+                    preferred_date_1: document.getElementById('prefDate1').value || null,
+                    preferred_date_2: document.getElementById('prefDate2').value || null,
+                    preferred_date_3: document.getElementById('prefDate3').value || null
                 })
             });
 
