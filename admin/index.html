@@ -378,6 +378,56 @@
         </div>
     </div>
 
+    <!-- INVOICES SECTION -->
+    <div style="margin-top:40px;">
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-card-label">Factures impayées</div>
+                <div class="stat-card-value pending" id="statInvPending">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">En retard</div>
+                <div class="stat-card-value" style="color:var(--red);" id="statInvOverdue">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Payées</div>
+                <div class="stat-card-value active" id="statInvPaid">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">CA total HT</div>
+                <div class="stat-card-value" id="statInvTotal">0 €</div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>
+                <i class="fas fa-file-invoice-dollar" style="color:var(--emerald)"></i>
+                Factures
+                <span class="count" id="invoicesCount" style="background:var(--emerald-pale); color:var(--emerald);">0</span>
+            </h2>
+            <div style="display:flex; gap:8px;">
+                <select id="invoicesFilter" onchange="loadAdminInvoices()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                    <option value="pending">Impayées</option>
+                    <option value="overdue">En retard</option>
+                    <option value="paid">Payées</option>
+                    <option value="cancelled">Annulées</option>
+                    <option value="all">Toutes</option>
+                </select>
+                <button class="btn-refresh" onclick="loadAdminInvoices()">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+            </div>
+        </div>
+        <div class="table-card" id="adminInvoicesList">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
+        </div>
+    </div>
+
+    <!-- INVOICE DETAIL (hidden) -->
+    <div id="invoiceDetailWrap" style="display:none; margin-top:24px;">
+        <div class="table-card" style="padding:28px;" id="invoiceDetailContent"></div>
+    </div>
+
     <!-- QUOTE DETAIL (hidden) -->
     <div id="quoteDetailWrap" style="display:none; margin-top:24px;">
         <div class="table-card" style="padding:28px;" id="quoteDetailContent"></div>
@@ -441,6 +491,7 @@
             loadPending();
             loadStats();
             loadAdminQuotes();
+            loadAdminInvoices();
 
         } catch (err) {
             console.error('Admin check failed:', err);
@@ -882,6 +933,282 @@
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-check"></i> Valider et notifier le client';
         }
+    }
+    // ===== ADMIN INVOICES =====
+    let adminInvoicesData = [];
+
+    async function loadAdminInvoices() {
+        const container = document.getElementById('adminInvoicesList');
+        const filter = document.getElementById('invoicesFilter').value;
+        document.getElementById('invoiceDetailWrap').style.display = 'none';
+
+        try {
+            const res = await fetch(API + '/api/admin/invoices', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur.</p></div>'; return; }
+            const data = await res.json();
+            adminInvoicesData = data.invoices || [];
+
+            const today = new Date().toISOString().split('T')[0];
+
+            // Stats
+            const pending = adminInvoicesData.filter(i => i.status === 'pending');
+            const overdue = pending.filter(i => i.due_date && i.due_date < today);
+            const paid = adminInvoicesData.filter(i => i.status === 'paid');
+            const caTotal = paid.reduce((s, i) => s + (i.total_ht || 0), 0);
+
+            document.getElementById('statInvPending').textContent = pending.length;
+            document.getElementById('statInvOverdue').textContent = overdue.length;
+            document.getElementById('statInvPaid').textContent = paid.length;
+            document.getElementById('statInvTotal').textContent = caTotal.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+
+            // Filter
+            let filtered = adminInvoicesData;
+            if (filter === 'pending') filtered = pending.filter(i => !i.due_date || i.due_date >= today);
+            else if (filter === 'overdue') filtered = overdue;
+            else if (filter === 'paid') filtered = paid;
+            else if (filter === 'cancelled') filtered = adminInvoicesData.filter(i => i.status === 'cancelled');
+            else filtered = adminInvoicesData; // all
+
+            document.getElementById('invoicesCount').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--emerald)"></i><p>Aucune facture dans cette catégorie.</p></div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(inv => {
+                const isOverdue = inv.status === 'pending' && inv.due_date && inv.due_date < today;
+                const isPaid = inv.status === 'paid';
+                const isCancelled = inv.status === 'cancelled';
+
+                let stColor = '#d97706', stBg = '#d9770615', stLabel = 'Impayée', stIcon = 'clock';
+                if (isOverdue) { stColor = '#dc2626'; stBg = '#dc262615'; stLabel = 'En retard'; stIcon = 'exclamation-triangle'; }
+                if (isPaid) { stColor = '#059669'; stBg = '#05966915'; stLabel = 'Payée'; stIcon = 'check-circle'; }
+                if (isCancelled) { stColor = '#94a3b8'; stBg = '#94a3b815'; stLabel = 'Annulée'; stIcon = 'ban'; }
+
+                const dueStr = inv.due_date ? inv.due_date.split('-').reverse().join('/') : '—';
+                const reminderInfo = inv.reminder_count ? '<span style="color:var(--amber);"><i class="fas fa-bell"></i> ' + inv.reminder_count + ' relance(s)</span>' : '';
+
+                return `
+                <div class="user-card" style="cursor:pointer;" onclick="openAdminInvoiceDetail(${inv.id})">
+                    <div class="user-avatar" style="background:${stBg}; color:${stColor};">
+                        <i class="fas fa-${stIcon}"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">
+                            ${inv.invoice_number}
+                            <span class="type-badge" style="background:${stBg}; color:${stColor};">${stLabel}</span>
+                        </div>
+                        <div class="user-email">${inv.client_name || '—'} · ${inv.client_email || ''}</div>
+                        <div class="user-details">
+                            <span><i class="fas fa-calendar"></i> Échéance : ${dueStr}</span>
+                            ${inv.notes ? '<span><i class="fas fa-link"></i> ' + inv.notes.substring(0, 50) + '</span>' : ''}
+                            ${reminderInfo}
+                        </div>
+                    </div>
+                    <div style="text-align:right; flex-shrink:0;">
+                        <div style="font-size:20px; font-weight:800; color:var(--slate-900);">
+                            ${inv.total_ht ? inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:12px; flex-shrink:0;"></i>
+                </div>`;
+            }).join('');
+
+        } catch (err) {
+            console.error('Load invoices failed:', err);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de connexion.</p></div>';
+        }
+    }
+
+    async function openAdminInvoiceDetail(invoiceId) {
+        const wrap = document.getElementById('invoiceDetailWrap');
+        const container = document.getElementById('invoiceDetailContent');
+        wrap.style.display = '';
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+        wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        try {
+            const res = await fetch(API + '/api/invoices/' + invoiceId, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<p style="color:var(--red);">Erreur.</p>'; return; }
+            const data = await res.json();
+            const inv = data.invoice;
+            const lines = data.lines || [];
+
+            const today = new Date().toISOString().split('T')[0];
+            const isOverdue = inv.status === 'pending' && inv.due_date && inv.due_date < today;
+            const isPaid = inv.status === 'paid';
+
+            let stLabel, stColor, stBg;
+            if (isPaid) { stLabel = 'Payée' + (inv.paid_at ? ' le ' + inv.paid_at.split('-').reverse().join('/') : ''); stColor = '#059669'; stBg = '#05966910'; }
+            else if (isOverdue) { stLabel = 'En retard — échéance dépassée depuis le ' + inv.due_date.split('-').reverse().join('/'); stColor = '#dc2626'; stBg = '#dc262610'; }
+            else { stLabel = 'En attente de paiement — échéance le ' + (inv.due_date ? inv.due_date.split('-').reverse().join('/') : '—'); stColor = '#d97706'; stBg = '#d9770610'; }
+
+            const unitLabels = { 'forfait': 'Forfait', 'jour': 'Jour(s)', 'trajet': 'Trajet(s)', 'km': 'Km', 'Ens.': 'Ens.' };
+
+            let html = `
+                <button onclick="document.getElementById('invoiceDetailWrap').style.display='none'" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:6px; margin-bottom:16px;">
+                    <i class="fas fa-arrow-left" style="font-size:11px;"></i> Retour
+                </button>
+
+                <div style="padding:14px 18px; border-radius:12px; background:${stBg}; border:1px solid ${stColor}30; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-${isPaid ? 'check-circle' : isOverdue ? 'exclamation-triangle' : 'clock'}" style="color:${stColor}; font-size:20px;"></i>
+                    <span style="font-size:15px; font-weight:700; color:${stColor};">${stLabel}</span>
+                    ${inv.reminder_count ? '<span style="margin-left:auto; font-size:12px; color:var(--slate-400);"><i class="fas fa-bell"></i> ' + inv.reminder_count + ' relance(s) envoyée(s)</span>' : ''}
+                </div>
+
+                <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; margin-bottom:24px;">
+                    <div>
+                        <div style="font-size:22px; font-weight:800; color:var(--navy);">${inv.invoice_number}</div>
+                        <div style="font-size:13px; color:var(--slate-500);">Émise le ${inv.issued_at ? inv.issued_at.split('-').reverse().join('/') : '—'}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:28px; font-weight:800; color:var(--navy);">${inv.total_ht ? inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</div>
+                        <div style="font-size:12px; color:var(--slate-400);">Montant HT</div>
+                    </div>
+                </div>
+
+                <div style="padding:16px 18px; background:var(--slate-50); border-radius:10px; margin-bottom:20px;">
+                    <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase; margin-bottom:6px;">Client</div>
+                    <div style="font-size:15px; font-weight:700; color:var(--slate-900);">${inv.client_name || '—'}</div>
+                    ${inv.client_email ? '<div style="font-size:13px; color:var(--slate-500);">' + inv.client_email + '</div>' : ''}
+                    ${inv.client_siret ? '<div style="font-size:12px; color:var(--slate-400); margin-top:4px;">SIRET : ' + inv.client_siret + '</div>' : ''}
+                </div>
+
+                <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
+                    <thead>
+                        <tr style="background:var(--navy); color:white;">
+                            <th style="padding:10px 12px; text-align:left; border-radius:8px 0 0 0; font-weight:600;">Description</th>
+                            <th style="padding:10px 12px; text-align:center; font-weight:600;">Qté</th>
+                            <th style="padding:10px 12px; text-align:center; font-weight:600;">Unité</th>
+                            <th style="padding:10px 12px; text-align:right; font-weight:600;">P.U.</th>
+                            <th style="padding:10px 12px; text-align:right; border-radius:0 8px 0 0; font-weight:600;">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${lines.map(l => `
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 12px;">
+                                <div style="font-weight:600; color:var(--slate-800);">${l.description}</div>
+                                ${l.sub_description ? '<div style="font-size:12px; color:var(--blue);">' + l.sub_description + '</div>' : ''}
+                            </td>
+                            <td style="padding:10px 12px; text-align:center;">${l.quantity}</td>
+                            <td style="padding:10px 12px; text-align:center; color:var(--slate-500);">${unitLabels[l.unit] || l.unit}</td>
+                            <td style="padding:10px 12px; text-align:right;">${l.unit_price.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</td>
+                            <td style="padding:10px 12px; text-align:right; font-weight:700;">${l.amount_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+
+                <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
+                    <div style="min-width:220px; padding:12px 16px; background:var(--slate-50); border-radius:10px;">
+                        <div style="display:flex; justify-content:space-between; padding:6px 0;">
+                            <span style="font-size:15px; font-weight:800;">Total HT</span>
+                            <span style="font-size:15px; font-weight:800; color:var(--navy);">${inv.total_ht ? inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                ${inv.notes ? '<div style="padding:12px 16px; background:var(--slate-50); border-radius:10px; margin-bottom:20px; font-size:13px; color:var(--slate-600);"><i class="fas fa-info-circle" style="margin-right:6px; color:var(--slate-400);"></i>' + inv.notes + '</div>' : ''}`;
+
+            // ACTION BUTTONS (only if pending)
+            if (inv.status === 'pending') {
+                html += `
+                <div style="display:flex; gap:12px; flex-wrap:wrap; padding-top:16px; border-top:1px solid var(--slate-200);">
+                    <button onclick="markInvoicePaid(${inv.id})" id="btnMarkPaid" style="background:var(--emerald); color:white; border:none; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-check"></i> Marquer payée
+                    </button>
+                    <button onclick="sendInvoiceReminder(${inv.id})" id="btnRemind" style="background:${isOverdue ? 'var(--red)' : 'var(--amber)'}; color:white; border:none; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-bell"></i> ${isOverdue ? 'Relance retard' : 'Envoyer rappel'}
+                    </button>
+                    <button onclick="cancelInvoiceAdmin(${inv.id})" style="background:none; border:1px solid var(--slate-200); color:var(--slate-500); padding:12px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-ban"></i> Annuler
+                    </button>
+                </div>`;
+            }
+
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error('Invoice detail failed:', err);
+            container.innerHTML = '<p style="color:var(--red);">Erreur de connexion.</p>';
+        }
+    }
+
+    async function markInvoicePaid(invoiceId) {
+        const btn = document.getElementById('btnMarkPaid');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> En cours...';
+        try {
+            const res = await fetch(API + '/api/admin/invoices/' + invoiceId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ status: 'paid' })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Facture marquée comme payée !');
+                openAdminInvoiceDetail(invoiceId);
+                loadAdminInvoices();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Marquer payée';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Marquer payée';
+        }
+    }
+
+    async function sendInvoiceReminder(invoiceId) {
+        const btn = document.getElementById('btnRemind');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+        try {
+            const res = await fetch(API + '/api/admin/invoices/' + invoiceId + '/remind', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Relance envoyée !');
+                openAdminInvoiceDetail(invoiceId);
+                loadAdminInvoices();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-bell"></i> Envoyer rappel';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-bell"></i> Envoyer rappel';
+        }
+    }
+
+    async function cancelInvoiceAdmin(invoiceId) {
+        if (!confirm('Annuler cette facture ?')) return;
+        try {
+            const res = await fetch(API + '/api/admin/invoices/' + invoiceId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ status: 'cancelled' })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Facture annulée.');
+                openAdminInvoiceDetail(invoiceId);
+                loadAdminInvoices();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) { showToast('Erreur de connexion', 'error'); }
     }
 
     // ===== INIT =====
