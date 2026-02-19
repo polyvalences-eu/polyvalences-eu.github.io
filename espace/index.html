@@ -3571,15 +3571,15 @@ async function loadQuotes() {
 
         container.innerHTML = quotesData.map(q => {
             const statusConf = {
-                'pending': { label: 'En attente', color: '#d97706', bg: '#d9770615', icon: 'clock' },
-                'sent': { label: 'Devis envoyé', color: '#2563eb', bg: '#2563eb15', icon: 'paper-plane' },
+                'submitted': { label: 'En attente', color: '#d97706', bg: '#d9770615', icon: 'clock' },
+                'validated': { label: 'Devis validé', color: '#2563eb', bg: '#2563eb15', icon: 'paper-plane' },
                 'accepted': { label: 'Accepté', color: '#059669', bg: '#05966915', icon: 'check-circle' },
                 'refused': { label: 'Refusé', color: '#dc2626', bg: '#dc262615', icon: 'times-circle' },
                 'invoiced': { label: 'Facturé', color: '#059669', bg: '#05966915', icon: 'file-invoice-dollar' },
                 'cancelled': { label: 'Annulé', color: '#94a3b8', bg: '#94a3b815', icon: 'ban' }
             };
             const st = statusConf[q.status] || statusConf['pending'];
-            const date = q.created_at ? formatDate(q.created_at.split('T')[0] || q.created_at.split(' ')[0]) : '—';
+            const date = q.created_at ? formatDate(q.created_at.substring(0, 10)) : '—';
 
             // Résumé des lignes
             const linesSummary = (q.lines || []).map(l => {
@@ -3610,7 +3610,7 @@ async function loadQuotes() {
                 </div>
                 <div style="text-align:right; flex-shrink:0;">
                     <div style="font-size:18px; font-weight:800; color:var(--slate-900); font-family:'Playfair Display',serif;">
-                        ${q.total_amount ? q.total_amount.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
+                        ${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
                     </div>
                     <div style="font-size:11px; color:var(--slate-400);">estimé</div>
                 </div>
@@ -3640,11 +3640,11 @@ async function openQuoteDetail(quoteId) {
         const data = await res.json();
         const q = data.quote;
         const lines = data.lines || [];
-        const history = data.status_history || [];
+        const history = data.logs || [];
 
         const statusConf = {
-            'pending': { label: 'En attente de validation', color: '#d97706', bg: '#d9770610' },
-            'sent': { label: 'Devis envoyé — en attente de votre réponse', color: '#2563eb', bg: '#2563eb10' },
+            'submitted': { label: 'En attente de validation', color: '#d97706', bg: '#d9770610' },
+            'validated': { label: 'Devis validé — en attente de votre réponse', color: '#2563eb', bg: '#2563eb10' },
             'accepted': { label: 'Accepté', color: '#059669', bg: '#05966910' },
             'refused': { label: 'Refusé', color: '#dc2626', bg: '#dc262610' },
             'invoiced': { label: 'Facturé', color: '#059669', bg: '#05966910' },
@@ -3688,12 +3688,12 @@ async function openQuoteDetail(quoteId) {
                         <div>
                             <div style="font-size:22px; font-weight:800; color:var(--navy); font-family:'Playfair Display',serif; margin-bottom:4px;">${q.quote_number}</div>
                             <div style="font-size:13px; color:var(--slate-500);">
-                                Demandé le ${formatDate(q.created_at ? q.created_at.split('T')[0] || q.created_at.split(' ')[0] : '')}
+                                Demandé le ${formatDate(q.created_at ? q.created_at.substring(0, 10) : '')}
                             </div>
                         </div>
                         <div style="text-align:right;">
                             <div style="font-size:28px; font-weight:800; color:var(--navy); font-family:'Playfair Display',serif;">
-                                ${q.total_amount ? q.total_amount.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
+                                ${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
                             </div>
                             <div style="font-size:12px; color:var(--slate-400);">Montant estimé TTC</div>
                         </div>
@@ -3751,7 +3751,7 @@ async function openQuoteDetail(quoteId) {
                         <div style="min-width:220px; padding:12px 16px; background:var(--slate-50); border-radius:10px;">
                             <div style="display:flex; justify-content:space-between; padding:6px 0;">
                                 <span style="font-size:15px; font-weight:800; color:var(--slate-900);">Total</span>
-                                <span style="font-size:15px; font-weight:800; color:var(--navy);">${q.total_amount ? q.total_amount.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
+                                <span style="font-size:15px; font-weight:800; color:var(--navy);">${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
                             </div>
                         </div>
                     </div>`;
@@ -3766,7 +3766,7 @@ async function openQuoteDetail(quoteId) {
         }
 
         // ACTION BUTTONS (seulement si statut = sent)
-        if (q.status === 'sent') {
+        if (q.status === 'validated') {
             html += `
                     <div style="display:flex; gap:12px; padding-top:16px; border-top:1px solid var(--slate-200); flex-wrap:wrap;">
                         <button onclick="respondQuote(${q.id}, 'accepted')" class="btn-primary" style="flex:1; justify-content:center; padding:14px; background:var(--emerald); font-size:15px;">
@@ -3797,7 +3797,7 @@ async function openQuoteDetail(quoteId) {
                                 <div style="width:8px; height:8px; border-radius:50%; background:var(--blue); flex-shrink:0;"></div>
                                 <span style="font-size:13px; font-weight:600; color:var(--slate-700);">${hLabels[h.new_status] || h.new_status}</span>
                                 ${h.note ? '<span style="font-size:12px; color:var(--slate-400);">· ' + h.note + '</span>' : ''}
-                                <span style="margin-left:auto; font-size:12px; color:var(--slate-400);">${h.changed_at ? formatDate(h.changed_at.split('T')[0] || h.changed_at.split(' ')[0]) : ''}</span>
+                                <span style="margin-left:auto; font-size:12px; color:var(--slate-400);">${h.changed_at ? formatDate(h.changed_at.substring(0, 10)) : ''}</span>
                             </div>`;
                         }).join('')}
                     </div>`;
@@ -3820,10 +3820,11 @@ async function respondQuote(quoteId, action) {
     if (!confirm('Voulez-vous ' + verb + ' ce devis ?')) return;
 
     try {
-        const res = await fetch(API + '/api/quotes/' + quoteId + '/respond', {
+        const endpoint = action === 'accepted' ? '/accept' : '/refuse';
+        const res = await fetch(API + '/api/quotes/' + quoteId + endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-            body: JSON.stringify({ action: action })
+            body: JSON.stringify({ reason: action === 'refused' ? 'Refusé par le client' : null })
         });
         const data = await res.json();
         if (res.ok && data.success) {
