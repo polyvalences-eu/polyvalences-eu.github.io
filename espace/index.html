@@ -3098,12 +3098,161 @@ async function signCharter() {
     }
 
     function viewFolderVehicles(folderId, folderName) {
-        // Basculer vers l'onglet véhicules avec filtre dossier
-        showSection('vehicules', document.querySelector('.sidebar-nav a[href="#vehicules"]'));
-        // On stocke le filtre et on recharge
-        window._folderFilter = folderId;
-        window._folderFilterName = folderName;
-        loadVehicles();
+        loadFolderDetail(folderId);
+    }
+
+    async function loadFolderDetail(folderId) {
+        const container = document.getElementById('foldersList');
+        const folder = foldersData.find(f => f.id === folderId);
+        if (!folder) return;
+
+        // Load all vehicles
+        let allVehicles = [];
+        try {
+            const res = await fetch(API + '/api/vehicles', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                allVehicles = data.vehicles || [];
+            }
+        } catch (e) {}
+
+        const inFolder = allVehicles.filter(v => v.folder_id === folderId);
+        const unclassified = allVehicles.filter(v => !v.folder_id);
+        const manager = folder.manager_first_name ? folder.manager_first_name + ' ' + folder.manager_last_name : null;
+
+        // --- HEADER ---
+        let html = `
+            <div style="margin-bottom:20px;">
+                <button onclick="loadFolders()" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:6px; margin-bottom:12px;">
+                    <i class="fas fa-arrow-left" style="font-size:11px;"></i> Tous les dossiers
+                </button>
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                    <div style="width:44px; height:44px; border-radius:10px; background:var(--blue-pale); display:flex; align-items:center; justify-content:center; color:var(--blue); font-size:18px; flex-shrink:0;">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:20px; font-weight:800; color:var(--slate-900); font-family:'Playfair Display',serif;">${folder.name}</div>
+                        <div style="font-size:13px; color:var(--slate-400);">
+                            ${manager ? '<i class="fas fa-user" style="margin-right:3px; font-size:10px;"></i> Gestionnaire : ' + manager + ' · ' : ''}
+                            ${inFolder.length} véhicule${inFolder.length > 1 ? 's' : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        // --- VEHICULES DANS CE DOSSIER ---
+        html += `
+            <div style="margin-bottom:28px;">
+                <div style="font-size:14px; font-weight:700; color:var(--slate-700); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-car" style="color:var(--blue); font-size:12px;"></i> Véhicules dans ce dossier
+                    <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; background:var(--blue-pale); color:var(--blue);">${inFolder.length}</span>
+                </div>`;
+
+        if (inFolder.length > 0) {
+            html += `<div style="border:1px solid var(--slate-100); border-radius:var(--radius); overflow:hidden;">`;
+            inFolder.forEach(v => {
+                const sc = statusClass(v.status);
+                const label = statusLabels[v.status] || v.status;
+                const desc = [v.brand, v.model].filter(Boolean).join(' ') || '—';
+                const assign = v.current_assignment;
+                html += `
+                <div style="display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--slate-50); flex-wrap:wrap;" onmouseover="this.style.background='var(--slate-50)'" onmouseout="this.style.background='white'">
+                    <div style="width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;" class="vehicle-icon ${sc}"><i class="fas fa-car"></i></div>
+                    <div style="min-width:90px;">
+                        <div style="font-size:14px; font-weight:700; color:var(--slate-900); letter-spacing:0.5px;">${v.plate}</div>
+                        <div style="font-size:12px; color:var(--slate-500);">${desc}</div>
+                    </div>
+                    <div style="font-size:12px; color:var(--slate-400); flex:1; min-width:100px;">
+                        ${v.location ? '<i class="fas fa-map-marker-alt" style="margin-right:3px; font-size:10px;"></i>' + v.location : '—'}
+                    </div>
+                    <span class="vehicle-status-badge ${sc}" style="font-size:11px;">${label}</span>
+                    <div style="font-size:12px; color:var(--slate-500); min-width:100px;">
+                        ${assign ? '<i class="fas fa-user" style="margin-right:3px; font-size:10px;"></i>' + assign.assigned_to : '<span style="color:var(--slate-300);">Non affecté</span>'}
+                    </div>
+                    <button onclick="quickTransfer(${v.id}, null, 'Retiré du dossier ${folder.name.replace(/'/g, "\\'")}', ${folderId})" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 12px; font-size:12px; font-weight:600; color:var(--red); cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:4px; white-space:nowrap; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--red)';this.style.background='#fef2f2'" onmouseout="this.style.borderColor='var(--slate-200)';this.style.background='none'">
+                        <i class="fas fa-times" style="font-size:10px;"></i> Retirer
+                    </button>
+                </div>`;
+            });
+            html += `</div>`;
+        } else {
+            html += `
+                <div style="padding:24px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">
+                    Aucun véhicule dans ce dossier. Ajoutez-en depuis la liste ci-dessous.
+                </div>`;
+        }
+        html += `</div>`;
+
+        // --- VEHICULES NON CLASSÉS ---
+        html += `
+            <div>
+                <div style="font-size:14px; font-weight:700; color:var(--slate-700); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-inbox" style="color:var(--slate-400); font-size:12px;"></i> Véhicules non classés — à ajouter
+                    <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; background:var(--slate-100); color:var(--slate-500);">${unclassified.length}</span>
+                </div>`;
+
+        if (unclassified.length > 0) {
+            html += `<div style="border:1px solid var(--slate-100); border-radius:var(--radius); overflow:hidden;">`;
+            unclassified.forEach(v => {
+                const sc = statusClass(v.status);
+                const label = statusLabels[v.status] || v.status;
+                const desc = [v.brand, v.model].filter(Boolean).join(' ') || '—';
+                const assign = v.current_assignment;
+                html += `
+                <div style="display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--slate-50); flex-wrap:wrap;" onmouseover="this.style.background='var(--slate-50)'" onmouseout="this.style.background='white'">
+                    <div style="width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;" class="vehicle-icon ${sc}"><i class="fas fa-car"></i></div>
+                    <div style="min-width:90px;">
+                        <div style="font-size:14px; font-weight:700; color:var(--slate-900); letter-spacing:0.5px;">${v.plate}</div>
+                        <div style="font-size:12px; color:var(--slate-500);">${desc}</div>
+                    </div>
+                    <div style="font-size:12px; color:var(--slate-400); flex:1; min-width:100px;">
+                        ${v.location ? '<i class="fas fa-map-marker-alt" style="margin-right:3px; font-size:10px;"></i>' + v.location : '—'}
+                    </div>
+                    <span class="vehicle-status-badge ${sc}" style="font-size:11px;">${label}</span>
+                    <div style="font-size:12px; color:var(--slate-500); min-width:100px;">
+                        ${assign ? '<i class="fas fa-user" style="margin-right:3px; font-size:10px;"></i>' + assign.assigned_to : '<span style="color:var(--slate-300);">Non affecté</span>'}
+                    </div>
+                    <button onclick="quickTransfer(${v.id}, ${folderId}, 'Ajouté au dossier ${folder.name.replace(/'/g, "\\'")}', ${folderId})" style="background:none; border:1px solid var(--emerald); border-radius:8px; padding:6px 12px; font-size:12px; font-weight:600; color:var(--emerald); cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:4px; white-space:nowrap; transition:all 0.15s;" onmouseover="this.style.background='var(--emerald-pale)'" onmouseout="this.style.background='none'">
+                        <i class="fas fa-plus" style="font-size:10px;"></i> Ajouter
+                    </button>
+                </div>`;
+            });
+            html += `</div>`;
+        } else {
+            html += `
+                <div style="padding:24px; border:1px dashed var(--slate-200); border-radius:10px; text-align:center; color:var(--slate-400); font-size:13px;">
+                    Tous vos véhicules sont déjà dans un dossier.
+                </div>`;
+        }
+        html += `</div>`;
+
+        container.innerHTML = html;
+    }
+
+    async function quickTransfer(vehicleId, toFolderId, note, reloadFolderId) {
+        try {
+            const res = await fetch(API + '/api/vehicles/' + vehicleId + '/transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ to_folder_id: toFolderId, note: note })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message);
+                // Refresh folder counts
+                try {
+                    const fRes = await fetch(API + '/api/folders', { headers: { 'Authorization': 'Bearer ' + authToken } });
+                    if (fRes.ok) { const fData = await fRes.json(); foldersData = fData.folders || []; }
+                } catch (e) {}
+                loadFolderDetail(reloadFolderId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
     }
 
     // ===== START =====
