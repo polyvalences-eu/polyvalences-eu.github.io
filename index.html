@@ -1801,6 +1801,13 @@
                 return;
             }
 
+            // Bloquer les chauffeurs sur l'espace client
+            if (data.user && data.user.role === 'driver') {
+                localStorage.setItem('pv_token', data.token);
+                window.location.href = '/driver/espace/';
+                return;
+            }
+
             authToken = data.token;
             currentUser = data.user;
             localStorage.setItem('pv_token', authToken);
@@ -2264,6 +2271,11 @@
             });
             if (res.ok) {
                 const data = await res.json();
+                // Rediriger les chauffeurs vers leur espace
+                if (data.user.role === 'driver') {
+                    window.location.href = '/driver/espace/';
+                    return;
+                }
                 currentUser = data.user;
                 setNavConnected(data.user);
             } else {
