@@ -779,6 +779,10 @@
             const validated = adminQuotesData.filter(q => q.status === 'validated').length;
             const accepted = adminQuotesData.filter(q => q.status === 'accepted').length;
             document.getElementById('statQuotesPending').textContent = submitted;
+            // Badge onglet devis
+            const badgeQ = document.getElementById('tabBadgeQuotes');
+            if (submitted > 0) { badgeQ.textContent = submitted; badgeQ.style.display = 'inline'; }
+            else { badgeQ.style.display = 'none'; }
             document.getElementById('statQuotesValidated').textContent = validated;
             document.getElementById('statQuotesAccepted').textContent = accepted;
             document.getElementById('statQuotesTotal').textContent = adminQuotesData.length;
@@ -1815,7 +1819,36 @@
                             ${doc.status === 'approved' ? 'Validé' : doc.status === 'rejected' ? 'Rejeté' : 'En attente'}
                         </span>
                     </div>`).join('')}
-                </div>`;
+                </div>
+
+                <!-- ACTIONS REVIEW -->
+                ${d.driver_status !== 'approved' ? `
+                <div style="padding:16px 18px; background:var(--blue-pale); border:1px solid #93c5fd; border-radius:10px; margin-bottom:20px;">
+                    <div style="font-size:13px; font-weight:700; color:#1e40af; margin-bottom:12px;">
+                        <i class="fas fa-gavel" style="margin-right:4px;"></i> Actions
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button onclick="reviewDriver(${driverId},'approve')" style="background:var(--emerald); color:white; border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
+                            <i class="fas fa-check"></i> Approuver
+                        </button>
+                        <button onclick="reviewDriver(${driverId},'request_documents')" style="background:var(--amber); color:white; border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
+                            <i class="fas fa-file-upload"></i> Demander docs
+                        </button>
+                        <button onclick="reviewDriver(${driverId},'reject')" style="background:var(--red); color:white; border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
+                            <i class="fas fa-times"></i> Refuser
+                        </button>
+                    </div>
+                </div>` : `
+                <div style="padding:16px 18px; background:var(--emerald-pale); border:1px solid #6ee7b7; border-radius:10px; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div style="font-size:13px; font-weight:700; color:#047857;">
+                            <i class="fas fa-check-circle" style="margin-right:4px;"></i> Chauffeur validé
+                        </div>
+                        <button onclick="reviewDriver(${driverId},'suspend')" style="background:none; border:1px solid var(--red); color:var(--red); padding:8px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
+                            <i class="fas fa-ban"></i> Suspendre
+                        </button>
+                    </div>
+                </div>`}`;
 
             container.innerHTML = html;
 
@@ -1836,6 +1869,31 @@
             if (res.ok && data.success) {
                 showToast(data.message || 'Score mis à jour !');
                 openDriverDetail(driverId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) { showToast('Erreur de connexion', 'error'); }
+    }
+
+    async function reviewDriver(driverId, action) {
+        let note = null;
+        if (['reject', 'request_documents', 'suspend'].includes(action)) {
+            note = prompt(action === 'request_documents' ? 'Quels documents manquent ?' : action === 'reject' ? 'Motif du refus (optionnel) :' : 'Motif de suspension (optionnel) :');
+            if (note === null) return; // Annulé
+        }
+        if (action === 'approve' && !confirm('Approuver ce chauffeur ?')) return;
+
+        try {
+            const res = await fetch(API + '/api/admin/drivers/' + driverId + '/review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ action, note: note || null })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Action effectuée !');
+                openDriverDetail(driverId);
+                loadAdminDrivers();
             } else {
                 showToast(data.error || 'Erreur', 'error');
             }
