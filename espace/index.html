@@ -3677,7 +3677,7 @@ async function openQuoteDetail(quoteId) {
                 <div style="padding:14px 18px; border-radius:12px; background:${st.bg}; border:1px solid ${st.color}30; margin-bottom:20px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                     <i class="fas fa-${q.status === 'accepted' || q.status === 'invoiced' ? 'check-circle' : q.status === 'refused' || q.status === 'cancelled' ? 'times-circle' : q.status === 'sent' ? 'paper-plane' : 'clock'}" style="color:${st.color}; font-size:20px;"></i>
                     <span style="font-size:15px; font-weight:700; color:${st.color};">${st.label}</span>
-                    ${q.status === 'sent' ? '<span style="font-size:12px; color:var(--slate-500); margin-left:auto;">Vous pouvez accepter ou refuser ce devis ci-dessous.</span>' : ''}
+                    ${q.status === 'validated' ? '<span style="font-size:12px; color:var(--slate-500); margin-left:auto;">Vous pouvez accepter ou refuser ce devis ci-dessous.</span>' : ''}
                 </div>
 
                 <!-- DEVIS CARD -->
@@ -3785,8 +3785,8 @@ async function openQuoteDetail(quoteId) {
                         <div style="font-size:12px; font-weight:700; color:var(--slate-400); text-transform:uppercase; margin-bottom:10px;">Historique</div>
                         ${history.map(h => {
                             const hLabels = {
-                                'pending': 'Demande créée',
-                                'sent': 'Devis envoyé',
+                                'submitted': 'Demande créée',
+                                'validated': 'Devis validé par PolyValences',
                                 'accepted': 'Accepté par le client',
                                 'refused': 'Refusé par le client',
                                 'invoiced': 'Facturé',
