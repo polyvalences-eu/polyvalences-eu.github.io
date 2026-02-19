@@ -618,6 +618,7 @@
             <li><a href="#securite" onclick="showSection('securite', this)"><i class="fas fa-lock"></i> Sécurité</a></li>
             <li><a href="#entreprise" onclick="showSection('entreprise', this)" id="navEntreprise" style="display:none"><i class="fas fa-building"></i> Entreprise</a></li>
             <li><a href="#vehicules" onclick="showSection('vehicules', this)"><i class="fas fa-car"></i> Véhicules</a></li>
+            <li><a href="#dossiers" onclick="showSection('dossiers', this)" id="navDossiers" style="display:none"><i class="fas fa-folder-open"></i> Dossiers</a></li>
             <li><a href="#demandes" class="disabled-link"><i class="fas fa-file-alt"></i> Demandes <span class="badge-soon">Bientôt</span></a></li>
         </ul>
     </nav>
@@ -754,6 +755,9 @@
                                 <input type="hidden" id="vLocationLng">
                             </div>
                         </div>
+                        <!-- DOSSIER -->
+                    <div style="margin-bottom:24px;" id="folderBlock"></div>
+
                         <!-- ENTRETIEN & CT -->
                         <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--slate-200);">
                             <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
@@ -984,6 +988,53 @@
             </div>
         </div>
 
+        <!-- DOSSIERS -->
+        <div class="section-card" id="section-dossiers">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; flex-wrap:wrap; gap:12px;">
+                <h2>Mes Dossiers</h2>
+                <button class="btn-primary" onclick="showAddFolderForm()">
+                    <i class="fas fa-plus"></i> Créer un dossier
+                </button>
+            </div>
+            <p class="subtitle">Regroupez vos véhicules par secteur, zone, client ou tout autre critère libre.</p>
+
+            <!-- ADD/EDIT FOLDER FORM (hidden) -->
+            <div id="folderFormWrap" style="display:none; margin-bottom:24px;">
+                <div style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:var(--radius); padding:24px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                        <h3 style="font-size:16px; font-weight:700; color:var(--slate-900); font-family:'DM Sans',sans-serif;" id="folderFormTitle">Créer un dossier</h3>
+                        <button onclick="hideFolderForm()" style="background:none; border:none; cursor:pointer; color:var(--slate-400); font-size:18px;"><i class="fas fa-times"></i></button>
+                    </div>
+                    <form onsubmit="event.preventDefault(); saveFolder()">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom du dossier *</label>
+                                <input type="text" id="fName" placeholder="Ex : Secteur Nord, Pool VIP, Grand Compte Renault..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Gestionnaire <span style="font-weight:400; color:var(--slate-400);">(optionnel)</span></label>
+                                <select id="fManager">
+                                    <option value="">— Aucun gestionnaire —</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="hidden" id="fEditId" value="">
+                        <button type="submit" class="btn-primary" id="btnSaveFolder">
+                            <i class="fas fa-save"></i> Créer le dossier
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- FOLDERS LIST -->
+            <div id="foldersList">
+                <div style="text-align:center; padding:40px; color:var(--slate-400);">
+                    <i class="fas fa-spinner fa-spin" style="font-size:24px; margin-bottom:12px; display:block;"></i>
+                    Chargement...
+                </div>
+            </div>
+        </div>
+
         <!-- ENTREPRISE -->
         <div class="section-card" id="section-entreprise">
             <h2>Mon Entreprise</h2>
@@ -1196,7 +1247,8 @@
         document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
         document.getElementById('section-' + id).classList.add('active');
         if (link) link.classList.add('active');
-        if (id === 'vehicules') loadVehicles();
+        if (id === 'vehicules') { window._folderFilter = null; window._folderFilterName = null; loadVehicles(); }
+        if (id === 'dossiers') loadFolders();
     }
 
     // ===== INIT =====
@@ -1232,6 +1284,7 @@
             // Show entreprise tab if Pro
             if (currentUser.account_type === 'pro') {
                 document.getElementById('navEntreprise').style.display = '';
+                document.getElementById('navDossiers').style.display = '';
                 loadCompany();
             }
 
@@ -1574,24 +1627,45 @@
     async function loadVehicles() {
         const container = document.getElementById('vehiclesList');
         try {
+            // Preload folders for badges
+            if (foldersData.length === 0 && currentUser && currentUser.account_type === 'pro') {
+                try {
+                    const fRes = await fetch(API + '/api/folders', { headers: { 'Authorization': 'Bearer ' + authToken } });
+                    if (fRes.ok) { const fData = await fRes.json(); foldersData = fData.folders || []; }
+                } catch (e) {}
+            }
             const res = await fetch(API + '/api/vehicles', {
                 headers: { 'Authorization': 'Bearer ' + authToken }
             });
             if (!res.ok) { container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de chargement.</p>'; return; }
             const data = await res.json();
             vehiclesData = data.vehicles || [];
-            
-            if (vehiclesData.length === 0) {
-                container.innerHTML = '<div id="vehiclesAlertsBanner" style="margin-bottom:20px;"></div>' + `
-    <div style="text-align:center; padding:48px 20px; color:var(--slate-400);">
+
+            // Folder filter
+            let filteredVehicles = vehiclesData;
+            let folderFilterHtml = '';
+            if (window._folderFilter) {
+                filteredVehicles = vehiclesData.filter(v => v.folder_id === window._folderFilter);
+                folderFilterHtml = `
+                    <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; background:var(--blue-pale); border:1px solid var(--blue); margin-bottom:16px; flex-wrap:wrap;">
+                        <i class="fas fa-folder" style="color:var(--blue);"></i>
+                        <span style="font-size:14px; font-weight:600; color:var(--blue);">Dossier : ${window._folderFilterName}</span>
+                        <span style="font-size:12px; color:var(--slate-500);">(${filteredVehicles.length} véhicule${filteredVehicles.length > 1 ? 's' : ''})</span>
+                        <button onclick="window._folderFilter=null;window._folderFilterName=null;loadVehicles();" style="margin-left:auto; background:none; border:1px solid var(--blue); border-radius:6px; padding:4px 10px; font-size:12px; font-weight:600; color:var(--blue); cursor:pointer; font-family:'DM Sans',sans-serif;">× Voir tous</button>
+                    </div>`;
+            }
+
+            if (filteredVehicles.length === 0) {
+                container.innerHTML = folderFilterHtml + '<div id="vehiclesAlertsBanner" style="margin-bottom:20px;"></div>' + `
+                    <div style="text-align:center; padding:48px 20px; color:var(--slate-400);">
                         <i class="fas fa-car" style="font-size:36px; margin-bottom:12px; display:block; color:var(--slate-300);"></i>
-                        <p style="font-size:14px; margin-bottom:4px;">Aucun véhicule dans votre parc.</p>
-                        <p style="font-size:13px;">Cliquez sur <strong>Ajouter un véhicule</strong> pour commencer.</p>
+                        <p style="font-size:14px; margin-bottom:4px;">${window._folderFilter ? 'Aucun véhicule dans ce dossier.' : 'Aucun véhicule dans votre parc.'}</p>
+                        <p style="font-size:13px;">${window._folderFilter ? 'Transférez des véhicules depuis leur fiche.' : 'Cliquez sur <strong>Ajouter un véhicule</strong> pour commencer.'}</p>
                     </div>`;
                 return;
             }
 
-            container.innerHTML = '<div id="vehiclesAlertsBanner" style="margin-bottom:20px;"></div>' + vehiclesData.map(v => {
+            container.innerHTML = folderFilterHtml + '<div id="vehiclesAlertsBanner" style="margin-bottom:20px;"></div>' + filteredVehicles.map(v => {
                 const sc = statusClass(v.status);
                 const label = statusLabels[v.status] || v.status;
                 const desc = [v.brand, v.model].filter(Boolean).join(' ') || 'Véhicule';
@@ -1623,6 +1697,7 @@
                             <span class="vehicle-status-badge ${sc}">${label}</span>
                             ${v.future_assignments > 0 ? '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--amber-pale);color:var(--amber);">' + v.future_assignments + ' future(s)</span>' : ''}
                             ${alertBadges}
+                            ${v.folder_id ? '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--blue-pale);color:var(--blue);"><i class="fas fa-folder" style="margin-right:3px;font-size:9px;"></i>' + (foldersData.find(f=>f.id===v.folder_id)?.name || 'Dossier') + '</span>' : ''}
                         </div>
                         <div class="vehicle-desc">${desc}</div>
                         <div class="vehicle-meta">
@@ -1639,7 +1714,7 @@
                 </div>`;
             }).join('');
 
-            renderVehicleAlerts(vehiclesData);
+            renderVehicleAlerts(filteredVehicles);
 
         } catch (err) {
             console.error('Load vehicles failed:', err);
@@ -1687,6 +1762,11 @@
             document.getElementById('detailMileage').textContent = v.mileage ? v.mileage.toLocaleString('fr-FR') + ' km' : '—';
             document.getElementById('detailLocation').textContent = v.location || '—';
             document.getElementById('detailNotes').textContent = v.notes || '—';
+
+            // Folder block (pro only)
+            if (currentUser.account_type === 'pro') {
+                loadFolderBlock(v);
+            }
 
             // Maintenance & CT alerts
             loadMaintenanceBlock(v);
@@ -2701,6 +2781,330 @@ async function signCharter() {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-signature"></i> Accepter et continuer';
 }
+
+// ===== FOLDER BLOCK (vehicle detail) =====
+    async function loadFolderBlock(v) {
+        const block = document.getElementById('folderBlock');
+        if (!block) return;
+
+        // Ensure folders loaded
+        if (foldersData.length === 0) {
+            try {
+                const fRes = await fetch(API + '/api/folders', { headers: { 'Authorization': 'Bearer ' + authToken } });
+                if (fRes.ok) { const fData = await fRes.json(); foldersData = fData.folders || []; }
+            } catch (e) {}
+        }
+
+        const currentFolder = v.folder_id ? foldersData.find(f => f.id === v.folder_id) : null;
+
+        // Build folder select options
+        const folderOptions = foldersData
+            .filter(f => f.id !== v.folder_id)
+            .map(f => `<option value="${f.id}">${f.name}</option>`)
+            .join('');
+
+        // Current folder display
+        let currentFolderHtml;
+        if (currentFolder) {
+            currentFolderHtml = `
+                <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; background:var(--blue-pale); border:1px solid var(--blue)20;">
+                    <i class="fas fa-folder" style="color:var(--blue); font-size:16px;"></i>
+                    <span style="font-size:14px; font-weight:700; color:var(--blue);">${currentFolder.name}</span>
+                    ${currentFolder.manager_first_name ? '<span style="font-size:12px; color:var(--slate-500);"><i class="fas fa-user" style="margin-right:3px; font-size:10px;"></i>' + currentFolder.manager_first_name + ' ' + currentFolder.manager_last_name + '</span>' : ''}
+                </div>`;
+        } else {
+            currentFolderHtml = `
+                <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; background:var(--slate-50); border:1px dashed var(--slate-200);">
+                    <i class="fas fa-inbox" style="color:var(--slate-400); font-size:16px;"></i>
+                    <span style="font-size:13px; color:var(--slate-400);">Non classé — aucun dossier attribué</span>
+                </div>`;
+        }
+
+        // Load transfer history
+        let transfersHtml = '';
+        try {
+            const tRes = await fetch(API + '/api/vehicles/' + v.id + '/transfers', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (tRes.ok) {
+                const tData = await tRes.json();
+                const transfers = tData.transfers || [];
+                if (transfers.length > 0) {
+                    transfersHtml = `
+                        <div style="margin-top:12px;">
+                            <div style="font-size:12px; font-weight:700; color:var(--slate-500); text-transform:uppercase; margin-bottom:8px;">Historique des passations</div>
+                            ${transfers.map(t => `
+                            <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--slate-100); border-radius:8px; margin-bottom:4px; font-size:12px; flex-wrap:wrap;">
+                                <i class="fas fa-arrow-right" style="color:var(--blue); font-size:10px; flex-shrink:0;"></i>
+                                <span style="color:var(--slate-500);">${t.from_folder_name || 'Non classé'}</span>
+                                <i class="fas fa-long-arrow-alt-right" style="color:var(--slate-300); font-size:11px;"></i>
+                                <span style="font-weight:600; color:var(--slate-700);">${t.to_folder_name || 'Non classé'}</span>
+                                ${t.note ? '<span style="color:var(--slate-400); font-style:italic;">· ' + t.note + '</span>' : ''}
+                                <span style="margin-left:auto; color:var(--slate-400); white-space:nowrap;">${t.transferred_by_first_name} ${t.transferred_by_last_name} · ${formatDate(t.transferred_at ? t.transferred_at.split('T')[0] || t.transferred_at.split(' ')[0] : '')}</span>
+                            </div>`).join('')}
+                        </div>`;
+                }
+            }
+        } catch (e) {
+            console.error('Load transfers failed:', e);
+        }
+
+        block.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <h3 style="font-size:15px; font-weight:700; color:var(--slate-800); font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-folder-open" style="color:var(--blue);"></i> Dossier
+                </h3>
+                <button class="btn-primary" style="padding:8px 16px; font-size:12px;" onclick="toggleTransferForm()">
+                    <i class="fas fa-exchange-alt"></i> Transférer
+                </button>
+            </div>
+            ${currentFolderHtml}
+            <!-- TRANSFER FORM (hidden) -->
+            <div id="transferFormWrap" style="display:none; margin-top:12px; padding:16px; background:var(--slate-50); border:1px solid var(--slate-200); border-radius:10px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                    <div style="font-size:14px; font-weight:700; color:var(--slate-900);">Transférer vers un dossier</div>
+                    <button onclick="document.getElementById('transferFormWrap').style.display='none'" style="background:none; border:none; cursor:pointer; color:var(--slate-400); font-size:16px;"><i class="fas fa-times"></i></button>
+                </div>
+                <form onsubmit="event.preventDefault(); transferVehicle()">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dossier cible</label>
+                            <select id="tTargetFolder">
+                                <option value="null">— Non classé (retirer du dossier) —</option>
+                                ${folderOptions}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Note <span style="font-weight:400; color:var(--slate-400);">(optionnelle)</span></label>
+                            <input type="text" id="tNote" placeholder="Ex : Réaffectation secteur, changement de zone...">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="btnTransfer">
+                        <i class="fas fa-exchange-alt"></i> Confirmer le transfert
+                    </button>
+                </form>
+            </div>
+            ${transfersHtml}`;
+    }
+
+    function toggleTransferForm() {
+        const wrap = document.getElementById('transferFormWrap');
+        wrap.style.display = wrap.style.display === 'none' ? '' : 'none';
+    }
+
+    async function transferVehicle() {
+        const btn = document.getElementById('btnTransfer');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transfert...';
+
+        const targetVal = document.getElementById('tTargetFolder').value;
+        const payload = {
+            to_folder_id: targetVal === 'null' ? null : parseInt(targetVal),
+            note: document.getElementById('tNote').value.trim() || null,
+        };
+
+        try {
+            const res = await fetch(API + '/api/vehicles/' + currentVehicleId + '/transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message);
+                loadVehicleDetail(currentVehicleId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-exchange-alt"></i> Confirmer le transfert';
+    }
+
+// ===== FOLDERS =====
+    let foldersData = [];
+    let companyContacts = [];
+
+    async function loadFolders() {
+        const container = document.getElementById('foldersList');
+        try {
+            const res = await fetch(API + '/api/folders', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de chargement.</p>'; return; }
+            const data = await res.json();
+            foldersData = data.folders || [];
+            const unclassified = data.unclassified_count || 0;
+
+            if (foldersData.length === 0 && unclassified === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:48px 20px; color:var(--slate-400);">
+                        <i class="fas fa-folder-open" style="font-size:36px; margin-bottom:12px; display:block; color:var(--slate-300);"></i>
+                        <p style="font-size:14px; margin-bottom:4px;">Aucun dossier créé.</p>
+                        <p style="font-size:13px;">Cliquez sur <strong>Créer un dossier</strong> pour organiser vos véhicules.</p>
+                    </div>`;
+                return;
+            }
+
+            let html = '';
+
+            // Unclassified row
+            html += `
+                <div style="display:flex; align-items:center; gap:14px; padding:14px 18px; border-radius:var(--radius); border:1px dashed var(--slate-200); margin-bottom:8px; background:var(--slate-50);">
+                    <div style="width:40px; height:40px; border-radius:10px; background:var(--slate-100); display:flex; align-items:center; justify-content:center; color:var(--slate-400); font-size:16px; flex-shrink:0;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:14px; font-weight:600; color:var(--slate-500);">Non classés</div>
+                        <div style="font-size:12px; color:var(--slate-400);">Véhicules sans dossier</div>
+                    </div>
+                    <span style="font-size:12px; font-weight:700; padding:2px 10px; border-radius:6px; background:var(--slate-100); color:var(--slate-500);">${unclassified}</span>
+                </div>`;
+
+            // Folder rows
+            foldersData.forEach(f => {
+                const manager = f.manager_first_name ? f.manager_first_name + ' ' + f.manager_last_name : null;
+                html += `
+                <div style="display:flex; align-items:center; gap:14px; padding:14px 18px; border-radius:var(--radius); border:1px solid var(--slate-100); margin-bottom:8px; transition:all 0.15s; cursor:pointer;" onmouseover="this.style.background='var(--slate-50)';this.style.borderColor='var(--slate-200)'" onmouseout="this.style.background='white';this.style.borderColor='var(--slate-100)'" onclick="viewFolderVehicles(${f.id}, '${f.name.replace(/'/g, "\\'")}')">
+                    <div style="width:40px; height:40px; border-radius:10px; background:var(--blue-pale); display:flex; align-items:center; justify-content:center; color:var(--blue); font-size:16px; flex-shrink:0;">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:15px; font-weight:700; color:var(--slate-900);">${f.name}</div>
+                        <div style="font-size:12px; color:var(--slate-400);">
+                            ${manager ? '<i class="fas fa-user" style="margin-right:3px; font-size:10px;"></i> ' + manager + ' · ' : ''}
+                            ${f.vehicle_count} véhicule${f.vehicle_count > 1 ? 's' : ''}
+                        </div>
+                    </div>
+                    <span style="font-size:12px; font-weight:700; padding:2px 10px; border-radius:6px; background:var(--blue-pale); color:var(--blue);">${f.vehicle_count}</span>
+                    <div style="display:flex; gap:6px;" onclick="event.stopPropagation();">
+                        <button class="btn-icon" onclick="showEditFolderForm(${f.id})" title="Modifier"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon danger" onclick="deleteFolder(${f.id}, '${f.name.replace(/'/g, "\\'")}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error('Load folders failed:', err);
+            container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de connexion.</p>';
+        }
+    }
+
+    async function loadContactsForFolderForm() {
+        const select = document.getElementById('fManager');
+        select.innerHTML = '<option value="">— Aucun gestionnaire —</option>';
+        try {
+            const res = await fetch(API + '/api/user/company', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            companyContacts = data.contacts || [];
+            companyContacts.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.first_name + ' ' + c.last_name + (c.id === currentUser.id ? ' (Vous)' : '');
+                select.appendChild(opt);
+            });
+        } catch (err) {
+            console.error('Load contacts failed:', err);
+        }
+    }
+
+    function showAddFolderForm() {
+        document.getElementById('folderFormWrap').style.display = '';
+        document.getElementById('folderFormTitle').textContent = 'Créer un dossier';
+        document.getElementById('fEditId').value = '';
+        document.getElementById('fName').value = '';
+        document.getElementById('fManager').value = '';
+        document.getElementById('btnSaveFolder').innerHTML = '<i class="fas fa-save"></i> Créer le dossier';
+        loadContactsForFolderForm();
+        document.getElementById('fName').focus();
+    }
+
+    function showEditFolderForm(folderId) {
+        const f = foldersData.find(x => x.id === folderId);
+        if (!f) return;
+        document.getElementById('folderFormWrap').style.display = '';
+        document.getElementById('folderFormTitle').textContent = 'Modifier « ' + f.name + ' »';
+        document.getElementById('fEditId').value = f.id;
+        document.getElementById('fName').value = f.name;
+        document.getElementById('btnSaveFolder').innerHTML = '<i class="fas fa-save"></i> Mettre à jour';
+        loadContactsForFolderForm().then(() => {
+            document.getElementById('fManager').value = f.manager_contact_id || '';
+        });
+        window.scrollTo({ top: document.getElementById('folderFormWrap').offsetTop - 100, behavior: 'smooth' });
+    }
+
+    function hideFolderForm() {
+        document.getElementById('folderFormWrap').style.display = 'none';
+    }
+
+    async function saveFolder() {
+        const btn = document.getElementById('btnSaveFolder');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+        const editId = document.getElementById('fEditId').value;
+        const payload = {
+            name: document.getElementById('fName').value.trim(),
+            manager_contact_id: document.getElementById('fManager').value ? parseInt(document.getElementById('fManager').value) : null,
+        };
+
+        try {
+            const url = editId ? API + '/api/folders/' + editId : API + '/api/folders';
+            const method = editId ? 'PUT' : 'POST';
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(editId ? 'Dossier mis à jour.' : 'Dossier créé.');
+                hideFolderForm();
+                loadFolders();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = editId ? '<i class="fas fa-save"></i> Mettre à jour' : '<i class="fas fa-save"></i> Créer le dossier';
+    }
+
+    async function deleteFolder(id, name) {
+        if (!confirm('Supprimer le dossier « ' + name + ' » ?\n\nLes véhicules seront déplacés en "Non classés".')) return;
+        try {
+            const res = await fetch(API + '/api/folders/' + id, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Dossier supprimé.');
+                loadFolders();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+        }
+    }
+
+    function viewFolderVehicles(folderId, folderName) {
+        // Basculer vers l'onglet véhicules avec filtre dossier
+        showSection('vehicules', document.querySelector('.sidebar-nav a[href="#vehicules"]'));
+        // On stocke le filtre et on recharge
+        window._folderFilter = folderId;
+        window._folderFilterName = folderName;
+        loadVehicles();
+    }
 
     // ===== START =====
 init();
