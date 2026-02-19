@@ -707,6 +707,8 @@
                             <span><i class="fas fa-calendar"></i> ${date}</span>
                             ${route ? '<span><i class="fas fa-route"></i> ' + route + '</span>' : ''}
                             ${q.distance_km ? '<span><i class="fas fa-road"></i> ' + q.distance_km + ' km · Grille ' + (q.grid || '') + '</span>' : ''}
+                            ${q.preferred_date_1 ? '<span style="color:var(--emerald);"><i class="fas fa-calendar-check"></i> ' + formatDate(q.preferred_date_1) + '</span>' : ''}
+                            ${q.confirmed_date ? '<span style="color:var(--emerald); font-weight:700;"><i class="fas fa-calendar-day"></i> Confirmé : ' + formatDate(q.confirmed_date) + '</span>' : ''}
                         </div>
                     </div>
                     <div style="text-align:right; flex-shrink:0;">
@@ -851,8 +853,62 @@
                     </div>
                 </div>`;
 
+            // DATES SOUHAITÉES (visible pour tous les statuts)
+            if (q.preferred_date_1) {
+                html += `
+                <div style="padding:16px 18px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:20px;">
+                    <div style="font-size:11px; font-weight:700; color:#059669; text-transform:uppercase; margin-bottom:8px;">
+                        <i class="fas fa-calendar-alt" style="margin-right:4px;"></i> Dates souhaitées par le client
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                        <div style="padding:10px 16px; background:white; border:1px solid #bbf7d0; border-radius:8px; font-size:14px; font-weight:600; color:var(--slate-800);">
+                            <i class="fas fa-calendar-day" style="color:#059669; margin-right:6px;"></i>${formatDate(q.preferred_date_1)}
+                        </div>
+                        ${q.preferred_date_2 ? '<div style="padding:10px 16px; background:white; border:1px solid #bbf7d0; border-radius:8px; font-size:14px; font-weight:600; color:var(--slate-800);"><i class="fas fa-calendar-day" style="color:#059669; margin-right:6px;"></i>' + formatDate(q.preferred_date_2) + '</div>' : ''}
+                        ${q.preferred_date_3 ? '<div style="padding:10px 16px; background:white; border:1px solid #bbf7d0; border-radius:8px; font-size:14px; font-weight:600; color:var(--slate-800);"><i class="fas fa-calendar-day" style="color:#059669; margin-right:6px;"></i>' + formatDate(q.preferred_date_3) + '</div>' : ''}
+                    </div>
+                    ${q.confirmed_date ? '<div style="margin-top:10px; padding:10px 14px; background:#dcfce7; border-radius:8px; font-size:14px; font-weight:700; color:#059669;"><i class="fas fa-check-circle" style="margin-right:6px;"></i>Date confirmée : ' + formatDate(q.confirmed_date) + '</div>' : ''}
+                </div>`;
+            }
+
             // VALIDATE ACTION (only if submitted)
             if (q.status === 'submitted') {
+                let dateRadios = '';
+                if (q.preferred_date_1) {
+                    dateRadios = `
+                    <div style="margin-bottom:14px;">
+                        <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:8px;">
+                            <i class="fas fa-calendar-check" style="color:#059669; margin-right:4px;"></i> Sélectionnez la date de convoyage
+                        </label>
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:white; border:2px solid var(--slate-200); border-radius:10px; cursor:pointer; transition:all 0.15s;" onclick="this.querySelector('input').checked=true; document.querySelectorAll('.date-radio-label').forEach(l=>l.style.borderColor='var(--slate-200)'); this.style.borderColor='#059669';" class="date-radio-label">
+                                <input type="radio" name="confirmedDate" value="${q.preferred_date_1}" checked style="accent-color:#059669; width:18px; height:18px;">
+                                <span style="font-size:14px; font-weight:600; color:var(--slate-800);">${formatDate(q.preferred_date_1)}</span>
+                                <span style="font-size:11px; font-weight:700; background:#dcfce7; color:#059669; padding:2px 8px; border-radius:4px;">Choix 1</span>
+                            </label>
+                            ${q.preferred_date_2 ? `
+                            <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:white; border:2px solid var(--slate-200); border-radius:10px; cursor:pointer; transition:all 0.15s;" onclick="this.querySelector('input').checked=true; document.querySelectorAll('.date-radio-label').forEach(l=>l.style.borderColor='var(--slate-200)'); this.style.borderColor='#059669';" class="date-radio-label">
+                                <input type="radio" name="confirmedDate" value="${q.preferred_date_2}" style="accent-color:#059669; width:18px; height:18px;">
+                                <span style="font-size:14px; font-weight:600; color:var(--slate-800);">${formatDate(q.preferred_date_2)}</span>
+                                <span style="font-size:11px; font-weight:700; background:var(--blue-pale); color:var(--blue); padding:2px 8px; border-radius:4px;">Choix 2</span>
+                            </label>` : ''}
+                            ${q.preferred_date_3 ? `
+                            <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:white; border:2px solid var(--slate-200); border-radius:10px; cursor:pointer; transition:all 0.15s;" onclick="this.querySelector('input').checked=true; document.querySelectorAll('.date-radio-label').forEach(l=>l.style.borderColor='var(--slate-200)'); this.style.borderColor='#059669';" class="date-radio-label">
+                                <input type="radio" name="confirmedDate" value="${q.preferred_date_3}" style="accent-color:#059669; width:18px; height:18px;">
+                                <span style="font-size:14px; font-weight:600; color:var(--slate-800);">${formatDate(q.preferred_date_3)}</span>
+                                <span style="font-size:11px; font-weight:700; background:var(--blue-pale); color:var(--blue); padding:2px 8px; border-radius:4px;">Choix 3</span>
+                            </label>` : ''}
+                            <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:white; border:2px solid var(--slate-200); border-radius:10px; cursor:pointer; transition:all 0.15s;" onclick="this.querySelector('input').checked=true; document.querySelectorAll('.date-radio-label').forEach(l=>l.style.borderColor='var(--slate-200)'); this.style.borderColor='#059669'; document.getElementById('customDateWrap').style.display='block';" class="date-radio-label">
+                                <input type="radio" name="confirmedDate" value="custom" style="accent-color:#059669; width:18px; height:18px;" onchange="document.getElementById('customDateWrap').style.display='block';">
+                                <span style="font-size:14px; font-weight:600; color:var(--slate-500);">Autre date</span>
+                            </label>
+                            <div id="customDateWrap" style="display:none; margin-top:4px;">
+                                <input type="date" id="customDate" style="width:100%; padding:12px 14px; border:2px solid #059669; border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif; outline:none;">
+                            </div>
+                        </div>
+                    </div>`;
+                }
+
                 html += `
                 <div style="padding:20px; background:var(--amber-pale); border:1px solid #fde68a; border-radius:12px; margin-bottom:20px;">
                     <div style="font-size:14px; font-weight:700; color:#92400e; margin-bottom:12px;">
@@ -861,6 +917,7 @@
                     <div style="font-size:13px; color:#92400e; margin-bottom:16px;">
                         En validant, le client recevra un email et pourra accepter ou refuser le devis depuis son espace.
                     </div>
+                    ${dateRadios}
                     <div style="margin-bottom:14px;">
                         <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:6px;">Notes admin (optionnel — visible par le client)</label>
                         <textarea id="adminNotes" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--slate-200); border-radius:10px; font-size:14px; font-family:'DM Sans',sans-serif; resize:vertical; outline:none;" placeholder="Ex : Devis valable 30 jours, véhicule à récupérer au parking B2..."></textarea>
@@ -915,7 +972,13 @@
                     'Authorization': 'Bearer ' + authToken
                 },
                 body: JSON.stringify({
-                    admin_notes: document.getElementById('adminNotes').value.trim() || null
+                    admin_notes: document.getElementById('adminNotes').value.trim() || null,
+                    confirmed_date: (() => {
+                        const selected = document.querySelector('input[name="confirmedDate"]:checked');
+                        if (!selected) return null;
+                        if (selected.value === 'custom') return document.getElementById('customDate').value || null;
+                        return selected.value;
+                    })()
                 })
             });
             const data = await res.json();
