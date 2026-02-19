@@ -1309,6 +1309,11 @@
             });
             if (!res.ok) { showNotConnected(); return; }
             const data = await res.json();
+            // Bloquer les chauffeurs
+            if (data.user.role === 'driver') {
+                window.location.href = '/driver/espace/';
+                return;
+            }
             currentUser = data.user;
 
             // Nav
