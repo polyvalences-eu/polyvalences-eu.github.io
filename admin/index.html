@@ -248,6 +248,39 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ===== ADMIN TABS ===== */
+        .admin-tabs {
+            display: flex; gap: 4px; margin-bottom: 28px;
+            background: var(--slate-100); padding: 4px; border-radius: 12px;
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+        }
+        .admin-tab {
+            flex: 1; min-width: 0;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 12px 8px; border: none; background: none;
+            font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+            color: var(--slate-500); cursor: pointer; border-radius: 8px;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .admin-tab:hover { color: var(--slate-700); background: white; }
+        .admin-tab.active {
+            background: var(--navy); color: white;
+            box-shadow: 0 2px 8px rgba(11,26,46,0.15);
+        }
+        .admin-tab i { font-size: 14px; }
+        .tab-badge {
+            font-size: 10px; font-weight: 700;
+            background: var(--red); color: white;
+            padding: 1px 7px; border-radius: 10px; margin-left: 2px;
+        }
+        .admin-tab.active .tab-badge { background: var(--amber); }
+        .admin-panel { display: none; animation: fadeIn 0.3s ease; }
+        .admin-panel.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
             .user-card {
@@ -295,66 +328,75 @@
 <!-- MAIN (hidden until loaded) -->
 <main class="admin-main" id="adminMain" style="display:none">
 
-    <!-- STATS -->
-    <div class="stats-row" id="statsRow">
-        <div class="stat-card">
-            <div class="stat-card-label">En attente</div>
-            <div class="stat-card-value pending" id="statPending">0</div>
+    <!-- ONGLETS -->
+    <div class="admin-tabs" id="adminTabs">
+        <button class="admin-tab active" onclick="switchAdminTab('dashboard')"><i class="fas fa-chart-bar"></i><span>Tableau de bord</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('quotes')"><i class="fas fa-file-alt"></i><span>Devis</span><span class="tab-badge" id="tabBadgeQuotes" style="display:none">0</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('invoices')"><i class="fas fa-file-invoice-dollar"></i><span>Factures</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('missions')"><i class="fas fa-car-side"></i><span>Missions</span><span class="tab-badge" id="tabBadgeMissions" style="display:none">0</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('drivers')"><i class="fas fa-id-badge"></i><span>Chauffeurs</span></button>
+    </div>
+
+    <!-- ============ TAB: TABLEAU DE BORD ============ -->
+    <div class="admin-panel active" id="panel-dashboard">
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card">
+                <div class="stat-card-label">En attente</div>
+                <div class="stat-card-value pending" id="statPending">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Comptes actifs</div>
+                <div class="stat-card-value active" id="statActive">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Total inscrits</div>
+                <div class="stat-card-value" id="statTotal">0</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-card-label">Comptes actifs</div>
-            <div class="stat-card-value active" id="statActive">0</div>
+
+        <div class="section-header">
+            <h2>
+                <i class="fas fa-user-clock" style="color:var(--amber)"></i>
+                Comptes en attente
+                <span class="count" id="pendingCount">0</span>
+            </h2>
+            <button class="btn-refresh" onclick="loadPending()">
+                <i class="fas fa-sync-alt"></i> Actualiser
+            </button>
         </div>
-        <div class="stat-card">
-            <div class="stat-card-label">Total inscrits</div>
-            <div class="stat-card-value" id="statTotal">0</div>
+        <div class="table-card" id="pendingList">
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <p>Aucun compte en attente de validation.</p>
+            </div>
         </div>
     </div>
 
-    <!-- STATS QUOTES -->
-    <div class="stats-row" id="statsQuotesRow">
-        <div class="stat-card">
-            <div class="stat-card-label">Devis à valider</div>
-            <div class="stat-card-value pending" id="statQuotesPending">0</div>
+    <!-- ============ TAB: DEVIS ============ -->
+    <div class="admin-panel" id="panel-quotes">
+        <div class="stats-row" id="statsQuotesRow">
+            <div class="stat-card">
+                <div class="stat-card-label">Devis à valider</div>
+                <div class="stat-card-value pending" id="statQuotesPending">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">En attente client</div>
+                <div class="stat-card-value" style="color:var(--blue);" id="statQuotesValidated">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Acceptés</div>
+                <div class="stat-card-value active" id="statQuotesAccepted">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Total devis</div>
+                <div class="stat-card-value" id="statQuotesTotal">0</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-card-label">Devis validés (en attente client)</div>
-            <div class="stat-card-value" style="color:var(--blue);" id="statQuotesValidated">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-card-label">Devis acceptés</div>
-            <div class="stat-card-value active" id="statQuotesAccepted">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-card-label">Total devis</div>
-            <div class="stat-card-value" id="statQuotesTotal">0</div>
-        </div>
-    </div>
 
-    <!-- PENDING USERS -->
-    <div class="section-header">
-        <h2>
-            <i class="fas fa-user-clock" style="color:var(--amber)"></i>
-            Comptes en attente
-            <span class="count" id="pendingCount">0</span>
-        </h2>
-        <button class="btn-refresh" onclick="loadPending()">
-            <i class="fas fa-sync-alt"></i> Actualiser
-        </button>
-    </div>
-    <div class="table-card" id="pendingList">
-        <div class="empty-state">
-            <i class="fas fa-check-circle"></i>
-            <p>Aucun compte en attente de validation.</p>
-        </div>
-    </div>
-
-<!-- QUOTES SECTION -->
-    <div style="margin-top:40px;">
         <div class="section-header">
             <h2>
                 <i class="fas fa-file-alt" style="color:var(--blue)"></i>
-                Devis à valider
+                Devis
                 <span class="count" id="quotesCount" style="background:var(--blue-pale); color:var(--blue);">0</span>
             </h2>
             <div style="display:flex; gap:8px;">
@@ -366,23 +408,23 @@
                     <option value="all">Tous</option>
                 </select>
                 <button class="btn-refresh" onclick="loadAdminQuotes()">
-                    <i class="fas fa-sync-alt"></i> Actualiser
+                    <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
         </div>
         <div class="table-card" id="adminQuotesList">
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i>
-                Chargement des devis...
-            </div>
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement des devis...</div>
+        </div>
+        <div id="quoteDetailWrap" style="display:none; margin-top:24px;">
+            <div class="table-card" style="padding:28px;" id="quoteDetailContent"></div>
         </div>
     </div>
 
-    <!-- INVOICES SECTION -->
-    <div style="margin-top:40px;">
+    <!-- ============ TAB: FACTURES ============ -->
+    <div class="admin-panel" id="panel-invoices">
         <div class="stats-row">
             <div class="stat-card">
-                <div class="stat-card-label">Factures impayées</div>
+                <div class="stat-card-label">Impayées</div>
                 <div class="stat-card-value pending" id="statInvPending">0</div>
             </div>
             <div class="stat-card">
@@ -414,23 +456,90 @@
                     <option value="all">Toutes</option>
                 </select>
                 <button class="btn-refresh" onclick="loadAdminInvoices()">
-                    <i class="fas fa-sync-alt"></i> Actualiser
+                    <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
         </div>
         <div class="table-card" id="adminInvoicesList">
             <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
         </div>
+        <div id="invoiceDetailWrap" style="display:none; margin-top:24px;">
+            <div class="table-card" style="padding:28px;" id="invoiceDetailContent"></div>
+        </div>
     </div>
 
-    <!-- INVOICE DETAIL (hidden) -->
-    <div id="invoiceDetailWrap" style="display:none; margin-top:24px;">
-        <div class="table-card" style="padding:28px;" id="invoiceDetailContent"></div>
+    <!-- ============ TAB: MISSIONS ============ -->
+    <div class="admin-panel" id="panel-missions">
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-card-label">Ouvertes</div>
+                <div class="stat-card-value pending" id="statMissionsOpen">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Assignées</div>
+                <div class="stat-card-value" style="color:var(--blue);" id="statMissionsAssigned">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">En cours</div>
+                <div class="stat-card-value" style="color:var(--amber);" id="statMissionsProgress">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">Terminées</div>
+                <div class="stat-card-value active" id="statMissionsCompleted">0</div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>
+                <i class="fas fa-car-side" style="color:var(--navy)"></i>
+                Missions
+                <span class="count" id="missionsCount" style="background:var(--blue-pale); color:var(--blue);">0</span>
+            </h2>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-refresh" onclick="openCreateMission()" style="background:var(--blue); color:white; border-color:var(--blue);">
+                    <i class="fas fa-plus"></i> Nouvelle mission
+                </button>
+                <select id="missionsFilter" onchange="loadAdminMissions()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                    <option value="open">Ouvertes</option>
+                    <option value="assigned">Assignées</option>
+                    <option value="in_progress">En cours</option>
+                    <option value="completed">Terminées</option>
+                    <option value="all">Toutes</option>
+                </select>
+                <button class="btn-refresh" onclick="loadAdminMissions()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="table-card" id="adminMissionsList">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
+        </div>
+        <div id="createMissionWrap" style="display:none; margin-top:24px;">
+            <div class="table-card" style="padding:28px;" id="createMissionContent"></div>
+        </div>
+        <div id="missionAppsWrap" style="display:none; margin-top:24px;">
+            <div class="table-card" style="padding:28px;" id="missionAppsContent"></div>
+        </div>
     </div>
 
-    <!-- QUOTE DETAIL (hidden) -->
-    <div id="quoteDetailWrap" style="display:none; margin-top:24px;">
-        <div class="table-card" style="padding:28px;" id="quoteDetailContent"></div>
+    <!-- ============ TAB: CHAUFFEURS ============ -->
+    <div class="admin-panel" id="panel-drivers">
+        <div class="section-header">
+            <h2>
+                <i class="fas fa-id-badge" style="color:var(--navy)"></i>
+                Chauffeurs
+                <span class="count" id="driversCount" style="background:var(--blue-pale); color:var(--blue);">0</span>
+            </h2>
+            <button class="btn-refresh" onclick="loadAdminDrivers()">
+                <i class="fas fa-sync-alt"></i> Actualiser
+            </button>
+        </div>
+        <div class="table-card" id="adminDriversList">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
+        </div>
+        <div id="driverDetailWrap" style="display:none; margin-top:24px;">
+            <div class="table-card" style="padding:28px;" id="driverDetailContent"></div>
+        </div>
     </div>
 
 </main>
@@ -462,6 +571,22 @@
         window.location.href = '../';
     }
 
+    // ===== ADMIN TABS =====
+    function switchAdminTab(tabId) {
+        document.querySelectorAll('.admin-tab').forEach((t, i) => {
+            const tabs = ['dashboard', 'quotes', 'invoices', 'missions', 'drivers'];
+            t.classList.toggle('active', tabs[i] === tabId);
+        });
+        document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + tabId).classList.add('active');
+
+        // Lazy load
+        if (tabId === 'quotes') loadAdminQuotes();
+        if (tabId === 'invoices') loadAdminInvoices();
+        if (tabId === 'missions') loadAdminMissions();
+        if (tabId === 'drivers') loadAdminDrivers();
+    }
+
     // ===== CHECK ADMIN =====
     async function checkAdmin() {
         if (!authToken) {
@@ -490,8 +615,6 @@
 
             loadPending();
             loadStats();
-            loadAdminQuotes();
-            loadAdminInvoices();
 
         } catch (err) {
             console.error('Admin check failed:', err);
@@ -1268,6 +1391,451 @@
                 showToast('Facture annulée.');
                 openAdminInvoiceDetail(invoiceId);
                 loadAdminInvoices();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) { showToast('Erreur de connexion', 'error'); }
+    }
+
+    // ===== ADMIN MISSIONS =====
+    let adminMissionsData = [];
+
+    async function loadAdminMissions() {
+        const container = document.getElementById('adminMissionsList');
+        const filter = document.getElementById('missionsFilter').value;
+        document.getElementById('createMissionWrap').style.display = 'none';
+        document.getElementById('missionAppsWrap').style.display = 'none';
+
+        try {
+            const res = await fetch(API + '/api/admin/missions', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur.</p></div>'; return; }
+            const data = await res.json();
+            adminMissionsData = data.missions || [];
+
+            // Stats
+            const open = adminMissionsData.filter(m => m.status === 'open').length;
+            const assigned = adminMissionsData.filter(m => m.status === 'assigned').length;
+            const inProgress = adminMissionsData.filter(m => ['in_progress','edl_departure_done','in_transit','edl_arrival_done'].includes(m.status)).length;
+            const completed = adminMissionsData.filter(m => m.status === 'completed').length;
+            document.getElementById('statMissionsOpen').textContent = open;
+            document.getElementById('statMissionsAssigned').textContent = assigned;
+            document.getElementById('statMissionsProgress').textContent = inProgress;
+            document.getElementById('statMissionsCompleted').textContent = completed;
+
+            // Badge onglet
+            const badge = document.getElementById('tabBadgeMissions');
+            if (open > 0) { badge.textContent = open; badge.style.display = 'inline'; }
+            else { badge.style.display = 'none'; }
+
+            // Filter
+            let filtered = adminMissionsData;
+            if (filter === 'open') filtered = adminMissionsData.filter(m => m.status === 'open');
+            else if (filter === 'assigned') filtered = adminMissionsData.filter(m => m.status === 'assigned');
+            else if (filter === 'in_progress') filtered = adminMissionsData.filter(m => ['in_progress','edl_departure_done','in_transit','edl_arrival_done'].includes(m.status));
+            else if (filter === 'completed') filtered = adminMissionsData.filter(m => m.status === 'completed');
+
+            document.getElementById('missionsCount').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" style="color:var(--slate-300)"></i><p>Aucune mission dans cette catégorie.</p></div>';
+                return;
+            }
+
+            const statusConf = {
+                'open': { label: 'Ouverte', color: '#d97706', bg: '#d9770615', icon: 'bullhorn' },
+                'assigned': { label: 'Assignée', color: '#2563eb', bg: '#2563eb15', icon: 'user-check' },
+                'in_progress': { label: 'En cours', color: '#d97706', bg: '#d9770615', icon: 'play' },
+                'edl_departure_done': { label: 'EDL départ', color: '#d97706', bg: '#d9770615', icon: 'clipboard-check' },
+                'in_transit': { label: 'En transit', color: '#2563eb', bg: '#2563eb15', icon: 'truck' },
+                'edl_arrival_done': { label: 'EDL arrivée', color: '#059669', bg: '#05966915', icon: 'clipboard-check' },
+                'completed': { label: 'Terminée', color: '#059669', bg: '#05966915', icon: 'check-circle' },
+                'cancelled': { label: 'Annulée', color: '#94a3b8', bg: '#94a3b815', icon: 'ban' }
+            };
+
+            container.innerHTML = filtered.map(m => {
+                const st = statusConf[m.status] || statusConf['open'];
+                const route = m.origin_address ? (m.origin_address.split(',')[0] + ' → ' + (m.destination_address || '').split(',')[0]) : '';
+                const date = m.mission_date ? m.mission_date.split('-').reverse().join('/') : '—';
+
+                return `
+                <div class="user-card" style="cursor:pointer;" onclick="${m.status === 'open' ? 'openMissionApps(' + m.id + ')' : ''}">
+                    <div class="user-avatar" style="background:${st.bg}; color:${st.color};">
+                        <i class="fas fa-${st.icon}"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">
+                            ${m.quote_number || 'Mission #' + m.id}
+                            <span class="type-badge" style="background:${st.bg}; color:${st.color};">${st.label}</span>
+                            ${m.status === 'open' && m.application_count ? '<span class="type-badge" style="background:#dbeafe; color:#1e40af;">' + m.application_count + ' candidature(s)</span>' : ''}
+                        </div>
+                        <div class="user-email">${route}</div>
+                        <div class="user-details">
+                            <span><i class="fas fa-road"></i> ${m.distance_km || '—'} km</span>
+                            <span><i class="fas fa-calendar-day"></i> ${date}</span>
+                            ${m.driver_name ? '<span><i class="fas fa-user"></i> ' + m.driver_name + '</span>' : ''}
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:12px; flex-shrink:0;"></i>
+                </div>`;
+            }).join('');
+
+        } catch (err) {
+            console.error('Load missions failed:', err);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de connexion.</p></div>';
+        }
+    }
+
+    async function openCreateMission() {
+        const wrap = document.getElementById('createMissionWrap');
+        const container = document.getElementById('createMissionContent');
+        wrap.style.display = '';
+        wrap.scrollIntoView({ behavior: 'smooth' });
+
+        // Charger devis acceptés sans mission
+        try {
+            const res = await fetch(API + '/api/admin/quotes?status=accepted', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            const quotes = (data.quotes || []).filter(q => !adminMissionsData.some(m => m.quote_id === q.id && m.status !== 'cancelled'));
+
+            if (quotes.length === 0) {
+                container.innerHTML = `
+                    <button onclick="document.getElementById('createMissionWrap').style.display='none'" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif; margin-bottom:16px;"><i class="fas fa-arrow-left"></i> Retour</button>
+                    <div class="empty-state"><i class="fas fa-check-circle" style="color:var(--emerald)"></i><p>Aucun devis accepté sans mission.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <button onclick="document.getElementById('createMissionWrap').style.display='none'" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:6px; margin-bottom:16px;">
+                    <i class="fas fa-arrow-left" style="font-size:11px;"></i> Retour
+                </button>
+                <h3 style="font-size:16px; font-weight:700; margin-bottom:16px; color:var(--navy);">
+                    <i class="fas fa-plus-circle" style="color:var(--blue); margin-right:6px;"></i>Créer une mission ouverte
+                </h3>
+                <div style="margin-bottom:14px;">
+                    <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:6px;">Sélectionnez un devis accepté</label>
+                    <select id="missionQuoteId" style="width:100%; padding:12px 14px; border:1px solid var(--slate-200); border-radius:10px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                        ${quotes.map(q => {
+                            const route = q.origin_address ? q.origin_address.split(',')[0] + ' → ' + (q.destination_address || '').split(',')[0] : '';
+                            const date = q.confirmed_date ? ' · ' + q.confirmed_date.split('-').reverse().join('/') : '';
+                            return '<option value="' + q.id + '" data-date="' + (q.confirmed_date || '') + '">' + q.quote_number + ' — ' + route + ' · ' + (q.distance_km || '') + 'km' + date + '</option>';
+                        }).join('')}
+                    </select>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:6px;">Date de mission</label>
+                    <input type="date" id="missionDate" style="width:100%; padding:12px 14px; border:1px solid var(--slate-200); border-radius:10px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:6px;">Délai de candidature (heures)</label>
+                    <select id="missionExpiry" style="width:100%; padding:12px 14px; border:1px solid var(--slate-200); border-radius:10px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                        <option value="24">24 heures</option>
+                        <option value="48" selected>48 heures</option>
+                        <option value="72">72 heures</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:6px;">Notes (optionnel)</label>
+                    <textarea id="missionNotes" rows="2" style="width:100%; padding:12px 14px; border:1px solid var(--slate-200); border-radius:10px; font-size:14px; font-family:'DM Sans',sans-serif; resize:vertical;" placeholder="Instructions pour les chauffeurs..."></textarea>
+                </div>
+                <button onclick="submitCreateMission()" id="btnCreateMission" style="background:var(--blue); color:white; border:none; padding:14px 28px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px; width:100%; justify-content:center;">
+                    <i class="fas fa-bullhorn"></i> Créer et notifier les chauffeurs
+                </button>`;
+
+            // Pré-remplir date si confirmed_date existe
+            const select = document.getElementById('missionQuoteId');
+            const updateDate = () => {
+                const opt = select.options[select.selectedIndex];
+                const d = opt.getAttribute('data-date');
+                if (d) document.getElementById('missionDate').value = d;
+            };
+            select.addEventListener('change', updateDate);
+            updateDate();
+
+        } catch (err) {
+            container.innerHTML = '<p style="color:var(--red);">Erreur.</p>';
+        }
+    }
+
+    async function submitCreateMission() {
+        const btn = document.getElementById('btnCreateMission');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création...';
+
+        const quoteId = parseInt(document.getElementById('missionQuoteId').value);
+        const missionDate = document.getElementById('missionDate').value;
+        const hours = parseInt(document.getElementById('missionExpiry').value);
+        const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
+        const notes = document.getElementById('missionNotes').value.trim();
+
+        try {
+            const res = await fetch(API + '/api/admin/missions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ quote_id: quoteId, mission_date: missionDate || null, notes: notes || null, expires_at: expiresAt })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Mission créée !');
+                document.getElementById('createMissionWrap').style.display = 'none';
+                loadAdminMissions();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-bullhorn"></i> Créer et notifier les chauffeurs';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-bullhorn"></i> Créer et notifier les chauffeurs';
+        }
+    }
+
+    async function openMissionApps(missionId) {
+        const wrap = document.getElementById('missionAppsWrap');
+        const container = document.getElementById('missionAppsContent');
+        wrap.style.display = '';
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+        wrap.scrollIntoView({ behavior: 'smooth' });
+
+        try {
+            const res = await fetch(API + '/api/admin/missions/' + missionId + '/applications', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<p style="color:var(--red);">Erreur.</p>'; return; }
+            const data = await res.json();
+            const mission = data.mission;
+            const apps = data.applications || [];
+
+            let html = `
+                <button onclick="document.getElementById('missionAppsWrap').style.display='none'" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:6px; margin-bottom:16px;">
+                    <i class="fas fa-arrow-left" style="font-size:11px;"></i> Retour
+                </button>
+                <h3 style="font-size:16px; font-weight:700; margin-bottom:16px; color:var(--navy);">
+                    <i class="fas fa-users" style="color:var(--blue); margin-right:6px;"></i>Candidatures — Mission #${missionId}
+                </h3>`;
+
+            if (apps.length === 0) {
+                html += '<div class="empty-state"><i class="fas fa-inbox" style="color:var(--slate-300)"></i><p>Aucune candidature pour le moment.</p></div>';
+            } else {
+                html += apps.map(a => {
+                    const stars = '★'.repeat(a.reliability_score || 0) + '☆'.repeat(5 - (a.reliability_score || 0));
+                    const statusBadge = a.status === 'selected' ? '<span class="type-badge" style="background:#d1fae5; color:#047857;">Sélectionné</span>'
+                        : a.status === 'rejected' ? '<span class="type-badge" style="background:#fee2e2; color:#dc2626;">Non retenu</span>'
+                        : '';
+
+                    return `
+                    <div class="user-card" style="border-left:3px solid ${a.status === 'selected' ? '#059669' : a.status === 'rejected' ? '#dc2626' : '#2563eb'};">
+                        <div class="user-avatar">${((a.first_name || '?')[0] + (a.last_name || '?')[0]).toUpperCase()}</div>
+                        <div class="user-info">
+                            <div class="user-name">
+                                ${a.first_name} ${a.last_name}
+                                ${statusBadge}
+                            </div>
+                            <div class="user-details">
+                                <span style="color:var(--amber); font-size:14px; letter-spacing:2px;" title="Fiabilité ${a.reliability_score}/5">${stars}</span>
+                                <span><i class="fas fa-phone"></i> ${a.phone || '—'}</span>
+                                <span><i class="fas fa-check-double"></i> ${a.completed_missions || 0} mission(s) terminée(s)</span>
+                            </div>
+                            ${a.message ? '<div style="font-size:12px; color:var(--slate-500); margin-top:4px; padding:6px 10px; background:var(--slate-50); border-radius:6px;"><i class="fas fa-comment" style="margin-right:4px;"></i>' + a.message + '</div>' : ''}
+                            <div style="font-size:11px; color:var(--slate-400); margin-top:4px;">Candidature le ${a.applied_at ? a.applied_at.replace('T',' ').substring(0,16) : '—'}</div>
+                        </div>
+                        ${a.status === 'applied' ? '<button class="btn-validate" onclick="event.stopPropagation();assignMission(' + missionId + ',' + a.driver_id + ',\'' + a.first_name + ' ' + a.last_name + '\',this)"><i class="fas fa-check"></i> Assigner</button>' : ''}
+                    </div>`;
+                }).join('');
+            }
+
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error('Mission apps failed:', err);
+            container.innerHTML = '<p style="color:var(--red);">Erreur de connexion.</p>';
+        }
+    }
+
+    async function assignMission(missionId, driverId, driverName, btn) {
+        if (!confirm('Assigner cette mission à ' + driverName + ' ?')) return;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            const res = await fetch(API + '/api/admin/missions/' + missionId + '/assign', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ driver_id: driverId })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Mission assignée !');
+                openMissionApps(missionId);
+                loadAdminMissions();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Assigner';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Assigner';
+        }
+    }
+
+    // ===== ADMIN DRIVERS =====
+    async function loadAdminDrivers() {
+        const container = document.getElementById('adminDriversList');
+        try {
+            const res = await fetch(API + '/api/admin/drivers', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur.</p></div>'; return; }
+            const data = await res.json();
+            const drivers = data.drivers || [];
+
+            document.getElementById('driversCount').textContent = drivers.length;
+
+            if (drivers.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-user-slash" style="color:var(--slate-300)"></i><p>Aucun chauffeur inscrit.</p></div>';
+                return;
+            }
+
+            const statusConf = {
+                'pending_documents': { label: 'Documents attendus', color: '#d97706', bg: '#d9770615' },
+                'documents_review': { label: 'En vérification', color: '#2563eb', bg: '#2563eb15' },
+                'documents_incomplete': { label: 'Incomplet', color: '#dc2626', bg: '#dc262615' },
+                'approved': { label: 'Validé', color: '#059669', bg: '#05966915' },
+                'suspended': { label: 'Suspendu', color: '#dc2626', bg: '#dc262615' },
+                'rejected': { label: 'Refusé', color: '#94a3b8', bg: '#94a3b815' }
+            };
+
+            container.innerHTML = drivers.map(d => {
+                const st = statusConf[d.driver_status] || statusConf['pending_documents'];
+                const initials = ((d.first_name || '?')[0] + (d.last_name || '?')[0]).toUpperCase();
+                const stars = '★'.repeat(d.reliability_score || 3) + '☆'.repeat(5 - (d.reliability_score || 3));
+
+                return `
+                <div class="user-card" style="cursor:pointer;" onclick="openDriverDetail(${d.id})">
+                    <div class="user-avatar">${initials}</div>
+                    <div class="user-info">
+                        <div class="user-name">
+                            ${d.first_name} ${d.last_name}
+                            <span class="type-badge" style="background:${st.bg}; color:${st.color};">${st.label}</span>
+                        </div>
+                        <div class="user-email">${d.email}</div>
+                        <div class="user-details">
+                            <span><i class="fas fa-phone"></i> ${d.phone || '—'}</span>
+                            <span style="color:var(--amber); letter-spacing:2px;" title="Fiabilité ${d.reliability_score || 3}/5">${stars}</span>
+                            <span><i class="fas fa-calendar"></i> Inscrit le ${d.created_at ? d.created_at.substring(0,10).split('-').reverse().join('/') : '—'}</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:12px; flex-shrink:0;"></i>
+                </div>`;
+            }).join('');
+
+        } catch (err) {
+            console.error('Load drivers failed:', err);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de connexion.</p></div>';
+        }
+    }
+
+    async function openDriverDetail(driverId) {
+        const wrap = document.getElementById('driverDetailWrap');
+        const container = document.getElementById('driverDetailContent');
+        wrap.style.display = '';
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+        wrap.scrollIntoView({ behavior: 'smooth' });
+
+        try {
+            const res = await fetch(API + '/api/admin/drivers/' + driverId, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<p style="color:var(--red);">Erreur.</p>'; return; }
+            const data = await res.json();
+            const d = data.driver;
+            const docs = data.documents || [];
+
+            const score = d.reliability_score || 3;
+
+            let html = `
+                <button onclick="document.getElementById('driverDetailWrap').style.display='none'" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:6px; margin-bottom:16px;">
+                    <i class="fas fa-arrow-left" style="font-size:11px;"></i> Retour
+                </button>
+
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;">
+                    <div style="width:64px; height:64px; border-radius:50%; background:var(--blue-pale); color:var(--blue); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px;">
+                        ${((d.first_name || '?')[0] + (d.last_name || '?')[0]).toUpperCase()}
+                    </div>
+                    <div>
+                        <div style="font-size:20px; font-weight:800; color:var(--navy);">${d.first_name} ${d.last_name}</div>
+                        <div style="font-size:13px; color:var(--slate-500);">${d.email} · ${d.phone || '—'}</div>
+                    </div>
+                </div>
+
+                <div style="padding:16px 18px; background:var(--slate-50); border-radius:10px; margin-bottom:20px;">
+                    <div style="display:flex; flex-wrap:wrap; gap:20px;">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase;">Adresse</div>
+                            <div style="font-size:14px; font-weight:600;">${d.driver_address || '—'}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase;">Statut</div>
+                            <div style="font-size:14px; font-weight:700; color:${d.driver_status === 'approved' ? '#059669' : '#d97706'};">${d.driver_status}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FIABILITÉ -->
+                <div style="padding:16px 18px; background:#fffbeb; border:1px solid #fde68a; border-radius:10px; margin-bottom:20px;">
+                    <div style="font-size:13px; font-weight:700; color:#92400e; margin-bottom:10px;">
+                        <i class="fas fa-star" style="margin-right:4px;"></i> Score de fiabilité (caché du chauffeur)
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        ${[1,2,3,4,5].map(i => `
+                            <button onclick="updateReliability(${driverId}, ${i})" style="width:44px; height:44px; border-radius:10px; border:2px solid ${i <= score ? '#d97706' : 'var(--slate-200)'}; background:${i <= score ? '#fef3c7' : 'white'}; font-size:18px; cursor:pointer; transition:all 0.15s;" title="${i}/5">
+                                ${i <= score ? '★' : '☆'}
+                            </button>
+                        `).join('')}
+                        <span style="font-size:14px; font-weight:700; color:#92400e; margin-left:8px;">${score}/5</span>
+                    </div>
+                </div>
+
+                <!-- DOCUMENTS -->
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:10px;"><i class="fas fa-folder-open" style="margin-right:6px;"></i>Documents</div>
+                    ${docs.length === 0 ? '<p style="font-size:13px; color:var(--slate-400);">Aucun document uploadé.</p>' : docs.map(doc => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--slate-100);">
+                        <div>
+                            <div style="font-size:13px; font-weight:600;">${doc.doc_type}</div>
+                            <div style="font-size:11px; color:var(--slate-400);">${doc.created_at ? doc.created_at.substring(0,10) : ''}</div>
+                        </div>
+                        <span style="font-size:11px; font-weight:700; padding:3px 8px; border-radius:4px; background:${doc.status === 'approved' ? '#d1fae5' : doc.status === 'rejected' ? '#fee2e2' : '#fef3c7'}; color:${doc.status === 'approved' ? '#047857' : doc.status === 'rejected' ? '#dc2626' : '#b45309'};">
+                            ${doc.status === 'approved' ? 'Validé' : doc.status === 'rejected' ? 'Rejeté' : 'En attente'}
+                        </span>
+                    </div>`).join('')}
+                </div>`;
+
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error('Driver detail failed:', err);
+            container.innerHTML = '<p style="color:var(--red);">Erreur de connexion.</p>';
+        }
+    }
+
+    async function updateReliability(driverId, score) {
+        try {
+            const res = await fetch(API + '/api/admin/drivers/' + driverId + '/reliability', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ score: score })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Score mis à jour !');
+                openDriverDetail(driverId);
             } else {
                 showToast(data.error || 'Erreur', 'error');
             }
