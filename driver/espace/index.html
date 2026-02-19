@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Espace Chauffeur | PolyValences</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --navy: #0b1a2e;
+            --blue: #2563eb;
+            --blue-light: #eff6ff;
+            --emerald: #059669;
+            --amber: #d97706;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-500: #64748b;
+            --slate-800: #1e293b;
+            --danger: #dc2626;
+            --bottom-nav-height: 65px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
+        
+        body {
+            background-color: var(--slate-50);
+            color: var(--slate-800);
+            /* Empêche le pull-to-refresh natif sur mobile qui peut être gênant */
+            overscroll-behavior-y: none;
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+        }
+
+        /* ===== HEADER ===== */
+        .app-header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--slate-200);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .app-header img { height: 28px; }
+        .user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: var(--blue-light);
+            color: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px;
+        }
+
+        /* ===== STATUS BANNER ===== */
+        .status-banner {
+            padding: 12px 20px; font-size: 13px; font-weight: 600;
+            align-items: center; gap: 8px;
+        }
+        .status-banner.review { background: #fef3c7; color: #b45309; }
+        .status-banner.missing_docs { background: #fee2e2; color: #b91c1c; }
+
+        /* ===== VIEWS ===== */
+        .view {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        .view.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .view-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: var(--navy); }
+
+        /* ===== CARDS & LISTS ===== */
+        .card {
+            background: white; border-radius: 16px; padding: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 16px; border: 1px solid var(--slate-100);
+        }
+        
+        /* Doc Upload Items */
+        .doc-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid var(--slate-100);
+        }
+        .doc-item:last-child { border-bottom: none; }
+        .doc-info h4 { font-size: 14px; color: var(--slate-800); }
+        .doc-info p { font-size: 12px; color: var(--slate-500); }
+        
+        .btn-upload {
+            background: var(--blue-light); color: var(--blue);
+            border: none; padding: 8px 16px; border-radius: 8px;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+        }
+        .badge-ok {
+            background: #d1fae5; color: #047857;
+            padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+        }
+        .badge-pending {
+            background: #fef3c7; color: #b45309;
+            padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+        }
+        .btn-danger {
+            background: #fee2e2 !important; color: #dc2626 !important; cursor: pointer;
+        }
+
+        /* Profile status colors */
+        .profile-status {
+            font-weight: 700; font-size: 13px;
+            padding: 3px 10px; border-radius: 6px;
+        }
+        .profile-status.pending_documents,
+        .profile-status.documents_incomplete { background: #fee2e2; color: #b91c1c; }
+        .profile-status.documents_review { background: #fef3c7; color: #b45309; }
+        .profile-status.approved { background: #d1fae5; color: #047857; }
+        .profile-status.suspended { background: #fee2e2; color: #b91c1c; }
+        .profile-status.rejected { background: #fecaca; color: #991b1b; }
+
+        /* Banner variants */
+        .status-banner.charter { background: #dbeafe; color: #1e40af; }
+        .status-banner.suspended { background: #fee2e2; color: #b91c1c; }
+        .status-banner.rejected { background: #fecaca; color: #991b1b; }
+
+        /* Mission start button */
+        .btn-start-mission {
+            width: 100%; margin-top: 12px; padding: 10px;
+            background: var(--blue); color: white; border: none;
+            border-radius: 8px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-start-mission:hover { background: #1d4ed8; }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: var(--bottom-nav-height);
+            background: white;
+            border-top: 1px solid var(--slate-200);
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom); /* Pour les iPhone récents */
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--slate-500); text-decoration: none; width: 25%;
+            font-size: 10px; font-weight: 600; gap: 4px;
+        }
+        .nav-item i { font-size: 20px; transition: 0.2s; }
+        .nav-item.active { color: var(--blue); }
+        .nav-item.active i { transform: translateY(-2px); }
+        .nav-item.disabled { opacity: 0.5; pointer-events: none; } /* Bloqué si dossier incomplet */
+
+        /* Loading Overlay */
+        #loader {
+            position: fixed; inset: 0; background: white; z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: var(--blue); margin-bottom: 16px;"></i>
+    <p style="color: var(--slate-500); font-weight: 500;">Chargement de votre espace...</p>
+</div>
+
+<header class="app-header">
+    <img src="/images/logo-polyvalences.png" alt="PolyValences">
+    <div class="user-avatar" id="userInitials">--</div>
+</header>
+
+<div id="bannerMissingDocs" class="status-banner missing_docs" style="display:none">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>Dossier incomplet. Veuillez uploader vos documents obligatoires.</span>
+</div>
+<div id="bannerReview" class="status-banner review" style="display:none">
+    <i class="fas fa-clock"></i>
+    <span>Dossier en cours de vérification par notre équipe (48h max).</span>
+</div>
+<div id="bannerCharter" class="status-banner charter" style="display:none">
+    <i class="fas fa-file-signature"></i>
+    <span>Compte validé ! Signez la charte pour accéder à vos missions.</span>
+</div>
+<div id="bannerSuspended" class="status-banner suspended" style="display:none">
+    <i class="fas fa-ban"></i>
+    <span>Votre compte est temporairement suspendu. Contactez-nous.</span>
+</div>
+<div id="bannerRejected" class="status-banner rejected" style="display:none">
+    <i class="fas fa-times-circle"></i>
+    <span>Votre candidature n'a pas été retenue.</span>
+</div>
+
+<main id="view-missions" class="view">
+    <h1 class="view-title">Mes Missions</h1>
+    <div id="missionsContainer">
+        <div class="card" style="text-align:center;padding:40px 20px">
+            <i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--slate-200);margin-bottom:16px"></i>
+            <p style="font-size:14px;color:var(--slate-500)">Chargement...</p>
+        </div>
+    </div>
+</main>
+
+<main id="view-frais" class="view">
+    <h1 class="view-title">Mes Frais</h1>
+    <div id="expensesContainer">
+        <div class="card" style="text-align:center;padding:30px 20px">
+            <i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--slate-200);margin-bottom:16px"></i>
+            <p style="font-size:14px;color:var(--slate-500)">Chargement...</p>
+        </div>
+    </div>
+</main>
+
+<main id="view-docs" class="view">
+    <h1 class="view-title">Mon Dossier</h1>
+    <p style="font-size:14px;color:var(--slate-500);margin-bottom:16px">
+        Uploadez vos documents obligatoires. Notre équipe vérifie votre dossier sous 48h.
+    </p>
+    <div class="card" id="docsContainer">
+        <div style="text-align:center;padding:20px">
+            <i class="fas fa-spinner fa-spin" style="font-size:24px;color:var(--slate-200)"></i>
+        </div>
+    </div>
+</main>
+
+<main id="view-charte" class="view">
+    <h1 class="view-title">Charte Chauffeur</h1>
+    <div class="card" style="padding:24px">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;color:var(--navy)">
+            <i class="fas fa-file-signature" style="color:var(--blue);margin-right:8px"></i>Charte PolyValences
+        </h3>
+        <div style="font-size:13px;color:var(--slate-600);line-height:1.8;margin-bottom:20px">
+            <p style="margin-bottom:12px">En signant cette charte, je m'engage à :</p>
+            <ul style="padding-left:20px;display:flex;flex-direction:column;gap:8px">
+                <li>Réaliser un état des lieux complet au départ et à l'arrivée de chaque mission</li>
+                <li>Prendre les photos obligatoires du véhicule</li>
+                <li><strong>Ne jamais utiliser le badge télépéage ou la carte carburant du client</strong></li>
+                <li>Payer mes frais personnellement et fournir un justificatif photo pour remboursement</li>
+                <li>Respecter le code de la route et les limitations de vitesse</li>
+                <li>Signaler immédiatement tout incident à PolyValences</li>
+                <li>Traiter les véhicules confiés avec le plus grand soin</li>
+            </ul>
+            <p style="margin-top:16px;padding:12px;background:#fef3c7;border-radius:8px;color:#92400e;font-weight:600">
+                <i class="fas fa-exclamation-triangle" style="margin-right:6px"></i>
+                Rappel : Pas de justificatif photo = pas de remboursement de frais.
+            </p>
+        </div>
+        <button id="charterBtn" onclick="signCharter()" style="width:100%;padding:14px;background:var(--navy);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px">
+            <i class="fas fa-signature"></i> J'accepte et je signe la charte
+        </button>
+    </div>
+</main>
+
+<main id="view-profil" class="view">
+    <h1 class="view-title">Mon Profil</h1>
+    <div class="card">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+            <div style="width:56px;height:56px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px" id="profileInitials">--</div>
+            <div>
+                <h3 id="profileName" style="font-size:17px;font-weight:700">...</h3>
+                <p id="profileEmail" style="color:var(--slate-500);font-size:13px">...</p>
+            </div>
+        </div>
+        <div style="border-top:1px solid var(--slate-100);padding-top:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;font-size:14px">
+                <span style="color:var(--slate-500)">Téléphone</span>
+                <span id="profilePhone" style="font-weight:600">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:14px">
+                <span style="color:var(--slate-500)">Statut</span>
+                <span id="profileStatus" class="profile-status">—</span>
+            </div>
+        </div>
+    </div>
+    <button onclick="logout()" style="width:100%;padding:14px;background:#fee2e2;color:#b91c1c;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px">
+        <i class="fas fa-sign-out-alt" style="margin-right:6px"></i> Se déconnecter
+    </button>
+    <a href="/" style="display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--slate-500);text-decoration:none">
+        <i class="fas fa-arrow-left" style="margin-right:4px"></i> Retour au site
+    </a>
+</main>
+
+<nav class="bottom-nav">
+    <a href="#" class="nav-item" id="nav-missions" onclick="event.preventDefault();switchTab('missions')">
+        <i class="fas fa-car"></i>
+        <span>Missions</span>
+    </a>
+    <a href="#" class="nav-item" id="nav-frais" onclick="event.preventDefault();switchTab('frais')">
+        <i class="fas fa-receipt"></i>
+        <span>Frais</span>
+    </a>
+    <a href="#" class="nav-item" id="nav-docs" onclick="event.preventDefault();switchTab('docs')">
+        <i class="fas fa-folder-open"></i>
+        <span>Docs</span>
+    </a>
+    <a href="#" class="nav-item" id="nav-profil" onclick="event.preventDefault();switchTab('profil')">
+        <i class="fas fa-user"></i>
+        <span>Profil</span>
+    </a>
+</nav>
+
+<script>
+    const API = 'https://api.polyvalences.eu';
+    let currentUser = null;
+    let driverDocs = [];
+    let driverMissions = [];
+
+    // ===== REQUIRED DOCS CONFIG =====
+    const DOC_TYPES = [
+        { type: 'id_front', label: 'Pièce d\'identité (recto)', desc: 'CNI ou Passeport' },
+        { type: 'id_back', label: 'Pièce d\'identité (verso)', desc: 'CNI ou Passeport' },
+        { type: 'license_front', label: 'Permis de conduire (recto)', desc: 'En cours de validité' },
+        { type: 'license_back', label: 'Permis de conduire (verso)', desc: 'En cours de validité' },
+        { type: 'address_proof', label: 'Justificatif de domicile', desc: 'Moins de 3 mois' },
+        { type: 'rib', label: 'RIB', desc: 'Pour le paiement des missions' },
+    ];
+    const DOC_OPTIONAL = [
+        { type: 'kbis', label: 'Kbis', desc: 'Si auto-entrepreneur / société' },
+        { type: 'insurance_rc', label: 'Assurance RC Pro', desc: 'Si disponible' },
+    ];
+
+    async function initApp() {
+        const token = localStorage.getItem('pv_token');
+        if (!token) { window.location.href = '/driver/'; return; }
+
+        try {
+            const res = await fetch(API + '/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            if (!res.ok) { logout(); return; }
+
+            const data = await res.json();
+            if (data.user.role !== 'driver') {
+                // Pas un chauffeur → rediriger
+                window.location.href = '/espace/';
+                return;
+            }
+
+            currentUser = data.user;
+            setupUI();
+            loadDocs();
+
+        } catch (error) {
+            console.error(error);
+            document.getElementById('loader').innerHTML = '<p style="color:#dc2626;font-weight:600;padding:20px;text-align:center">Impossible de contacter le serveur.<br><a href="javascript:location.reload()" style="color:var(--blue)">Réessayer</a></p>';
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+        }
+    }
+
+    function setupUI() {
+        const initials = (currentUser.first_name[0] + currentUser.last_name[0]).toUpperCase();
+        document.getElementById('userInitials').innerText = initials;
+        document.getElementById('profileName').innerText = currentUser.first_name + ' ' + currentUser.last_name;
+        document.getElementById('profileEmail').innerText = currentUser.email;
+        document.getElementById('profileInitials').innerText = initials;
+        document.getElementById('profilePhone').innerText = currentUser.phone || '—';
+        document.getElementById('profileStatus').innerText = statusLabel(currentUser.driver_status);
+        document.getElementById('profileStatus').className = 'profile-status ' + currentUser.driver_status;
+
+        const status = currentUser.driver_status;
+
+        // Hide all banners first
+        document.querySelectorAll('.status-banner').forEach(b => b.style.display = 'none');
+
+        if (status === 'pending_documents' || status === 'documents_incomplete') {
+            document.getElementById('bannerMissingDocs').style.display = 'flex';
+            if (status === 'documents_incomplete') {
+                document.getElementById('bannerMissingDocs').querySelector('span').textContent =
+                    'Documents incomplets. Veuillez mettre à jour votre dossier.';
+            }
+            blockAppToDocs();
+        } else if (status === 'documents_review') {
+            document.getElementById('bannerReview').style.display = 'flex';
+            blockAppToDocs();
+        } else if (status === 'approved') {
+            // Vérifier si charte signée
+            if (!currentUser.driver_charter_signed) {
+                document.getElementById('bannerCharter').style.display = 'flex';
+                blockAppToCharter();
+            } else {
+                enableFullAccess();
+                switchTab('missions');
+                loadMissions();
+            }
+        } else if (status === 'suspended') {
+            document.getElementById('bannerSuspended').style.display = 'flex';
+            blockAll();
+        } else if (status === 'rejected') {
+            document.getElementById('bannerRejected').style.display = 'flex';
+            blockAll();
+        }
+    }
+
+    function statusLabel(s) {
+        const map = {
+            'pending_documents': 'Documents en attente',
+            'documents_review': 'En cours de vérification',
+            'documents_incomplete': 'Documents incomplets',
+            'approved': 'Validé',
+            'suspended': 'Suspendu',
+            'rejected': 'Refusé'
+        };
+        return map[s] || s;
+    }
+
+    function blockAppToDocs() {
+        document.getElementById('nav-missions').classList.add('disabled');
+        document.getElementById('nav-frais').classList.add('disabled');
+        switchTab('docs');
+    }
+
+    function blockAppToCharter() {
+        document.getElementById('nav-missions').classList.add('disabled');
+        document.getElementById('nav-frais').classList.add('disabled');
+        switchTab('charte');
+    }
+
+    function blockAll() {
+        document.getElementById('nav-missions').classList.add('disabled');
+        document.getElementById('nav-frais').classList.add('disabled');
+        document.getElementById('nav-docs').classList.add('disabled');
+        switchTab('profil');
+    }
+
+    function enableFullAccess() {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('disabled'));
+    }
+
+    // ===== DOCUMENTS =====
+    async function loadDocs() {
+        const token = localStorage.getItem('pv_token');
+        try {
+            const res = await fetch(API + '/api/driver/documents', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            driverDocs = data.documents || [];
+        } catch (e) { driverDocs = []; }
+        renderDocs();
+    }
+
+    function renderDocs() {
+        const container = document.getElementById('docsContainer');
+        const allDocs = [...DOC_TYPES, ...DOC_OPTIONAL];
+        let html = '';
+
+        allDocs.forEach(docDef => {
+            const uploaded = driverDocs.find(d => d.doc_type === docDef.type);
+            const isOptional = DOC_OPTIONAL.some(o => o.type === docDef.type);
+
+            html += '<div class="doc-item">';
+            html += '<div class="doc-info">';
+            html += '<h4>' + docDef.label + (isOptional ? ' <span style="color:var(--slate-500);font-size:11px;font-weight:400">(optionnel)</span>' : '') + '</h4>';
+            html += '<p>' + docDef.desc + '</p>';
+            if (uploaded && uploaded.admin_note) {
+                html += '<p style="color:#dc2626;font-size:11px;margin-top:4px"><i class="fas fa-info-circle"></i> ' + uploaded.admin_note + '</p>';
+            }
+            html += '</div>';
+
+            if (uploaded) {
+                if (uploaded.status === 'approved') {
+                    html += '<span class="badge-ok"><i class="fas fa-check"></i> Validé</span>';
+                } else if (uploaded.status === 'rejected') {
+                    html += '<label class="btn-upload btn-danger"><i class="fas fa-redo"></i> Renvoyer<input type="file" accept="image/*,.pdf" onchange="uploadDoc(\'' + docDef.type + '\', this)" hidden></label>';
+                } else {
+                    html += '<span class="badge-pending"><i class="fas fa-clock"></i> Envoyé</span>';
+                }
+            } else {
+                html += '<label class="btn-upload"><i class="fas fa-upload"></i> Uploader<input type="file" accept="image/*,.pdf" onchange="uploadDoc(\'' + docDef.type + '\', this)" hidden></label>';
+            }
+
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+    }
+
+    async function uploadDoc(docType, input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const token = localStorage.getItem('pv_token');
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('doc_type', docType);
+
+        // Feedback visuel
+        const btn = input.parentElement;
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.style.pointerEvents = 'none';
+
+        try {
+            const res = await fetch(API + '/api/driver/documents', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token },
+                body: formData
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                showToast(data.error || 'Erreur lors de l\'upload', 'error');
+                btn.innerHTML = originalHtml;
+                btn.style.pointerEvents = '';
+                return;
+            }
+
+            showToast('Document envoyé !');
+
+            if (data.all_required_uploaded) {
+                showToast('Tous les documents obligatoires sont envoyés. Vérification en cours.');
+                // Recharger le statut
+                setTimeout(() => location.reload(), 1500);
+            }
+
+            await loadDocs();
+        } catch (e) {
+            showToast('Erreur réseau. Réessayez.', 'error');
+            btn.innerHTML = originalHtml;
+            btn.style.pointerEvents = '';
+        }
+    }
+
+    // ===== CHARTER =====
+    async function signCharter() {
+        const token = localStorage.getItem('pv_token');
+        const btn = document.getElementById('charterBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signature...';
+
+        try {
+            const res = await fetch(API + '/api/driver/charter', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ version: '2026-02' })
+            });
+
+            if (res.ok) {
+                showToast('Charte signée ! Bienvenue chez PolyValences.');
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                const data = await res.json();
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (e) {
+            showToast('Erreur réseau.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-signature"></i> J\'accepte et je signe la charte';
+        }
+    }
+
+    // ===== MISSIONS =====
+    async function loadMissions() {
+        const token = localStorage.getItem('pv_token');
+        try {
+            const res = await fetch(API + '/api/driver/missions', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            driverMissions = data.missions || [];
+        } catch (e) { driverMissions = []; }
+        renderMissions();
+    }
+
+    function renderMissions() {
+        const container = document.getElementById('missionsContainer');
+        if (driverMissions.length === 0) {
+            container.innerHTML = `
+                <div class="card" style="text-align:center;padding:40px 20px">
+                    <i class="fas fa-map-marked-alt" style="font-size:48px;color:var(--slate-200);margin-bottom:16px"></i>
+                    <h3 style="font-size:16px;margin-bottom:8px">Aucune mission pour le moment</h3>
+                    <p style="font-size:14px;color:var(--slate-500)">Nous vous notifierons par email dès qu'un trajet vous est assigné.</p>
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        driverMissions.forEach(m => {
+            const statusColor = {
+                'assigned': 'var(--blue)', 'in_progress': 'var(--amber)',
+                'edl_departure_done': 'var(--amber)', 'in_transit': 'var(--amber)',
+                'edl_arrival_done': 'var(--emerald)', 'completed': 'var(--emerald)', 'cancelled': 'var(--danger)'
+            }[m.status] || 'var(--slate-500)';
+
+            const statusText = {
+                'assigned': 'Assignée', 'in_progress': 'En cours',
+                'edl_departure_done': 'EDL départ fait', 'in_transit': 'En transit',
+                'edl_arrival_done': 'EDL arrivée fait', 'completed': 'Terminée', 'cancelled': 'Annulée'
+            }[m.status] || m.status;
+
+            const originShort = (m.origin_address || '').split(',')[0];
+            const destShort = (m.destination_address || '').split(',')[0];
+            const date = m.confirmed_date ? m.confirmed_date.split('-').reverse().join('/') : '—';
+
+            html += `
+                <div class="card mission-card" onclick="openMission(${m.id})" style="cursor:pointer">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+                        <div>
+                            <div style="font-size:12px;color:var(--slate-500);margin-bottom:2px">${m.quote_number || 'Mission #' + m.id}</div>
+                            <div style="font-size:15px;font-weight:700">${originShort} → ${destShort}</div>
+                        </div>
+                        <span style="background:${statusColor}15;color:${statusColor};padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">${statusText}</span>
+                    </div>
+                    <div style="display:flex;gap:16px;font-size:13px;color:var(--slate-500)">
+                        <span><i class="fas fa-road" style="margin-right:4px"></i>${m.distance_km || '—'} km</span>
+                        <span><i class="fas fa-calendar" style="margin-right:4px"></i>${date}</span>
+                    </div>
+                    ${m.client_first_name ? '<div style="font-size:12px;color:var(--slate-500);margin-top:8px"><i class="fas fa-user" style="margin-right:4px"></i>Client : ' + m.client_first_name + ' ' + (m.client_last_name || '') + '</div>' : ''}
+                    ${m.status === 'assigned' ? '<button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button>' : ''}
+                </div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    async function startMission(missionId, btn) {
+        const token = localStorage.getItem('pv_token');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            const res = await fetch(API + '/api/driver/missions/' + missionId + '/start', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                showToast('Mission démarrée !');
+                await loadMissions();
+            } else {
+                const data = await res.json();
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (e) {
+            showToast('Erreur réseau.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-play"></i> Démarrer la mission';
+        }
+    }
+
+    async function openMission(missionId) {
+        // Pour l'instant, redirige vers le détail
+        // TODO: modal ou vue détaillée avec EDL + frais
+        showToast('Détail mission — bientôt disponible');
+    }
+
+    // ===== EXPENSES =====
+    async function loadExpenses() {
+        const token = localStorage.getItem('pv_token');
+        try {
+            const res = await fetch(API + '/api/driver/expenses', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            renderExpenses(data.expenses || []);
+        } catch (e) {
+            renderExpenses([]);
+        }
+    }
+
+    function renderExpenses(expenses) {
+        const container = document.getElementById('expensesContainer');
+        if (expenses.length === 0) {
+            container.innerHTML = `
+                <div class="card" style="text-align:center;padding:30px 20px">
+                    <i class="fas fa-receipt" style="font-size:40px;color:var(--slate-200);margin-bottom:12px"></i>
+                    <p style="font-size:14px;color:var(--slate-500)">Aucun frais déclaré pour le moment.</p>
+                </div>`;
+            return;
+        }
+
+        const typeLabels = { 'toll': 'Péage', 'fuel': 'Carburant', 'train_return': 'Train retour', 'other': 'Autre' };
+        const statusLabels = { 'pending': 'En attente', 'approved': 'Validé', 'rejected': 'Rejeté' };
+
+        let html = '';
+        expenses.forEach(e => {
+            const statusColor = e.status === 'approved' ? 'var(--emerald)' : e.status === 'rejected' ? 'var(--danger)' : 'var(--amber)';
+            html += `
+                <div class="card" style="padding:14px 16px">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <div style="font-size:14px;font-weight:700">${typeLabels[e.type] || e.type}</div>
+                            <div style="font-size:12px;color:var(--slate-500)">${e.created_at ? e.created_at.split('T')[0].split('-').reverse().join('/') : '—'}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-size:16px;font-weight:700">${parseFloat(e.amount).toFixed(2)} €</div>
+                            <span style="font-size:11px;font-weight:600;color:${statusColor}">${statusLabels[e.status] || e.status}</span>
+                        </div>
+                    </div>
+                    ${e.admin_note ? '<div style="margin-top:8px;font-size:12px;color:var(--danger)"><i class="fas fa-info-circle"></i> ' + e.admin_note + '</div>' : ''}
+                </div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // ===== NAVIGATION =====
+    function switchTab(tabId) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('view-' + tabId).classList.add('active');
+        const navItem = document.getElementById('nav-' + tabId);
+        if (navItem) navItem.classList.add('active');
+
+        // Lazy load
+        if (tabId === 'missions' && currentUser && currentUser.driver_status === 'approved') loadMissions();
+        if (tabId === 'frais') loadExpenses();
+    }
+
+    // ===== TOAST =====
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:80px;left:20px;right:20px;background:' + (type === 'error' ? '#dc2626' : 'var(--navy)') + ';color:white;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:300;text-align:center;animation:fadeIn 0.3s ease';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    function logout() {
+        localStorage.removeItem('pv_token');
+        window.location.href = '/driver/';
+    }
+
+    window.onload = initApp;
+</script>
+
+</body>
+</html>
