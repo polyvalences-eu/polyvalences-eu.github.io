@@ -536,6 +536,9 @@
         <div id="missionSheetWrap" style="display:none; margin-top:24px;">
             <div class="table-card" style="padding:28px;" id="missionSheetContent"></div>
         </div>
+        <div id="missionEdlWrap" style="display:none; margin-top:24px;">
+            <div class="table-card" style="padding:28px;" id="missionEdlContent"></div>
+        </div>
     </div>
 
     <!-- ============ TAB: CHAUFFEURS ============ -->
@@ -1498,6 +1501,7 @@
                 let clickAction = '';
                 if (m.status === 'draft') clickAction = 'openMissionDraft(' + m.id + ')';
                 else if (m.status === 'open') clickAction = 'openMissionApps(' + m.id + ')';
+                else if (['edl_departure_done','in_transit','edl_arrival_done','completed'].includes(m.status)) clickAction = 'openMissionEdl(' + m.id + ')';
 
                 return `
                 <div class="user-card" style="cursor:pointer;" onclick="${clickAction}">
@@ -1868,6 +1872,119 @@
             showToast('Erreur de connexion', 'error');
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-bullhorn"></i> Ouvrir à tous les chauffeurs';
+        }
+    }
+
+    // ===== MISSION EDL (ÉTATS DES LIEUX) =====
+    async function openMissionEdl(missionId) {
+        const wrap = document.getElementById('missionEdlWrap');
+        const container = document.getElementById('missionEdlContent');
+        wrap.style.display = '';
+        wrap.scrollIntoView({ behavior: 'smooth' });
+
+        container.innerHTML = '<div style="text-align:center;padding:24px"><i class="fas fa-spinner fa-spin" style="font-size:20px;color:var(--blue)"></i></div>';
+
+        try {
+            // Charger les EDL de cette mission
+            const res = await fetch(API + '/api/inspections?mission_id=' + missionId, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            const inspections = data.inspections || [];
+
+            // Charger aussi les infos mission
+            const mission = adminMissionsData.find(m => m.id === missionId);
+
+            let html = `
+                <button onclick="document.getElementById('missionEdlWrap').style.display='none'" style="background:none;border:1px solid var(--slate-200);border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--slate-500);cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px">
+                    <i class="fas fa-arrow-left" style="font-size:11px"></i> Retour
+                </button>
+                <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--navy)">
+                    <i class="fas fa-clipboard-list" style="color:var(--blue);margin-right:6px"></i>États des lieux — ${mission ? (mission.quote_number || 'Mission #' + missionId) : 'Mission #' + missionId}
+                </h3>
+                <p style="font-size:13px;color:var(--slate-500);margin-bottom:20px">${mission ? (mission.origin_address || '') + ' → ' + (mission.destination_address || '') : ''}</p>`;
+
+            if (inspections.length === 0) {
+                html += '<div style="text-align:center;padding:30px;color:var(--slate-400)"><i class="fas fa-clipboard" style="font-size:32px;margin-bottom:10px;display:block"></i>Aucun EDL pour cette mission.</div>';
+            } else {
+                inspections.forEach(edl => {
+                    const typeLabel = edl.type === 'departure' ? 'Départ' : edl.type === 'arrival' ? 'Arrivée' : 'Libre';
+                    const dateStr = edl.created_at ? new Date(edl.created_at + 'Z').toLocaleString('fr-FR') : '—';
+
+                    let statusHtml = '';
+                    if (edl.contested && edl.status !== 'resolved') {
+                        statusHtml = '<span style="background:#fef2f2;color:#dc2626;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700">Contesté</span>';
+                    } else if (edl.status === 'resolved') {
+                        statusHtml = '<span style="background:#dbeafe;color:#1e40af;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700">Résolu</span>';
+                    } else if (edl.status === 'signed') {
+                        statusHtml = '<span style="background:#d1fae5;color:#047857;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700">Signé</span>';
+                    } else if (edl.status === 'signed_absent') {
+                        statusHtml = '<span style="background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700">Signé (absent)</span>';
+                    } else {
+                        statusHtml = '<span style="background:var(--slate-100);color:var(--slate-500);padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700">' + (edl.status || 'Brouillon') + '</span>';
+                    }
+
+                    html += '<div style="border:1px solid var(--slate-100);border-radius:12px;padding:18px;margin-bottom:12px;background:var(--slate-50)">';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+                    html += '<div><strong style="font-size:15px">EDL ' + typeLabel + '</strong> ' + statusHtml + '</div>';
+                    html += '<a href="' + API + '/api/inspections/' + edl.id + '/pdf?token=' + authToken + '" target="_blank" style="padding:8px 16px;background:var(--blue);color:white;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px"><i class="fas fa-file-alt"></i>Voir le PDF</a>';
+                    html += '</div>';
+                    html += '<div style="font-size:13px;color:var(--slate-500)">' + dateStr + ' — ' + (edl.plate || '') + ' ' + [edl.brand, edl.model].filter(Boolean).join(' ') + '</div>';
+                    html += '<div style="font-size:13px;color:var(--slate-500);margin-top:4px">Km : ' + (edl.mileage || '—') + ' — Carburant : ' + (edl.fuel_level || '—') + '</div>';
+
+                    // Dommages
+                    const damages = typeof edl.damages === 'string' ? JSON.parse(edl.damages || '[]') : (edl.damages || []);
+                    if (damages.length > 0) {
+                        html += '<div style="margin-top:10px;padding:10px;background:#fef2f2;border-radius:8px;font-size:12px;color:#dc2626"><strong>' + damages.length + ' dommage(s) :</strong> ';
+                        html += damages.map(d => 'Zone ' + d.zone + ' (' + d.type + ')').join(', ');
+                        html += '</div>';
+                    }
+
+                    // Contestation
+                    if (edl.contested) {
+                        html += '<div style="margin-top:10px;padding:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px">';
+                        html += '<div style="font-size:13px;font-weight:700;color:#dc2626;margin-bottom:4px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Contestation client</div>';
+                        html += '<div style="font-size:13px;color:var(--slate-600)">' + (edl.contest_reason || '—') + '</div>';
+                        if (edl.status !== 'resolved') {
+                            html += '<button onclick="resolveContest(' + edl.id + ',this)" style="margin-top:10px;padding:8px 18px;background:#059669;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit"><i class="fas fa-check"></i> Résoudre</button>';
+                        } else {
+                            html += '<div style="margin-top:8px;font-size:12px;color:#059669;font-weight:600"><i class="fas fa-check-circle"></i> Résolu</div>';
+                        }
+                        html += '</div>';
+                    }
+
+                    html += '</div>';
+                });
+            }
+
+            container.innerHTML = html;
+        } catch (e) {
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626">Erreur de chargement des EDL.</div>';
+        }
+    }
+
+    async function resolveContest(inspectionId, btn) {
+        if (!confirm('Confirmer la résolution de cette contestation ?')) return;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch(API + '/api/admin/inspections/' + inspectionId + '/resolve', {
+                method: 'PUT',
+                headers: { 'Authorization': 'Bearer ' + authToken, 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            if (res.ok) {
+                btn.outerHTML = '<div style="margin-top:8px;font-size:12px;color:#059669;font-weight:600"><i class="fas fa-check-circle"></i> Résolu — Email envoyé au client</div>';
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Erreur');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Résoudre';
+            }
+        } catch (e) {
+            alert('Erreur réseau');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Résoudre';
         }
     }
 
