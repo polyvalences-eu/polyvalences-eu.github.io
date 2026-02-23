@@ -13,14 +13,14 @@
         gtag('js', new Date());
         gtag('config', 'G-Z7W30WDQNB');
     </script>
-    <meta name="description" content="Rejoignez PolyValences comme chauffeur-convoyeur indépendant. Missions de convoyage automobile en France et Europe. Rémunération attractive par mission + frais remboursés.">
+    <meta name="description" content="Rejoignez PolyValences comme chauffeur-convoyeur. Missions de convoyage automobile en France et Europe. Frais remboursés sur justificatif.">
 
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "JobPosting",
-        "title": "Chauffeur-convoyeur automobile indépendant",
-        "description": "Missions de convoyage automobile en France et Europe. Rémunération attractive par mission + frais remboursés.",
+        "title": "Chauffeur-convoyeur automobile",
+        "description": "Missions de convoyage automobile en France et Europe. Frais remboursés sur justificatif.",
         "hiringOrganization": {
             "@type": "Organization",
             "name": "PolyValences",
@@ -376,75 +376,6 @@
             font-size: 14px; color: var(--slate-500); line-height: 1.7;
         }
 
-        /* ===== RÉMUNÉRATION ===== */
-        .remuneration { padding: 100px 24px; background: var(--slate-50); }
-        .remuneration-inner { max-width: 1000px; margin: 0 auto; }
-        .remuneration-header { text-align: center; margin-bottom: 56px; }
-        .remuneration-header h2 {
-            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
-            color: var(--slate-900); margin-bottom: 12px;
-        }
-        .remuneration-header p { font-size: 17px; color: var(--slate-500); }
-        .remuneration-cards { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
-        .rem-card {
-            flex: 0 0 340px; padding: 36px;
-            background: white; border-radius: var(--radius-lg);
-            border: 1px solid var(--slate-100);
-            text-align: center; position: relative; overflow: hidden;
-            transition: all 0.3s;
-        }
-        .rem-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
-        .rem-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-        }
-        .rem-card.blue::before { background: var(--blue); }
-        .rem-card.green::before { background: var(--emerald); }
-        .rem-icon {
-            width: 56px; height: 56px; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; margin: 0 auto 16px;
-        }
-        .rem-card.blue .rem-icon { background: var(--blue-pale); color: var(--blue); }
-        .rem-card.green .rem-icon { background: #d1fae5; color: var(--emerald); }
-        .rem-card-label {
-            font-size: 12px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.06em; margin-bottom: 8px;
-        }
-        .rem-card.blue .rem-card-label { color: var(--blue); }
-        .rem-card.green .rem-card-label { color: var(--emerald); }
-        .rem-card-title {
-            font-size: 16px; font-weight: 600; color: var(--slate-700);
-            margin-bottom: 12px;
-        }
-        .rem-card-price {
-            font-size: 48px; font-weight: 800;
-            font-family: 'Playfair Display', serif; margin-bottom: 4px;
-        }
-        .rem-card.blue .rem-card-price { color: var(--blue); }
-        .rem-card.green .rem-card-price { color: var(--emerald); }
-        .rem-card-freq { font-size: 14px; color: var(--slate-500); margin-bottom: 16px; }
-        .rem-card-detail { font-size: 13px; color: var(--slate-500); line-height: 1.7; }
-
-        .rem-extras {
-            margin-top: 48px; text-align: center;
-            background: white; border-radius: var(--radius-lg);
-            padding: 32px; border: 1px solid var(--slate-100);
-            max-width: 700px; margin-left: auto; margin-right: auto;
-        }
-        .rem-extras h4 {
-            font-size: 16px; font-weight: 700; color: var(--slate-900);
-            margin-bottom: 16px; font-family: 'DM Sans', sans-serif;
-        }
-        .rem-extras-list {
-            list-style: none; display: flex; flex-wrap: wrap;
-            justify-content: center; gap: 16px 32px;
-        }
-        .rem-extras-list li {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 14px; color: var(--slate-600);
-        }
-        .rem-extras-list li i { color: var(--emerald); font-size: 13px; }
-
         /* ===== AVANTAGES ===== */
         .avantages { padding: 100px 24px; background: white; }
         .avantages-inner { max-width: 1200px; margin: 0 auto; }
@@ -571,7 +502,6 @@
         <div class="nav-links">
             <a href="/" class="nav-link">Accueil</a>
             <a href="#comment-ca-marche" class="nav-link">Comment ça marche</a>
-            <a href="#remuneration" class="nav-link">Rémunération</a>
             <a href="#avantages" class="nav-link">Avantages</a>
             <div class="nav-sep"></div>
             <a href="mailto:support@polyvalences.eu" class="nav-email">
@@ -597,7 +527,6 @@
     <ul class="mobile-menu-links">
         <li><a href="/" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Accueil</a></li>
         <li><a href="#comment-ca-marche" onclick="closeMobileMenu()"><i class="fas fa-list-ol"></i> Comment ça marche</a></li>
-        <li><a href="#remuneration" onclick="closeMobileMenu()"><i class="fas fa-euro-sign"></i> Rémunération</a></li>
         <li><a href="#avantages" onclick="closeMobileMenu()"><i class="fas fa-star"></i> Avantages</a></li>
         <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
     </ul>
@@ -619,11 +548,11 @@
             </div>
             <h1>Devenez chauffeur-<em>convoyeur</em> PolyValences</h1>
             <p class="hero-sub">
-                Vous aimez conduire ? Rejoignez notre réseau de chauffeurs indépendants. Missions de convoyage automobile en France et en Europe, rémunération transparente, liberté totale.
+                Vous aimez conduire ? Rejoignez notre réseau de chauffeurs-convoyeurs. Missions de convoyage automobile en France et en Europe, frais remboursés.
             </p>
             <div style="display:flex;gap:16px;flex-wrap:wrap;">
-                <a href="#remuneration" class="btn-outline">
-                    <i class="fas fa-euro-sign"></i> Voir la rémunération
+                <a href="#avantages" class="btn-outline">
+                    <i class="fas fa-star"></i> Voir les avantages
                 </a>
             </div>
         </div>
@@ -731,8 +660,8 @@
 <div class="trust-bar">
     <div class="trust-inner">
         <div class="trust-item">
-            <div class="trust-number">Rémunéré</div>
-            <div class="trust-label">Par mission + frais</div>
+            <div class="trust-number">Missions</div>
+            <div class="trust-label">France & Europe</div>
         </div>
         <div class="trust-item">
             <div class="trust-number">100%</div>
@@ -776,42 +705,18 @@
     </div>
 </section>
 
-<!-- ===== RÉMUNÉRATION ===== -->
-<section class="remuneration" id="remuneration">
-    <div class="remuneration-inner">
-        <div class="remuneration-header">
-            <h2>Rémunération attractive</h2>
-            <p>Chaque mission est rémunérée. Vos frais sont remboursés sur justificatif.</p>
-        </div>
-        <div class="remuneration-cards">
-            <div class="rem-card blue">
-                <div class="rem-icon"><i class="fas fa-wallet"></i></div>
-                <div class="rem-card-label">Rémunération</div>
-                <div class="rem-card-title">Par mission effectuée</div>
-                <div class="rem-card-detail" style="margin-top:12px">Le montant de chaque mission vous est communiqué avant acceptation. Vous êtes payé par virement après validation.</div>
-            </div>
-            <div class="rem-card green">
-                <div class="rem-icon"><i class="fas fa-receipt"></i></div>
-                <div class="rem-card-label">Frais remboursés</div>
-                <div class="rem-card-title">Péage, carburant, train retour</div>
-                <div class="rem-card-detail" style="margin-top:12px">Tous vos frais de mission sont remboursés intégralement sur présentation d'un justificatif photo.</div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- ===== AVANTAGES ===== -->
 <section class="avantages" id="avantages">
     <div class="avantages-inner">
         <div class="avantages-header">
             <h2>Pourquoi rejoindre PolyValences ?</h2>
-            <p>Un réseau professionnel, une liberté totale.</p>
+            <p>Un réseau professionnel au service du convoyage automobile.</p>
         </div>
         <div class="avantages-grid">
             <div class="av-card">
                 <div class="av-icon"><i class="fas fa-clock"></i></div>
-                <h3>Liberté totale</h3>
-                <p>Vous choisissez vos missions, vos horaires, votre rythme. Pas de minimum, pas d'obligation.</p>
+                <h3>Flexibilité</h3>
+                <p>Vous choisissez vos missions selon votre disponibilité et votre zone géographique.</p>
             </div>
             <div class="av-card">
                 <div class="av-icon"><i class="fas fa-map-marked-alt"></i></div>
@@ -826,7 +731,7 @@
             <div class="av-card">
                 <div class="av-icon"><i class="fas fa-euro-sign"></i></div>
                 <h3>Paiement rapide</h3>
-                <p>Rémunération par virement après validation de la mission. Frais remboursés sur justificatif.</p>
+                <p>Paiement par virement après validation de la mission. Frais remboursés sur justificatif.</p>
             </div>
             <div class="av-card">
                 <div class="av-icon"><i class="fas fa-shield-alt"></i></div>
@@ -864,7 +769,6 @@
                 <ul>
                     <li><a href="/">Site client</a></li>
                     <li><a href="#comment-ca-marche">Comment ça marche</a></li>
-                    <li><a href="#remuneration">Rémunération</a></li>
                     <li><a href="#avantages">Avantages</a></li>
                 </ul>
             </div>

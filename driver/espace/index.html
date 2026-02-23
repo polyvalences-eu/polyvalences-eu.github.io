@@ -189,6 +189,128 @@
             position: fixed; inset: 0; background: white; z-index: 1000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
+
+        /* ===== EDL WIZARD ===== */
+        .edl-overlay {
+            display: none; position: fixed; inset: 0; background: white; z-index: 500;
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+        }
+        .edl-overlay.active { display: flex; flex-direction: column; }
+        .edl-header {
+            background: var(--navy); color: white; padding: 14px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 501;
+        }
+        .edl-header h2 { font-size: 16px; font-weight: 700; }
+        .edl-close { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 4px 8px; }
+        .edl-progress { display: flex; gap: 8px; padding: 16px 20px; background: var(--slate-50); }
+        .edl-progress-dot {
+            flex: 1; height: 4px; border-radius: 4px; background: var(--slate-200); transition: 0.3s;
+        }
+        .edl-progress-dot.done { background: var(--emerald); }
+        .edl-progress-dot.current { background: var(--blue); }
+        .edl-step { display: none; flex: 1; padding: 20px; padding-bottom: 100px; }
+        .edl-step.active { display: block; }
+        .edl-step h3 { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+        .edl-step p.subtitle { font-size: 13px; color: var(--slate-500); margin-bottom: 20px; }
+        .edl-field { margin-bottom: 16px; }
+        .edl-field label { display: block; font-size: 13px; font-weight: 600; color: var(--slate-800); margin-bottom: 6px; }
+        .edl-field input, .edl-field textarea {
+            width: 100%; padding: 12px; border: 1px solid var(--slate-200); border-radius: 10px;
+            font-size: 15px; font-family: 'DM Sans', sans-serif; box-sizing: border-box;
+        }
+        .edl-field textarea { min-height: 80px; resize: vertical; }
+        .fuel-btns { display: flex; gap: 8px; }
+        .fuel-btn {
+            flex: 1; padding: 14px 8px; border: 2px solid var(--slate-200); border-radius: 10px;
+            background: white; font-size: 14px; font-weight: 700; text-align: center;
+            cursor: pointer; transition: 0.2s;
+        }
+        .fuel-btn.selected { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+        .edl-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 20px;
+            background: white; border-top: 1px solid var(--slate-200);
+            display: flex; gap: 10px; z-index: 502;
+        }
+        .edl-nav button {
+            flex: 1; padding: 14px; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+        }
+        .edl-btn-prev { background: var(--slate-100); color: var(--slate-800); }
+        .edl-btn-next { background: var(--blue); color: white; }
+        .edl-btn-submit { background: var(--emerald); color: white; }
+
+        /* SVG Silhouette */
+        .silhouette-container { position: relative; width: 100%; max-width: 320px; margin: 0 auto 20px; }
+        .silhouette-container svg { width: 100%; height: auto; }
+        .zone-btn {
+            position: absolute; width: 30px; height: 30px; border-radius: 50%;
+            background: rgba(37,99,235,0.15); border: 2px solid var(--blue);
+            color: var(--blue); font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transform: translate(-50%, -50%); transition: 0.2s;
+        }
+        .zone-btn.has-damage { background: #fca5a5; border-color: var(--danger); color: var(--danger); }
+        .zone-btn:active { transform: translate(-50%, -50%) scale(1.2); }
+
+        /* Photo captures */
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .photo-slot {
+            aspect-ratio: 4/3; border: 2px dashed var(--slate-200); border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; overflow: hidden; background: var(--slate-50);
+        }
+        .photo-slot i { font-size: 24px; color: var(--slate-300); margin-bottom: 4px; }
+        .photo-slot span { font-size: 11px; color: var(--slate-400); font-weight: 600; }
+        .photo-slot.has-photo { border-color: var(--emerald); border-style: solid; }
+        .photo-slot img {
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+        }
+        .photo-slot .photo-check {
+            position: absolute; top: 6px; right: 6px; background: var(--emerald); color: white;
+            width: 22px; height: 22px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 11px;
+        }
+
+        /* Signature Canvas */
+        .sig-canvas-wrap {
+            border: 2px solid var(--slate-200); border-radius: 12px; margin-bottom: 8px;
+            position: relative; background: white; touch-action: none;
+        }
+        .sig-canvas-wrap canvas { width: 100%; height: 160px; display: block; border-radius: 10px; }
+        .sig-clear {
+            position: absolute; top: 8px; right: 8px; background: var(--slate-100);
+            border: none; border-radius: 6px; padding: 4px 10px; font-size: 12px;
+            cursor: pointer; color: var(--slate-500);
+        }
+        .absent-check {
+            display: flex; align-items: center; gap: 10px; padding: 14px;
+            background: #fef3c7; border-radius: 10px; margin-bottom: 16px; cursor: pointer;
+        }
+        .absent-check input { width: 20px; height: 20px; accent-color: var(--amber); }
+        .absent-check span { font-size: 14px; font-weight: 600; color: #92400e; }
+
+        /* Damage modal */
+        .damage-modal-bg {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 510;
+            align-items: flex-end; justify-content: center;
+        }
+        .damage-modal-bg.active { display: flex; }
+        .damage-modal {
+            background: white; border-radius: 20px 20px 0 0; padding: 24px 20px 30px;
+            width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto;
+        }
+        .damage-type-btn {
+            display: inline-block; padding: 10px 16px; border: 2px solid var(--slate-200);
+            border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+            margin: 0 6px 8px 0; transition: 0.2s; background: white;
+        }
+        .damage-type-btn.selected { border-color: var(--danger); background: #fef2f2; color: var(--danger); }
+
+        .quality-alert {
+            background: #eff6ff; border: 1px solid #93c5fd; border-radius: 10px;
+            padding: 12px 14px; font-size: 12px; color: #1e40af; margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
@@ -367,6 +489,212 @@
         <span>Profil</span>
     </a>
 </nav>
+
+<!-- ===== EDL WIZARD MODAL ===== -->
+<div id="edlOverlay" class="edl-overlay">
+    <div class="edl-header">
+        <h2 id="edlTitle">État des lieux</h2>
+        <button class="edl-close" onclick="closeEDL()">&times;</button>
+    </div>
+    <div class="edl-progress">
+        <div class="edl-progress-dot current" id="dot1"></div>
+        <div class="edl-progress-dot" id="dot2"></div>
+        <div class="edl-progress-dot" id="dot3"></div>
+    </div>
+
+    <!-- ÉTAPE 1/3 — Identification & Jauge -->
+    <div class="edl-step active" id="edlStep1">
+        <h3>1/3 — Identification</h3>
+        <p class="subtitle">Relevez le kilométrage et le niveau de carburant</p>
+
+        <div class="edl-field">
+            <label>Kilométrage compteur</label>
+            <input type="number" id="edlMileage" placeholder="Ex : 45230" inputmode="numeric">
+        </div>
+
+        <div class="edl-field">
+            <label>Photo compteur (optionnel)</label>
+            <div class="photo-grid" style="grid-template-columns:1fr">
+                <label class="photo-slot" id="slotMileagePhoto">
+                    <i class="fas fa-camera"></i>
+                    <span>Compteur</span>
+                    <input type="file" accept="image/*" capture="environment" style="display:none" onchange="previewSlotPhoto(this,'slotMileagePhoto')">
+                </label>
+            </div>
+        </div>
+
+        <div class="edl-field">
+            <label>Niveau de carburant</label>
+            <div class="fuel-btns">
+                <div class="fuel-btn" onclick="selectFuel('1/4')">1/4</div>
+                <div class="fuel-btn" onclick="selectFuel('1/2')">1/2</div>
+                <div class="fuel-btn" onclick="selectFuel('3/4')">3/4</div>
+                <div class="fuel-btn" onclick="selectFuel('full')">Plein</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 2/3 — Inspection visuelle -->
+    <div class="edl-step" id="edlStep2">
+        <h3>2/3 — Inspection visuelle</h3>
+        <p class="subtitle">Touchez une zone pour signaler un dommage</p>
+
+        <div class="silhouette-container" id="silhouetteWrap">
+            <svg viewBox="0 0 320 480" xmlns="http://www.w3.org/2000/svg">
+                <!-- Carrosserie vue de dessus -->
+                <rect x="60" y="40" width="200" height="400" rx="40" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+                <!-- Pare-brise -->
+                <path d="M80 120 Q160 90 240 120 L240 160 Q160 140 80 160 Z" fill="#bfdbfe" stroke="#94a3b8" stroke-width="1.5"/>
+                <!-- Lunette arrière -->
+                <path d="M80 340 Q160 370 240 340 L240 310 Q160 330 80 310 Z" fill="#bfdbfe" stroke="#94a3b8" stroke-width="1.5"/>
+                <!-- Capot -->
+                <rect x="80" y="50" width="160" height="70" rx="20" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+                <!-- Toit -->
+                <rect x="90" y="170" width="140" height="130" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+                <!-- Hayon -->
+                <rect x="80" y="350" width="160" height="60" rx="15" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+                <!-- Rétros -->
+                <ellipse cx="50" cy="160" rx="12" ry="8" fill="#94a3b8"/>
+                <ellipse cx="270" cy="160" rx="12" ry="8" fill="#94a3b8"/>
+                <!-- Roues -->
+                <rect x="45" y="80" width="20" height="45" rx="8" fill="#475569"/>
+                <rect x="255" y="80" width="20" height="45" rx="8" fill="#475569"/>
+                <rect x="45" y="350" width="20" height="45" rx="8" fill="#475569"/>
+                <rect x="255" y="350" width="20" height="45" rx="8" fill="#475569"/>
+            </svg>
+            <!-- 12 zones cliquables (positionnées en %) -->
+            <div class="zone-btn" style="top:10%;left:50%" onclick="openDamageModal(1)" id="zone1">1</div>
+            <div class="zone-btn" style="top:22%;left:18%" onclick="openDamageModal(2)" id="zone2">2</div>
+            <div class="zone-btn" style="top:40%;left:18%" onclick="openDamageModal(3)" id="zone3">3</div>
+            <div class="zone-btn" style="top:72%;left:18%" onclick="openDamageModal(4)" id="zone4">4</div>
+            <div class="zone-btn" style="top:88%;left:50%" onclick="openDamageModal(5)" id="zone5">5</div>
+            <div class="zone-btn" style="top:72%;left:82%" onclick="openDamageModal(6)" id="zone6">6</div>
+            <div class="zone-btn" style="top:40%;left:82%" onclick="openDamageModal(7)" id="zone7">7</div>
+            <div class="zone-btn" style="top:22%;left:82%" onclick="openDamageModal(8)" id="zone8">8</div>
+            <div class="zone-btn" style="top:18%;left:50%" onclick="openDamageModal(9)" id="zone9">9</div>
+            <div class="zone-btn" style="top:50%;left:50%" onclick="openDamageModal(10)" id="zone10">10</div>
+            <div class="zone-btn" style="top:82%;left:50%" onclick="openDamageModal(11)" id="zone11">11</div>
+            <div class="zone-btn" style="top:28%;left:50%" onclick="openDamageModal(12)" id="zone12">12</div>
+        </div>
+
+        <div style="font-size:11px;color:var(--slate-500);text-align:center;margin-bottom:16px">
+            1-Pare-choc AV &bull; 2-Aile AVG &bull; 3-Porte AVG &bull; 4-Aile ARG &bull; 5-Pare-choc AR &bull; 6-Aile ARD<br>
+            7-Porte ARD &bull; 8-Aile AVD &bull; 9-Capot &bull; 10-Toit &bull; 11-Hayon/Coffre &bull; 12-Pare-brise
+        </div>
+
+        <div id="damagesSummary" style="margin-bottom:16px"></div>
+
+        <div class="quality-alert">
+            Prenez les photos directement depuis l'appareil (pas WhatsApp). Le détail doit être lisible.
+        </div>
+
+        <div class="edl-field">
+            <label>4 photos globales OBLIGATOIRES</label>
+            <div class="photo-grid">
+                <label class="photo-slot" id="slotFront">
+                    <i class="fas fa-camera"></i><span>Avant</span>
+                    <input type="file" accept="image/*" capture="environment" style="display:none" onchange="previewSlotPhoto(this,'slotFront')">
+                </label>
+                <label class="photo-slot" id="slotRear">
+                    <i class="fas fa-camera"></i><span>Arrière</span>
+                    <input type="file" accept="image/*" capture="environment" style="display:none" onchange="previewSlotPhoto(this,'slotRear')">
+                </label>
+                <label class="photo-slot" id="slotLeft">
+                    <i class="fas fa-camera"></i><span>Profil gauche</span>
+                    <input type="file" accept="image/*" capture="environment" style="display:none" onchange="previewSlotPhoto(this,'slotLeft')">
+                </label>
+                <label class="photo-slot" id="slotRight">
+                    <i class="fas fa-camera"></i><span>Profil droit</span>
+                    <input type="file" accept="image/*" capture="environment" style="display:none" onchange="previewSlotPhoto(this,'slotRight')">
+                </label>
+            </div>
+        </div>
+
+        <div class="edl-field">
+            <label>Observations</label>
+            <textarea id="edlObservations" placeholder="Remarques libres..."></textarea>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 3/3 — Double signature -->
+    <div class="edl-step" id="edlStep3">
+        <h3>3/3 — Signatures</h3>
+        <p class="subtitle">Signez et faites signer le client</p>
+
+        <div class="edl-field">
+            <label>Signature chauffeur</label>
+            <div class="sig-canvas-wrap">
+                <canvas id="sigDriver"></canvas>
+                <button class="sig-clear" onclick="clearSig('sigDriver')">Effacer</button>
+            </div>
+        </div>
+
+        <label class="absent-check" id="absentCheck">
+            <input type="checkbox" id="edlClientAbsent" onchange="toggleAbsent()">
+            <span>Remise de clés sans contact (client absent)</span>
+        </label>
+
+        <div id="clientSigSection">
+            <div class="edl-field">
+                <label>Signature client</label>
+                <div class="sig-canvas-wrap">
+                    <canvas id="sigClient"></canvas>
+                    <button class="sig-clear" onclick="clearSig('sigClient')">Effacer</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="absentReasonSection" style="display:none">
+            <div class="edl-field">
+                <label>Motif d'absence</label>
+                <input type="text" id="edlAbsentReason" placeholder="Ex : client non joignable, boîte aux lettres...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation fixe bas -->
+    <div class="edl-nav" id="edlNav">
+        <button class="edl-btn-prev" id="edlPrevBtn" onclick="edlPrev()" style="display:none">
+            <i class="fas fa-arrow-left"></i> Précédent
+        </button>
+        <button class="edl-btn-next" id="edlNextBtn" onclick="edlNext()">
+            Suivant <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+</div>
+
+<!-- DAMAGE MODAL -->
+<div class="damage-modal-bg" id="damageModalBg">
+    <div class="damage-modal">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:4px" id="damageModalTitle">Zone 1 — Pare-choc AV</h3>
+        <p style="font-size:13px;color:var(--slate-500);margin-bottom:16px">Sélectionnez le type de dommage</p>
+
+        <div id="damageTypes" style="margin-bottom:14px">
+            <div class="damage-type-btn" onclick="selectDamageType(this,'rayure')">Rayure</div>
+            <div class="damage-type-btn" onclick="selectDamageType(this,'bosse')">Bosse</div>
+            <div class="damage-type-btn" onclick="selectDamageType(this,'eclat')">Éclat</div>
+            <div class="damage-type-btn" onclick="selectDamageType(this,'casse')">Cassé</div>
+        </div>
+
+        <div class="edl-field">
+            <label>Description</label>
+            <input type="text" id="damageDesc" placeholder="Détails du dommage...">
+        </div>
+
+        <div class="edl-field">
+            <label>Photo du dommage</label>
+            <label class="photo-slot" id="slotDamagePhoto" style="aspect-ratio:16/9">
+                <i class="fas fa-camera"></i><span>Photo dommage</span>
+                <input type="file" accept="image/*" capture="environment" style="display:none" onchange="previewSlotPhoto(this,'slotDamagePhoto')">
+            </label>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:16px">
+            <button onclick="closeDamageModal()" style="flex:1;padding:14px;border:1px solid var(--slate-200);border-radius:12px;background:white;font-size:14px;font-weight:600;cursor:pointer">Annuler</button>
+            <button onclick="saveDamage()" style="flex:1;padding:14px;border:none;border-radius:12px;background:var(--danger);color:white;font-size:14px;font-weight:700;cursor:pointer">Enregistrer</button>
+        </div>
+    </div>
+</div>
 
 <script>
     const API = 'https://api.polyvalences.eu';
@@ -829,9 +1157,9 @@
                     </div>` : ''}
                     ${m.status === 'assigned' && !m.accepted_at ? '<div style="margin-top:12px;padding:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;font-size:14px;font-weight:700;color:#dc2626;text-align:center;margin-bottom:8px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Date impérative : ' + date + '</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn-start-mission" onclick="event.stopPropagation();acceptMission(' + m.id + ', this)" style="background:#059669;flex:1"><i class="fas fa-check"></i> Accepter la mission</button><button class="btn-start-mission" onclick="event.stopPropagation();refuseMission(' + m.id + ', this)" style="background:#dc2626;flex:0 0 auto;padding:12px 18px"><i class="fas fa-times"></i> Refuser</button></div>' : ''}
                     ${m.status === 'assigned' && m.accepted_at ? '<button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button>' : ''}
-                    ${m.status === 'in_progress' ? '<button class="btn-start-mission" disabled style="background:var(--slate-300);cursor:not-allowed" title="Bientôt disponible (Sprint C)"><i class="fas fa-clipboard-check"></i> État des lieux de départ</button>' : ''}
+                    ${m.status === 'in_progress' ? '<button class="btn-start-mission" onclick="event.stopPropagation();openEDL(' + m.id + ', \'departure\')" style="background:var(--amber)"><i class="fas fa-clipboard-check"></i> État des lieux de départ</button>' : ''}
                     ${m.status === 'edl_departure_done' ? '<button class="btn-start-mission" onclick="event.stopPropagation();goInTransit(' + m.id + ', this)" style="background:var(--amber)"><i class="fas fa-truck"></i> Confirmer le départ — En route</button>' : ''}
-                    ${m.status === 'in_transit' ? '<button class="btn-start-mission" disabled style="background:var(--slate-300);cursor:not-allowed" title="Bientôt disponible (Sprint C)"><i class="fas fa-clipboard-check"></i> État des lieux d\'arrivée</button>' : ''}
+                    ${m.status === 'in_transit' ? '<button class="btn-start-mission" onclick="event.stopPropagation();openEDL(' + m.id + ', \'arrival\')" style="background:var(--emerald)"><i class="fas fa-clipboard-check"></i> État des lieux d\'arrivée</button>' : ''}
                     ${m.status === 'edl_arrival_done' ? '<div style="margin-top:12px;padding:10px;background:#dbeafe;color:#1e40af;border-radius:8px;font-size:13px;font-weight:600;text-align:center"><i class="fas fa-hourglass-half" style="margin-right:4px"></i>En attente de validation admin</div>' : ''}
                     ${m.status === 'completed' && !m.has_expenses ? '<button class="btn-start-mission" onclick="event.stopPropagation();openExpenseForm(' + m.quote_id + ')" style="background:var(--emerald)"><i class="fas fa-receipt"></i> Déclarer mes frais</button>' : ''}
                     ${m.status === 'completed' && m.has_expenses ? '<div style="margin-top:12px;padding:10px;background:#d1fae5;color:#047857;border-radius:8px;font-size:13px;font-weight:600;text-align:center"><i class="fas fa-check-circle" style="margin-right:4px"></i>Mission terminée — Frais en cours de validation</div>' : ''}
@@ -1111,6 +1439,438 @@
     function logout() {
         localStorage.removeItem('pv_token');
         window.location.href = '/driver/';
+    }
+
+    // ===== EDL WIZARD =====
+    const ZONE_NAMES = {
+        1: 'Pare-choc AV', 2: 'Aile AVG', 3: 'Porte AVG', 4: 'Aile ARG',
+        5: 'Pare-choc AR', 6: 'Aile ARD', 7: 'Porte ARD', 8: 'Aile AVD',
+        9: 'Capot', 10: 'Toit', 11: 'Hayon/Coffre', 12: 'Pare-brise'
+    };
+
+    let edlMissionId = null;
+    let edlType = null; // departure or arrival
+    let edlCurrentStep = 1;
+    let edlFuelLevel = null;
+    let edlDamages = []; // { zone, zoneLabel, type, description, photoFile, photoKey }
+    let currentDamageZone = null;
+    let selectedDamageType = null;
+    let edlGlobalPhotos = { front: null, rear: null, left: null, right: null };
+    let edlGlobalKeys = { front: null, rear: null, left: null, right: null };
+    let edlMileagePhotoFile = null;
+    let sigDriverCanvas = null;
+    let sigClientCanvas = null;
+    let sigDriverCtx = null;
+    let sigClientCtx = null;
+    let sigDrawing = false;
+
+    function openEDL(missionId, type) {
+        edlMissionId = missionId;
+        edlType = type;
+        edlCurrentStep = 1;
+        edlFuelLevel = null;
+        edlDamages = [];
+        edlGlobalPhotos = { front: null, rear: null, left: null, right: null };
+        edlGlobalKeys = { front: null, rear: null, left: null, right: null };
+        edlMileagePhotoFile = null;
+        selectedDamageType = null;
+
+        document.getElementById('edlTitle').textContent = type === 'departure' ? 'EDL de départ' : 'EDL d\'arrivée';
+        document.getElementById('edlMileage').value = '';
+        document.getElementById('edlObservations').value = '';
+        document.getElementById('edlClientAbsent').checked = false;
+        document.getElementById('edlAbsentReason').value = '';
+        toggleAbsent();
+
+        // Reset photos
+        ['slotFront','slotRear','slotLeft','slotRight','slotMileagePhoto'].forEach(id => {
+            const slot = document.getElementById(id);
+            const img = slot.querySelector('img');
+            const check = slot.querySelector('.photo-check');
+            if (img) img.remove();
+            if (check) check.remove();
+            slot.classList.remove('has-photo');
+            const inp = slot.querySelector('input[type=file]');
+            if (inp) inp.value = '';
+        });
+
+        // Reset fuel buttons
+        document.querySelectorAll('.fuel-btn').forEach(b => b.classList.remove('selected'));
+
+        // Reset zones
+        for (let i = 1; i <= 12; i++) {
+            document.getElementById('zone' + i).classList.remove('has-damage');
+        }
+        document.getElementById('damagesSummary').innerHTML = '';
+
+        showEdlStep(1);
+        document.getElementById('edlOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        // Init signature canvases
+        setTimeout(() => {
+            initSigCanvas('sigDriver');
+            initSigCanvas('sigClient');
+        }, 200);
+    }
+
+    function closeEDL() {
+        if (!confirm('Quitter l\'état des lieux ? Les données non soumises seront perdues.')) return;
+        document.getElementById('edlOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function showEdlStep(step) {
+        edlCurrentStep = step;
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById('edlStep' + i).classList.toggle('active', i === step);
+            const dot = document.getElementById('dot' + i);
+            dot.classList.remove('done', 'current');
+            if (i < step) dot.classList.add('done');
+            if (i === step) dot.classList.add('current');
+        }
+        document.getElementById('edlPrevBtn').style.display = step === 1 ? 'none' : '';
+        const nextBtn = document.getElementById('edlNextBtn');
+        if (step === 3) {
+            nextBtn.className = 'edl-btn-submit';
+            nextBtn.innerHTML = '<i class="fas fa-check-circle"></i> Valider et Signer';
+            nextBtn.onclick = submitEDL;
+        } else {
+            nextBtn.className = 'edl-btn-next';
+            nextBtn.innerHTML = 'Suivant <i class="fas fa-arrow-right"></i>';
+            nextBtn.onclick = edlNext;
+        }
+        window.scrollTo(0, 0);
+    }
+
+    function edlNext() {
+        if (edlCurrentStep === 1) {
+            if (!document.getElementById('edlMileage').value) {
+                showToast('Veuillez saisir le kilométrage.', 'error'); return;
+            }
+            if (!edlFuelLevel) {
+                showToast('Veuillez sélectionner le niveau de carburant.', 'error'); return;
+            }
+        }
+        if (edlCurrentStep === 2) {
+            const hasAll = edlGlobalPhotos.front && edlGlobalPhotos.rear && edlGlobalPhotos.left && edlGlobalPhotos.right;
+            if (!hasAll) {
+                showToast('Les 4 photos globales sont obligatoires.', 'error'); return;
+            }
+        }
+        if (edlCurrentStep < 3) showEdlStep(edlCurrentStep + 1);
+    }
+
+    function edlPrev() {
+        if (edlCurrentStep > 1) showEdlStep(edlCurrentStep - 1);
+    }
+
+    function selectFuel(level) {
+        edlFuelLevel = level;
+        document.querySelectorAll('.fuel-btn').forEach(b => {
+            b.classList.toggle('selected', b.textContent.trim() === (level === 'full' ? 'Plein' : level));
+        });
+    }
+
+    function previewSlotPhoto(input, slotId) {
+        const slot = document.getElementById(slotId);
+        const file = input.files[0];
+        if (!file) return;
+
+        // Store file reference for global photos
+        if (slotId === 'slotFront') edlGlobalPhotos.front = file;
+        if (slotId === 'slotRear') edlGlobalPhotos.rear = file;
+        if (slotId === 'slotLeft') edlGlobalPhotos.left = file;
+        if (slotId === 'slotRight') edlGlobalPhotos.right = file;
+        if (slotId === 'slotMileagePhoto') edlMileagePhotoFile = file;
+
+        // Preview
+        const reader = new FileReader();
+        reader.onload = e => {
+            let img = slot.querySelector('img');
+            if (!img) { img = document.createElement('img'); slot.appendChild(img); }
+            img.src = e.target.result;
+            slot.classList.add('has-photo');
+            if (!slot.querySelector('.photo-check')) {
+                const ck = document.createElement('div');
+                ck.className = 'photo-check';
+                ck.innerHTML = '<i class="fas fa-check"></i>';
+                slot.appendChild(ck);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // --- Damage modal ---
+    function openDamageModal(zoneId) {
+        currentDamageZone = zoneId;
+        selectedDamageType = null;
+        document.getElementById('damageModalTitle').textContent = 'Zone ' + zoneId + ' — ' + ZONE_NAMES[zoneId];
+        document.querySelectorAll('.damage-type-btn').forEach(b => b.classList.remove('selected'));
+        document.getElementById('damageDesc').value = '';
+
+        // Reset photo
+        const slot = document.getElementById('slotDamagePhoto');
+        const img = slot.querySelector('img');
+        const check = slot.querySelector('.photo-check');
+        if (img) img.remove();
+        if (check) check.remove();
+        slot.classList.remove('has-photo');
+        const inp = slot.querySelector('input[type=file]');
+        if (inp) inp.value = '';
+
+        document.getElementById('damageModalBg').classList.add('active');
+    }
+
+    function closeDamageModal() {
+        document.getElementById('damageModalBg').classList.remove('active');
+        currentDamageZone = null;
+    }
+
+    function selectDamageType(btn, type) {
+        selectedDamageType = type;
+        document.querySelectorAll('.damage-type-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function saveDamage() {
+        if (!selectedDamageType) { showToast('Sélectionnez un type de dommage.', 'error'); return; }
+
+        const desc = document.getElementById('damageDesc').value;
+        const photoInput = document.querySelector('#slotDamagePhoto input[type=file]');
+        const photoFile = photoInput && photoInput.files[0] ? photoInput.files[0] : null;
+
+        edlDamages.push({
+            zone: currentDamageZone,
+            zoneLabel: ZONE_NAMES[currentDamageZone],
+            type: selectedDamageType,
+            description: desc,
+            photoFile: photoFile,
+            photoKey: null
+        });
+
+        // Mark zone
+        document.getElementById('zone' + currentDamageZone).classList.add('has-damage');
+
+        // Update summary
+        renderDamagesSummary();
+        closeDamageModal();
+        showToast('Dommage enregistré — zone ' + currentDamageZone);
+    }
+
+    function renderDamagesSummary() {
+        const div = document.getElementById('damagesSummary');
+        if (edlDamages.length === 0) { div.innerHTML = ''; return; }
+        let html = '<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--danger)"><i class="fas fa-exclamation-triangle"></i> ' + edlDamages.length + ' dommage(s) signalé(s)</div>';
+        edlDamages.forEach((d, i) => {
+            html += '<div style="padding:8px 12px;background:#fef2f2;border-radius:8px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between;align-items:center">';
+            html += '<span><strong>Zone ' + d.zone + '</strong> ' + d.zoneLabel + ' — ' + d.type + (d.description ? ' : ' + d.description : '') + '</span>';
+            html += '<button onclick="removeDamage(' + i + ')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:4px"><i class="fas fa-trash"></i></button>';
+            html += '</div>';
+        });
+        div.innerHTML = html;
+    }
+
+    function removeDamage(index) {
+        const zone = edlDamages[index].zone;
+        edlDamages.splice(index, 1);
+        // Check if zone still has damages
+        const hasMore = edlDamages.some(d => d.zone === zone);
+        if (!hasMore) document.getElementById('zone' + zone).classList.remove('has-damage');
+        renderDamagesSummary();
+    }
+
+    // --- Signature canvas ---
+    function initSigCanvas(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const wrap = canvas.parentElement;
+        canvas.width = wrap.clientWidth - 4;
+        canvas.height = 160;
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#0b1a2e';
+
+        if (canvasId === 'sigDriver') { sigDriverCanvas = canvas; sigDriverCtx = ctx; }
+        else { sigClientCanvas = canvas; sigClientCtx = ctx; }
+
+        let drawing = false;
+        let lastX, lastY;
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches ? e.touches[0] : e;
+            return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+        }
+
+        canvas.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; });
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; }, { passive: false });
+
+        canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = getPos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; });
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; }, { passive: false });
+
+        canvas.addEventListener('mouseup', () => { drawing = false; });
+        canvas.addEventListener('touchend', () => { drawing = false; });
+        canvas.addEventListener('mouseleave', () => { drawing = false; });
+    }
+
+    function clearSig(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function isCanvasBlank(canvas) {
+        const ctx = canvas.getContext('2d');
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        for (let i = 3; i < data.length; i += 4) { if (data[i] > 0) return false; }
+        return true;
+    }
+
+    function toggleAbsent() {
+        const absent = document.getElementById('edlClientAbsent').checked;
+        document.getElementById('clientSigSection').style.display = absent ? 'none' : '';
+        document.getElementById('absentReasonSection').style.display = absent ? '' : 'none';
+    }
+
+    // --- Soumission ---
+    async function submitEDL() {
+        const token = localStorage.getItem('pv_token');
+        const absent = document.getElementById('edlClientAbsent').checked;
+
+        // Validation signature driver
+        if (isCanvasBlank(sigDriverCanvas)) {
+            showToast('Veuillez signer (chauffeur).', 'error'); return;
+        }
+        // Validation signature client ou motif absence
+        if (!absent && isCanvasBlank(sigClientCanvas)) {
+            showToast('Faites signer le client ou cochez "client absent".', 'error'); return;
+        }
+        if (absent && !document.getElementById('edlAbsentReason').value.trim()) {
+            showToast('Veuillez indiquer le motif d\'absence.', 'error'); return;
+        }
+
+        const submitBtn = document.getElementById('edlNextBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+        try {
+            // 1. Upload photos globales
+            const globalSlots = { front: 'slotFront', rear: 'slotRear', left: 'slotLeft', right: 'slotRight' };
+            for (const [key, slotId] of Object.entries(globalSlots)) {
+                const file = edlGlobalPhotos[key];
+                if (file) {
+                    const fd = new FormData();
+                    fd.append('mission_id', edlMissionId);
+                    fd.append('type', edlType);
+                    fd.append('category', 'global');
+                    fd.append('file', file);
+                    const res = await fetch(API + '/api/inspections/upload', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token },
+                        body: fd
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        edlGlobalKeys[key] = data.key;
+                    }
+                }
+            }
+
+            // 2. Upload photos dommages
+            for (const dmg of edlDamages) {
+                if (dmg.photoFile) {
+                    const fd = new FormData();
+                    fd.append('mission_id', edlMissionId);
+                    fd.append('type', edlType);
+                    fd.append('category', 'damage');
+                    fd.append('file', dmg.photoFile);
+                    const res = await fetch(API + '/api/inspections/upload', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token },
+                        body: fd
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        dmg.photoKey = data.key;
+                    }
+                }
+            }
+
+            // 3. Préparer les signatures base64
+            const sigDriverData = sigDriverCanvas.toDataURL('image/png');
+            const sigClientData = absent ? null : sigClientCanvas.toDataURL('image/png');
+
+            // 4. Obtenir géolocalisation
+            let lat = null, lng = null, locationStr = null;
+            try {
+                const pos = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000, enableHighAccuracy: true });
+                });
+                lat = pos.coords.latitude;
+                lng = pos.coords.longitude;
+                locationStr = lat.toFixed(6) + ',' + lng.toFixed(6);
+            } catch (e) { /* géoloc non disponible */ }
+
+            // 5. Envoyer POST /api/inspections
+            const payload = {
+                mission_id: edlMissionId,
+                type: edlType,
+                mileage: parseInt(document.getElementById('edlMileage').value) || null,
+                fuel_level: edlFuelLevel,
+                location: locationStr,
+                location_lat: lat,
+                location_lng: lng,
+                damages: edlDamages.map(d => ({
+                    zone: d.zone, zoneLabel: d.zoneLabel,
+                    type: d.type, description: d.description,
+                    photo: d.photoKey
+                })),
+                observations: document.getElementById('edlObservations').value || null,
+                photos: [],
+                global_photos: Object.values(edlGlobalKeys).filter(Boolean),
+                client_absent: absent,
+                absent_reason: absent ? document.getElementById('edlAbsentReason').value.trim() : null,
+                signature_driver: sigDriverData,
+                signature_client: sigClientData
+            };
+
+            // Récupérer infos véhicule depuis la mission affichée
+            const mission = driverMissions.find(m => m.id === edlMissionId);
+            if (mission) {
+                payload.plate = mission.vehicle_plate || null;
+                payload.brand = mission.vehicle_brand || null;
+                payload.model = mission.vehicle_model || null;
+            }
+
+            const res = await fetch(API + '/api/inspections', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                document.getElementById('edlOverlay').classList.remove('active');
+                document.body.style.overflow = '';
+                showToast('État des lieux enregistré !');
+                await loadMissions();
+            } else {
+                showToast(result.error || 'Erreur lors de l\'envoi.', 'error');
+            }
+        } catch (e) {
+            console.error('EDL submit error:', e);
+            showToast('Erreur réseau. Réessayez.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Valider et Signer';
+        }
     }
 
     window.onload = initApp;
