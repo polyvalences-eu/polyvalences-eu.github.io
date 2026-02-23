@@ -253,6 +253,25 @@
 
 <main id="view-frais" class="view">
     <h1 class="view-title">Mes Frais</h1>
+
+    <!-- Formulaire de déclaration (masqué par défaut) -->
+    <div id="expenseForm" style="display:none">
+        <div class="card" style="padding:16px">
+            <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">Déclarer mes frais</h3>
+            <div style="background:#fef3c7;border:1px solid #fcd34d;padding:12px;border-radius:8px;font-size:12px;color:#92400e;margin-bottom:16px">
+                <strong>Prenez vos photos directement depuis l'appareil photo du téléphone</strong> (pas via WhatsApp). Le texte du justificatif doit être lisible. Vous pouvez aussi importer un PDF.
+            </div>
+            <div id="expenseLines"></div>
+            <button type="button" onclick="addExpenseLine()" style="width:100%;padding:10px;border:2px dashed var(--slate-200);background:white;color:var(--blue);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin:12px 0">
+                <i class="fas fa-plus"></i> Ajouter un frais
+            </button>
+            <button type="button" onclick="submitExpenses()" id="submitExpensesBtn" style="width:100%;padding:14px;background:var(--navy);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">
+                <i class="fas fa-paper-plane"></i> Soumettre mes frais
+            </button>
+        </div>
+    </div>
+
+    <!-- Liste des frais existants -->
     <div id="expensesContainer">
         <div class="card" style="text-align:center;padding:30px 20px">
             <i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--slate-200);margin-bottom:16px"></i>
@@ -784,6 +803,12 @@
                     </div>
                     ${m.client_first_name ? '<div style="font-size:12px;color:var(--slate-500);margin-top:8px"><i class="fas fa-user" style="margin-right:4px"></i>Client : ' + m.client_first_name + ' ' + (m.client_last_name || '') + '</div>' : ''}
                     ${m.status === 'assigned' ? '<button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button>' : ''}
+                    ${m.status === 'in_progress' ? '<button class="btn-start-mission" disabled style="background:var(--slate-300);cursor:not-allowed" title="Bientôt disponible (Sprint C)"><i class="fas fa-clipboard-check"></i> État des lieux de départ</button>' : ''}
+                    ${m.status === 'edl_departure_done' ? '<button class="btn-start-mission" onclick="event.stopPropagation();goInTransit(' + m.id + ', this)" style="background:var(--amber)"><i class="fas fa-truck"></i> Confirmer le départ — En route</button>' : ''}
+                    ${m.status === 'in_transit' ? '<button class="btn-start-mission" disabled style="background:var(--slate-300);cursor:not-allowed" title="Bientôt disponible (Sprint C)"><i class="fas fa-clipboard-check"></i> État des lieux d\'arrivée</button>' : ''}
+                    ${m.status === 'edl_arrival_done' ? '<div style="margin-top:12px;padding:10px;background:#dbeafe;color:#1e40af;border-radius:8px;font-size:13px;font-weight:600;text-align:center"><i class="fas fa-hourglass-half" style="margin-right:4px"></i>En attente de validation admin</div>' : ''}
+                    ${m.status === 'completed' && !m.has_expenses ? '<button class="btn-start-mission" onclick="event.stopPropagation();openExpenseForm(' + m.quote_id + ')" style="background:var(--emerald)"><i class="fas fa-receipt"></i> Déclarer mes frais</button>' : ''}
+                    ${m.status === 'completed' && m.has_expenses ? '<div style="margin-top:12px;padding:10px;background:#d1fae5;color:#047857;border-radius:8px;font-size:13px;font-weight:600;text-align:center"><i class="fas fa-check-circle" style="margin-right:4px"></i>Mission terminée — Frais en cours de validation</div>' : ''}
                 </div>`;
         });
 
@@ -812,6 +837,30 @@
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-play"></i> Démarrer la mission';
+        }
+    }
+
+    async function goInTransit(missionId, btn) {
+        const token = localStorage.getItem('pv_token');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch(API + '/api/driver/missions/' + missionId + '/in-transit', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                showToast('En route !');
+                await loadMissions();
+            } else {
+                const data = await res.json();
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (e) {
+            showToast('Erreur réseau.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-truck"></i> Confirmer le départ — En route';
         }
     }
 
@@ -869,6 +918,95 @@
         });
 
         container.innerHTML = html;
+    }
+
+    // ===== EXPENSE FORM =====
+    let currentExpenseQuoteId = null;
+    let expenseLineCount = 0;
+
+    function openExpenseForm(quoteId) {
+        currentExpenseQuoteId = quoteId;
+        expenseLineCount = 0;
+        document.getElementById('expenseLines').innerHTML = '';
+        addExpenseLine();
+        document.getElementById('expenseForm').style.display = 'block';
+        switchTab('frais');
+    }
+
+    function addExpenseLine() {
+        expenseLineCount++;
+        const id = expenseLineCount;
+        const div = document.createElement('div');
+        div.id = 'expenseLine' + id;
+        div.style.cssText = 'border:1px solid var(--slate-200);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--slate-50)';
+        div.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <span style="font-size:13px;font-weight:700">Frais #${id}</span>
+                ${id > 1 ? '<button type="button" onclick="document.getElementById(\'expenseLine' + id + '\').remove()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px"><i class="fas fa-trash"></i></button>' : ''}
+            </div>
+            <select id="expType${id}" style="width:100%;padding:10px;border:1px solid var(--slate-200);border-radius:8px;font-size:14px;margin-bottom:8px;font-family:'DM Sans',sans-serif">
+                <option value="fuel">Carburant</option>
+                <option value="toll">Péage</option>
+                <option value="train_return">Train retour</option>
+                <option value="other">Autre</option>
+            </select>
+            <input type="number" id="expAmount${id}" placeholder="Montant (€)" step="0.01" min="0.01" style="width:100%;padding:10px;border:1px solid var(--slate-200);border-radius:8px;font-size:14px;margin-bottom:8px;box-sizing:border-box">
+            <input type="text" id="expDesc${id}" placeholder="Description (optionnel)" style="width:100%;padding:10px;border:1px solid var(--slate-200);border-radius:8px;font-size:14px;margin-bottom:8px;box-sizing:border-box">
+            <label style="display:block;padding:14px;border:2px dashed var(--slate-200);border-radius:8px;text-align:center;cursor:pointer;font-size:13px;color:var(--slate-500)">
+                <i class="fas fa-camera" style="margin-right:4px"></i> Photo ou PDF du justificatif
+                <input type="file" id="expFile${id}" accept="image/*,application/pdf" style="display:none" onchange="this.parentElement.innerHTML='<i class=\\'fas fa-check-circle\\' style=\\'color:var(--emerald)\\'></i> ' + this.files[0].name">
+            </label>`;
+        document.getElementById('expenseLines').appendChild(div);
+    }
+
+    async function submitExpenses() {
+        const token = localStorage.getItem('pv_token');
+        const btn = document.getElementById('submitExpensesBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+        let success = 0;
+        let errors = 0;
+
+        for (let i = 1; i <= expenseLineCount; i++) {
+            const line = document.getElementById('expenseLine' + i);
+            if (!line) continue;
+
+            const type = document.getElementById('expType' + i).value;
+            const amount = document.getElementById('expAmount' + i).value;
+            const desc = document.getElementById('expDesc' + i).value;
+            const fileInput = document.getElementById('expFile' + i);
+            const file = fileInput ? fileInput.files[0] : null;
+
+            if (!amount || parseFloat(amount) <= 0) { errors++; continue; }
+            if (!file) { showToast('Justificatif obligatoire pour le frais #' + i, 'error'); errors++; continue; }
+
+            const formData = new FormData();
+            formData.append('quote_id', currentExpenseQuoteId);
+            formData.append('type', type);
+            formData.append('amount', amount);
+            formData.append('description', desc || '');
+            formData.append('photo', file);
+
+            try {
+                const res = await fetch(API + '/api/driver/expenses', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+                if (res.ok) { success++; } else { errors++; }
+            } catch (e) { errors++; }
+        }
+
+        if (success > 0) showToast(success + ' frais soumis !');
+        if (errors > 0) showToast(errors + ' erreur(s)', 'error');
+
+        document.getElementById('expenseForm').style.display = 'none';
+        currentExpenseQuoteId = null;
+        await loadExpenses();
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Soumettre mes frais';
     }
 
     // ===== NAVIGATION =====
