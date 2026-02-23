@@ -802,6 +802,31 @@
                         <span><i class="fas fa-calendar" style="margin-right:4px"></i>${date}</span>
                     </div>
                     ${m.client_first_name ? '<div style="font-size:12px;color:var(--slate-500);margin-top:8px"><i class="fas fa-user" style="margin-right:4px"></i>Client : ' + m.client_first_name + ' ' + (m.client_last_name || '') + '</div>' : ''}
+                    ${(m.sheet_completed_at && ['assigned','in_progress','edl_departure_done','in_transit','edl_arrival_done','completed'].includes(m.status)) ? `
+                    <div style="margin-top:12px; background:var(--slate-50); border-radius:10px; padding:14px;">
+                        <div style="font-size:13px; font-weight:700; color:var(--navy); margin-bottom:10px;">
+                            <i class="fas fa-car" style="margin-right:4px;"></i>${[m.vehicle_plate, m.vehicle_brand, m.vehicle_model].filter(Boolean).join(' — ')}
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <div style="background:#eff6ff; border-radius:8px; padding:10px;">
+                                <div style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin-bottom:4px;">
+                                    <i class="fas fa-map-marker-alt" style="margin-right:2px;"></i>Départ
+                                </div>
+                                <div style="font-size:13px; color:var(--navy); font-weight:600;">${m.pickup_address || '—'}</div>
+                                ${m.pickup_contact_name ? '<div style="font-size:12px; color:var(--slate-600); margin-top:2px;">' + m.pickup_contact_name + '</div>' : ''}
+                                ${m.pickup_contact_phone ? '<div style="margin-top:2px;"><a href="tel:' + m.pickup_contact_phone + '" onclick="event.stopPropagation()" style="font-size:13px; color:#2563eb; font-weight:600; text-decoration:none;"><i class="fas fa-phone" style="margin-right:4px;"></i>' + m.pickup_contact_phone + '</a></div>' : ''}
+                            </div>
+                            <div style="background:#fef3c7; border-radius:8px; padding:10px;">
+                                <div style="font-size:11px; font-weight:700; color:#92400e; text-transform:uppercase; margin-bottom:4px;">
+                                    <i class="fas fa-flag-checkered" style="margin-right:2px;"></i>Arrivée
+                                </div>
+                                <div style="font-size:13px; color:var(--navy); font-weight:600;">${m.delivery_address || '—'}</div>
+                                ${m.delivery_contact_name ? '<div style="font-size:12px; color:var(--slate-600); margin-top:2px;">' + m.delivery_contact_name + '</div>' : ''}
+                                ${m.delivery_contact_phone ? '<div style="margin-top:2px;"><a href="tel:' + m.delivery_contact_phone + '" onclick="event.stopPropagation()" style="font-size:13px; color:#2563eb; font-weight:600; text-decoration:none;"><i class="fas fa-phone" style="margin-right:4px;"></i>' + m.delivery_contact_phone + '</a></div>' : ''}
+                            </div>
+                        </div>
+                        ${m.mission_notes ? '<div style="margin-top:8px; padding:8px 10px; background:white; border-radius:6px; border:1px solid var(--slate-200); font-size:12px; color:var(--slate-600);"><i class="fas fa-sticky-note" style="margin-right:4px; color:var(--slate-400);"></i>' + m.mission_notes + '</div>' : ''}
+                    </div>` : ''}
                     ${m.status === 'assigned' && !m.accepted_at ? '<div style="margin-top:12px;padding:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;font-size:14px;font-weight:700;color:#dc2626;text-align:center;margin-bottom:8px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Date impérative : ' + date + '</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn-start-mission" onclick="event.stopPropagation();acceptMission(' + m.id + ', this)" style="background:#059669;flex:1"><i class="fas fa-check"></i> Accepter la mission</button><button class="btn-start-mission" onclick="event.stopPropagation();refuseMission(' + m.id + ', this)" style="background:#dc2626;flex:0 0 auto;padding:12px 18px"><i class="fas fa-times"></i> Refuser</button></div>' : ''}
                     ${m.status === 'assigned' && m.accepted_at ? '<button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button>' : ''}
                     ${m.status === 'in_progress' ? '<button class="btn-start-mission" disabled style="background:var(--slate-300);cursor:not-allowed" title="Bientôt disponible (Sprint C)"><i class="fas fa-clipboard-check"></i> État des lieux de départ</button>' : ''}
