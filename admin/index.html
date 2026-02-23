@@ -472,6 +472,10 @@
     <div class="admin-panel" id="panel-missions">
         <div class="stats-row">
             <div class="stat-card">
+                <div class="stat-card-label">Brouillons</div>
+                <div class="stat-card-value" style="color:var(--slate-500);" id="statMissionsDraft">0</div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-card-label">Ouvertes</div>
                 <div class="stat-card-value pending" id="statMissionsOpen">0</div>
             </div>
@@ -500,6 +504,7 @@
                     <i class="fas fa-plus"></i> Nouvelle mission
                 </button>
                 <select id="missionsFilter" onchange="loadAdminMissions()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                    <option value="draft">Brouillons</option>
                     <option value="open">Ouvertes</option>
                     <option value="assigned">Assignées</option>
                     <option value="in_progress">En cours</option>
@@ -519,6 +524,9 @@
         </div>
         <div id="missionAppsWrap" style="display:none; margin-top:24px;">
             <div class="table-card" style="padding:28px;" id="missionAppsContent"></div>
+        </div>
+        <div id="missionAttributionWrap" style="display:none; margin-top:24px;">
+            <div class="table-card" style="padding:28px;" id="missionAttributionContent"></div>
         </div>
     </div>
 
@@ -1409,6 +1417,7 @@
         const filter = document.getElementById('missionsFilter').value;
         document.getElementById('createMissionWrap').style.display = 'none';
         document.getElementById('missionAppsWrap').style.display = 'none';
+        document.getElementById('missionAttributionWrap').style.display = 'none';
 
         try {
             const res = await fetch(API + '/api/admin/missions', {
@@ -1419,23 +1428,27 @@
             adminMissionsData = data.missions || [];
 
             // Stats
+            const draft = adminMissionsData.filter(m => m.status === 'draft').length;
             const open = adminMissionsData.filter(m => m.status === 'open').length;
             const assigned = adminMissionsData.filter(m => m.status === 'assigned').length;
             const inProgress = adminMissionsData.filter(m => ['in_progress','edl_departure_done','in_transit','edl_arrival_done'].includes(m.status)).length;
             const completed = adminMissionsData.filter(m => m.status === 'completed').length;
+            document.getElementById('statMissionsDraft').textContent = draft;
             document.getElementById('statMissionsOpen').textContent = open;
             document.getElementById('statMissionsAssigned').textContent = assigned;
             document.getElementById('statMissionsProgress').textContent = inProgress;
             document.getElementById('statMissionsCompleted').textContent = completed;
 
-            // Badge onglet
+            // Badge onglet — afficher brouillons + ouvertes
             const badge = document.getElementById('tabBadgeMissions');
-            if (open > 0) { badge.textContent = open; badge.style.display = 'inline'; }
+            const actionNeeded = draft + open;
+            if (actionNeeded > 0) { badge.textContent = actionNeeded; badge.style.display = 'inline'; }
             else { badge.style.display = 'none'; }
 
             // Filter
             let filtered = adminMissionsData;
-            if (filter === 'open') filtered = adminMissionsData.filter(m => m.status === 'open');
+            if (filter === 'draft') filtered = adminMissionsData.filter(m => m.status === 'draft');
+            else if (filter === 'open') filtered = adminMissionsData.filter(m => m.status === 'open');
             else if (filter === 'assigned') filtered = adminMissionsData.filter(m => m.status === 'assigned');
             else if (filter === 'in_progress') filtered = adminMissionsData.filter(m => ['in_progress','edl_departure_done','in_transit','edl_arrival_done'].includes(m.status));
             else if (filter === 'completed') filtered = adminMissionsData.filter(m => m.status === 'completed');
@@ -1448,12 +1461,13 @@
             }
 
             const statusConf = {
-                'open': { label: 'Ouverte', color: '#d97706', bg: '#d9770615', icon: 'bullhorn' },
-                'assigned': { label: 'Assignée', color: '#2563eb', bg: '#2563eb15', icon: 'user-check' },
-                'in_progress': { label: 'En cours', color: '#d97706', bg: '#d9770615', icon: 'play' },
-                'edl_departure_done': { label: 'EDL départ', color: '#d97706', bg: '#d9770615', icon: 'clipboard-check' },
-                'in_transit': { label: 'En transit', color: '#2563eb', bg: '#2563eb15', icon: 'truck' },
-                'edl_arrival_done': { label: 'EDL arrivée', color: '#059669', bg: '#05966915', icon: 'clipboard-check' },
+                'draft': { label: 'Brouillon', color: '#64748b', bg: '#64748b15', icon: 'file-alt' },
+                'open': { label: 'Ouverte', color: '#2563eb', bg: '#2563eb15', icon: 'bullhorn' },
+                'assigned': { label: 'En attente chauffeur', color: '#d97706', bg: '#d9770615', icon: 'user-clock' },
+                'in_progress': { label: 'En cours', color: '#2563eb', bg: '#2563eb15', icon: 'play' },
+                'edl_departure_done': { label: 'EDL départ fait', color: '#2563eb', bg: '#2563eb15', icon: 'clipboard-check' },
+                'in_transit': { label: 'En route', color: '#2563eb', bg: '#2563eb15', icon: 'truck' },
+                'edl_arrival_done': { label: 'EDL arrivée fait', color: '#2563eb', bg: '#2563eb15', icon: 'clipboard-check' },
                 'completed': { label: 'Terminée', color: '#059669', bg: '#05966915', icon: 'check-circle' },
                 'cancelled': { label: 'Annulée', color: '#94a3b8', bg: '#94a3b815', icon: 'ban' }
             };
@@ -1463,21 +1477,35 @@
                 const route = m.origin_address ? (m.origin_address.split(',')[0] + ' → ' + (m.destination_address || '').split(',')[0]) : '';
                 const date = m.mission_date ? m.mission_date.split('-').reverse().join('/') : '—';
 
+                // Badge assignation : attente vs confirmée
+                let assignBadge = '';
+                if (m.status === 'assigned' && m.accepted_at) {
+                    assignBadge = '<span class="type-badge" style="background:#d1fae5; color:#047857;">Confirmée ✓</span>';
+                } else if (m.status === 'assigned' && !m.accepted_at) {
+                    assignBadge = '<span class="type-badge" style="background:#fef3c7; color:#92400e;">En attente de confirmation</span>';
+                }
+
+                // Onclick selon statut
+                let clickAction = '';
+                if (m.status === 'draft') clickAction = 'openMissionAttribution(' + m.id + ')';
+                else if (m.status === 'open') clickAction = 'openMissionApps(' + m.id + ')';
+
                 return `
-                <div class="user-card" style="cursor:pointer;" onclick="${m.status === 'open' ? 'openMissionApps(' + m.id + ')' : ''}">
+                <div class="user-card" style="cursor:pointer;" onclick="${clickAction}">
                     <div class="user-avatar" style="background:${st.bg}; color:${st.color};">
                         <i class="fas fa-${st.icon}"></i>
                     </div>
                     <div class="user-info">
                         <div class="user-name">
                             ${m.quote_number || 'Mission #' + m.id}
-                            <span class="type-badge" style="background:${st.bg}; color:${st.color};">${st.label}</span>
+                            <span class="type-badge" style="background:${st.bg}; color:${st.color};">${m.status === 'assigned' && m.accepted_at ? 'Confirmée' : st.label}</span>
                             ${m.status === 'open' && m.application_count ? '<span class="type-badge" style="background:#dbeafe; color:#1e40af;">' + m.application_count + ' candidature(s)</span>' : ''}
+                            ${assignBadge}
                         </div>
                         <div class="user-email">${route}</div>
                         <div class="user-details">
                             <span><i class="fas fa-road"></i> ${m.distance_km || '—'} km</span>
-                            <span><i class="fas fa-calendar-day"></i> ${date}</span>
+                            <span style="${m.status === 'draft' ? 'color:#dc2626; font-weight:700;' : ''}"><i class="fas fa-calendar-day"></i> ${date}</span>
                             ${m.driver_name ? '<span><i class="fas fa-user"></i> ' + m.driver_name + '</span>' : ''}
                         </div>
                     </div>
@@ -1685,6 +1713,152 @@
             showToast('Erreur de connexion', 'error');
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-check"></i> Assigner';
+        }
+    }
+
+    // ===== MISSION ATTRIBUTION (DRAFT) =====
+    async function openMissionAttribution(missionId) {
+        const wrap = document.getElementById('missionAttributionWrap');
+        const container = document.getElementById('missionAttributionContent');
+        wrap.style.display = '';
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement des chauffeurs...</div>';
+        wrap.scrollIntoView({ behavior: 'smooth' });
+
+        try {
+            const res = await fetch(API + '/api/admin/missions/' + missionId + '/drivers', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { container.innerHTML = '<p style="color:var(--red);">Erreur chargement.</p>'; return; }
+            const data = await res.json();
+            const mission = data.mission;
+            const drivers = (data.drivers || []).sort((a, b) => b.reliability - a.reliability);
+            const dateStr = mission.mission_date ? mission.mission_date.split('-').reverse().join('/') : 'À définir';
+
+            let html = `
+                <button onclick="document.getElementById('missionAttributionWrap').style.display='none'" style="background:none; border:1px solid var(--slate-200); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600; color:var(--slate-500); cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:6px; margin-bottom:16px;">
+                    <i class="fas fa-arrow-left" style="font-size:11px;"></i> Retour
+                </button>
+
+                <div style="background:var(--slate-50); border-radius:12px; padding:20px; margin-bottom:20px;">
+                    <h3 style="font-size:17px; font-weight:700; color:var(--navy); margin-bottom:10px;">
+                        <i class="fas fa-file-alt" style="color:var(--slate-400); margin-right:6px;"></i>${mission.quote_number} — BROUILLON
+                    </h3>
+                    <div style="font-size:14px; color:var(--slate-600); margin-bottom:8px;">
+                        <i class="fas fa-route" style="margin-right:4px;"></i> ${mission.origin} → ${mission.destination} &nbsp;|&nbsp; ${mission.distance_km} km
+                    </div>
+                    <div style="font-size:18px; font-weight:800; color:#dc2626; margin-bottom:8px; padding:8px 14px; background:#fef2f2; border-radius:8px; display:inline-block;">
+                        <i class="fas fa-exclamation-triangle" style="margin-right:4px;"></i> DATE IMPÉRATIVE : ${dateStr}
+                    </div>
+                    <div style="font-size:13px; color:var(--slate-500); margin-top:6px;">
+                        Prix client : <strong>${mission.client_price}€</strong> &nbsp;|&nbsp; Rémunération driver : <strong>${mission.driver_pay}€</strong>
+                    </div>
+                </div>
+
+                <h4 style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:14px; border-bottom:2px solid var(--slate-200); padding-bottom:8px;">
+                    <i class="fas fa-users" style="color:var(--blue); margin-right:6px;"></i>CHAUFFEURS DISPONIBLES
+                </h4>`;
+
+            if (drivers.length === 0) {
+                html += '<div class="empty-state"><i class="fas fa-user-slash" style="color:var(--slate-300)"></i><p>Aucun chauffeur approuvé disponible.</p></div>';
+            } else {
+                html += drivers.map(d => {
+                    const stars = '<span style="color:#f59e0b; font-size:16px; letter-spacing:1px;">' + '★'.repeat(d.reliability) + '☆'.repeat(5 - d.reliability) + '</span>';
+                    const marginColor = d.estimated_margin >= 100 ? '#059669' : d.estimated_margin >= 50 ? '#d97706' : '#dc2626';
+                    return `
+                    <div class="user-card" style="border-left:3px solid ${d.reliability >= 4 ? '#059669' : d.reliability >= 3 ? '#d97706' : '#94a3b8'}; margin-bottom:8px;">
+                        <div class="user-avatar" style="background:#dbeafe; color:#1e40af; font-size:13px; font-weight:700;">
+                            ${d.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                ${d.name}
+                                ${stars}
+                                <span style="font-size:12px; color:var(--slate-400);">(${d.reliability}/5)</span>
+                            </div>
+                            <div class="user-details" style="margin-top:4px;">
+                                <span><i class="fas fa-check-double"></i> ${d.total_missions} mission(s)</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${d.zone}</span>
+                                <span><i class="fas fa-receipt"></i> Frais moy: ${d.avg_expenses}€</span>
+                            </div>
+                            <div style="font-size:13px; margin-top:6px; display:flex; gap:12px; flex-wrap:wrap;">
+                                <span style="color:var(--slate-600);">Coût estimé: <strong>${d.estimated_cost}€</strong></span>
+                                <span style="color:${marginColor}; font-weight:700;">→ Marge: ${d.estimated_margin}€</span>
+                            </div>
+                        </div>
+                        <button onclick="event.stopPropagation();assignDirect(${missionId},${d.id},'${d.name.replace(/'/g,"\\'")}',this)" class="btn-validate" style="white-space:nowrap;">
+                            <i class="fas fa-user-check"></i> Attribuer
+                        </button>
+                    </div>`;
+                }).join('');
+            }
+
+            html += `
+                <div style="margin-top:20px; padding-top:16px; border-top:2px solid var(--slate-200); text-align:center;">
+                    <button onclick="openMissionToAll(${missionId},this)" style="background:var(--amber); color:white; border:none; padding:14px 28px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:8px;">
+                        <i class="fas fa-bullhorn"></i> Ouvrir à tous les chauffeurs
+                    </button>
+                </div>`;
+
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error('Mission attribution failed:', err);
+            container.innerHTML = '<p style="color:var(--red);">Erreur de connexion.</p>';
+        }
+    }
+
+    async function assignDirect(missionId, driverId, driverName, btn) {
+        if (!confirm('Attribuer cette mission à ' + driverName + ' ?')) return;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            const res = await fetch(API + '/api/admin/missions/' + missionId + '/assign-direct', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ driver_id: driverId })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Mission attribuée !');
+                document.getElementById('missionAttributionWrap').style.display = 'none';
+                loadAdminMissions();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-check"></i> Attribuer';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-user-check"></i> Attribuer';
+        }
+    }
+
+    async function openMissionToAll(missionId, btn) {
+        if (!confirm('Ouvrir cette mission à tous les chauffeurs ? Un email sera envoyé à chacun.')) return;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ouverture...';
+
+        try {
+            const res = await fetch(API + '/api/admin/missions/' + missionId + '/open', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Mission ouverte !');
+                document.getElementById('missionAttributionWrap').style.display = 'none';
+                loadAdminMissions();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-bullhorn"></i> Ouvrir à tous les chauffeurs';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-bullhorn"></i> Ouvrir à tous les chauffeurs';
         }
     }
 

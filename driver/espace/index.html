@@ -802,7 +802,8 @@
                         <span><i class="fas fa-calendar" style="margin-right:4px"></i>${date}</span>
                     </div>
                     ${m.client_first_name ? '<div style="font-size:12px;color:var(--slate-500);margin-top:8px"><i class="fas fa-user" style="margin-right:4px"></i>Client : ' + m.client_first_name + ' ' + (m.client_last_name || '') + '</div>' : ''}
-                    ${m.status === 'assigned' ? '<button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button>' : ''}
+                    ${m.status === 'assigned' && !m.accepted_at ? '<div style="margin-top:12px;padding:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;font-size:14px;font-weight:700;color:#dc2626;text-align:center;margin-bottom:8px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Date impérative : ' + date + '</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn-start-mission" onclick="event.stopPropagation();acceptMission(' + m.id + ', this)" style="background:#059669;flex:1"><i class="fas fa-check"></i> Accepter la mission</button><button class="btn-start-mission" onclick="event.stopPropagation();refuseMission(' + m.id + ', this)" style="background:#dc2626;flex:0 0 auto;padding:12px 18px"><i class="fas fa-times"></i> Refuser</button></div>' : ''}
+                    ${m.status === 'assigned' && m.accepted_at ? '<button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button>' : ''}
                     ${m.status === 'in_progress' ? '<button class="btn-start-mission" disabled style="background:var(--slate-300);cursor:not-allowed" title="Bientôt disponible (Sprint C)"><i class="fas fa-clipboard-check"></i> État des lieux de départ</button>' : ''}
                     ${m.status === 'edl_departure_done' ? '<button class="btn-start-mission" onclick="event.stopPropagation();goInTransit(' + m.id + ', this)" style="background:var(--amber)"><i class="fas fa-truck"></i> Confirmer le départ — En route</button>' : ''}
                     ${m.status === 'in_transit' ? '<button class="btn-start-mission" disabled style="background:var(--slate-300);cursor:not-allowed" title="Bientôt disponible (Sprint C)"><i class="fas fa-clipboard-check"></i> État des lieux d\'arrivée</button>' : ''}
@@ -837,6 +838,57 @@
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-play"></i> Démarrer la mission';
+        }
+    }
+
+    async function acceptMission(missionId, btn) {
+        const token = localStorage.getItem('pv_token');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch(API + '/api/driver/missions/' + missionId + '/accept', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                showToast('Mission acceptée !');
+                await loadMissions();
+            } else {
+                const data = await res.json();
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Accepter la mission';
+            }
+        } catch (e) {
+            showToast('Erreur réseau.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Accepter la mission';
+        }
+    }
+
+    async function refuseMission(missionId, btn) {
+        if (!confirm('Êtes-vous sûr de vouloir refuser cette mission ? L\'admin en sera notifié.')) return;
+        const token = localStorage.getItem('pv_token');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch(API + '/api/driver/missions/' + missionId + '/refuse', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                showToast('Mission refusée.');
+                await loadMissions();
+            } else {
+                const data = await res.json();
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-times"></i> Refuser';
+            }
+        } catch (e) {
+            showToast('Erreur réseau.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-times"></i> Refuser';
         }
     }
 
