@@ -295,6 +295,122 @@
         .ac-item { padding:10px 14px; font-size:13px; cursor:pointer; border-bottom:1px solid var(--slate-100); }
         .ac-item:hover { background:var(--slate-50); }
         .ac-item:last-child { border-bottom:none; }
+
+        /* ===== SPRINT I — ACTIONS REQUISES ===== */
+        .action-cards { display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:28px; }
+        .action-card {
+            display:flex; align-items:center; gap:14px; padding:14px 18px;
+            background:white; border-radius:var(--radius); border:1px solid var(--slate-100);
+            cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit;
+        }
+        .action-card:hover { border-color:var(--blue); box-shadow:0 4px 12px rgba(37,99,235,0.1); transform:translateY(-1px); }
+        .action-card .ac-icon {
+            width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+            font-size:16px; flex-shrink:0;
+        }
+        .action-card .ac-label { font-size:14px; font-weight:600; flex:1; }
+        .action-card .ac-count { font-size:20px; font-weight:800; min-width:32px; text-align:right; }
+
+        .kpi-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:32px; }
+        .kpi-card {
+            background:white; border-radius:var(--radius); padding:18px; text-align:center;
+            border:1px solid var(--slate-100); box-shadow:0 2px 8px rgba(0,0,0,0.03);
+        }
+        .kpi-card .kpi-value { font-size:32px; font-weight:800; color:var(--navy); }
+        .kpi-card .kpi-label { font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+
+        /* ===== FILTERS BAR ===== */
+        .filters-bar {
+            display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; align-items:center;
+        }
+        .filter-btn {
+            padding:8px 14px; border:1px solid var(--slate-200); border-radius:8px;
+            background:white; font-size:12px; font-weight:600; color:var(--slate-500);
+            cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; white-space:nowrap;
+        }
+        .filter-btn:hover { border-color:var(--blue); color:var(--blue); }
+        .filter-btn.active { background:var(--navy); color:white; border-color:var(--navy); }
+        .search-input {
+            padding:8px 14px; border:1px solid var(--slate-200); border-radius:8px;
+            font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-700);
+            min-width:200px; outline:none; transition:border-color 0.2s;
+        }
+        .search-input:focus { border-color:var(--blue); }
+
+        /* ===== DATA TABLE ===== */
+        .data-table { width:100%; border-collapse:collapse; font-size:13px; }
+        .data-table thead th {
+            padding:12px 14px; text-align:left; font-size:11px; font-weight:700;
+            color:var(--slate-400); text-transform:uppercase; letter-spacing:0.5px;
+            border-bottom:2px solid var(--slate-100); background:var(--slate-50);
+        }
+        .data-table tbody tr {
+            border-bottom:1px solid var(--slate-50); cursor:pointer; transition:background 0.15s;
+        }
+        .data-table tbody tr:hover { background:var(--slate-50); }
+        .data-table tbody td { padding:12px 14px; vertical-align:middle; }
+        .badge {
+            display:inline-flex; align-items:center; gap:4px;
+            padding:4px 10px; border-radius:6px; font-size:11px; font-weight:700; white-space:nowrap;
+        }
+        .badge-gray { background:#f1f5f9; color:#64748b; }
+        .badge-blue { background:#dbeafe; color:#1e40af; }
+        .badge-green { background:#d1fae5; color:#047857; }
+        .badge-orange { background:#fef3c7; color:#92400e; }
+        .badge-red { background:#fee2e2; color:#dc2626; }
+        .badge-teal { background:#ccfbf1; color:#0d9488; }
+
+        .date-urgent { color:var(--red); font-weight:700; }
+        .date-warning { color:var(--amber); font-weight:600; }
+
+        .btn-action {
+            padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600;
+            border:none; cursor:pointer; font-family:'DM Sans',sans-serif;
+            display:inline-flex; align-items:center; gap:4px; transition:all 0.15s;
+        }
+        .btn-action-blue { background:var(--blue); color:white; }
+        .btn-action-blue:hover { background:#1d4ed8; }
+        .btn-action-gray { background:var(--slate-100); color:var(--slate-600); }
+        .btn-action-gray:hover { background:var(--slate-200); }
+        .btn-action-green { background:var(--emerald); color:white; }
+        .btn-action-green:hover { background:#047857; }
+
+        /* ===== DETAIL PANEL ===== */
+        .detail-panel {
+            display:none; margin-top:20px; background:white; border-radius:var(--radius);
+            border:1px solid var(--slate-100); box-shadow:0 4px 16px rgba(0,0,0,0.05); padding:24px;
+            animation:fadeIn 0.3s ease;
+        }
+        .detail-panel.show { display:block; }
+        .detail-section {
+            padding:16px 0; border-bottom:1px solid var(--slate-100);
+        }
+        .detail-section:last-child { border-bottom:none; }
+        .detail-section-title {
+            font-size:12px; font-weight:700; color:var(--slate-400); text-transform:uppercase;
+            letter-spacing:0.5px; margin-bottom:10px; display:flex; align-items:center; gap:6px;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
+            z-index:200; align-items:center; justify-content:center;
+        }
+        .modal-overlay.show { display:flex; }
+        .modal-content {
+            background:white; border-radius:16px; padding:28px; max-width:500px; width:90%;
+            max-height:90vh; overflow-y:auto; animation:fadeIn 0.3s ease;
+        }
+
+        @media (max-width:768px) {
+            .data-table { font-size:12px; }
+            .data-table thead th, .data-table tbody td { padding:8px 6px; }
+            .filters-bar { gap:4px; }
+            .kpi-row { grid-template-columns:repeat(2, 1fr); }
+            .admin-tabs { gap:2px; }
+            .admin-tab { padding:10px 4px; font-size:11px; }
+            .admin-tab span.tab-text { display:none; }
+        }
     </style>
 </head>
 <body>
@@ -333,46 +449,179 @@
 <!-- MAIN (hidden until loaded) -->
 <main class="admin-main" id="adminMain" style="display:none">
 
-    <!-- ONGLETS -->
+    <!-- ONGLETS — 7 tabs Sprint I -->
     <div class="admin-tabs" id="adminTabs">
-        <button class="admin-tab active" onclick="switchAdminTab('dashboard')"><i class="fas fa-chart-bar"></i><span>Tableau de bord</span></button>
-        <button class="admin-tab" onclick="switchAdminTab('quotes')"><i class="fas fa-file-alt"></i><span>Devis</span><span class="tab-badge" id="tabBadgeQuotes" style="display:none">0</span></button>
-        <button class="admin-tab" onclick="switchAdminTab('invoices')"><i class="fas fa-file-invoice-dollar"></i><span>Factures</span></button>
-        <button class="admin-tab" onclick="switchAdminTab('missions')"><i class="fas fa-car-side"></i><span>Missions</span><span class="tab-badge" id="tabBadgeMissions" style="display:none">0</span></button>
-        <button class="admin-tab" onclick="switchAdminTab('drivers')"><i class="fas fa-id-badge"></i><span>Chauffeurs</span></button>
+        <button class="admin-tab active" onclick="switchAdminTab('dashboard')"><i class="fas fa-chart-bar"></i><span class="tab-text">Dashboard</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('missions')"><i class="fas fa-car-side"></i><span class="tab-text">Missions</span><span class="tab-badge" id="tabBadgeMissions" style="display:none">0</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('clients')"><i class="fas fa-users"></i><span class="tab-text">Clients</span><span class="tab-badge" id="tabBadgeClients" style="display:none">0</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('edl')"><i class="fas fa-clipboard-list"></i><span class="tab-text">EDL</span><span class="tab-badge" id="tabBadgeEdl" style="display:none">0</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('quotes')"><i class="fas fa-file-alt"></i><span class="tab-text">Devis</span><span class="tab-badge" id="tabBadgeQuotes" style="display:none">0</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('invoices')"><i class="fas fa-file-invoice-dollar"></i><span class="tab-text">Factures</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('drivers')"><i class="fas fa-id-badge"></i><span class="tab-text">Chauffeurs</span></button>
     </div>
 
-    <!-- ============ TAB: TABLEAU DE BORD ============ -->
+    <!-- ============ TAB: DASHBOARD (Sprint I) ============ -->
     <div class="admin-panel active" id="panel-dashboard">
-        <div class="stats-row" id="statsRow">
-            <div class="stat-card">
-                <div class="stat-card-label">En attente</div>
-                <div class="stat-card-value pending" id="statPending">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-label">Comptes actifs</div>
-                <div class="stat-card-value active" id="statActive">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-label">Total inscrits</div>
-                <div class="stat-card-value" id="statTotal">0</div>
+        <div class="section-header" style="margin-bottom:20px;">
+            <h2><i class="fas fa-bolt" style="color:var(--amber)"></i> Actions requises</h2>
+            <button class="btn-refresh" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> Actualiser</button>
+        </div>
+        <div class="action-cards" id="dashboardActions">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
+        </div>
+
+        <div class="section-header" style="margin-bottom:16px;">
+            <h2><i class="fas fa-chart-line" style="color:var(--blue)"></i> Indicateurs</h2>
+        </div>
+        <div class="kpi-row" id="dashboardKpis">
+            <div class="kpi-card"><div class="kpi-value" id="kpiMissions">—</div><div class="kpi-label">Missions ce mois</div></div>
+            <div class="kpi-card"><div class="kpi-value" id="kpiRevenue">—</div><div class="kpi-label">CA ce mois</div></div>
+            <div class="kpi-card"><div class="kpi-value" id="kpiUpcoming">—</div><div class="kpi-label">Missions à venir</div></div>
+            <div class="kpi-card"><div class="kpi-value" id="kpiClients">—</div><div class="kpi-label">Clients actifs</div></div>
+            <div class="kpi-card"><div class="kpi-value" id="kpiDrivers">—</div><div class="kpi-label">Chauffeurs approuvés</div></div>
+        </div>
+
+        <!-- Section comptes en attente (legacy, toujours utile) -->
+        <div class="section-header" style="margin-top:24px;">
+            <h2><i class="fas fa-user-clock" style="color:var(--amber)"></i> Comptes en attente <span class="count" id="pendingCount">0</span></h2>
+        </div>
+        <div class="table-card" id="pendingList">
+            <div class="empty-state"><i class="fas fa-check-circle"></i><p>Aucun compte en attente.</p></div>
+        </div>
+    </div>
+
+    <!-- ============ TAB: CLIENTS (Sprint I nouveau) ============ -->
+    <div class="admin-panel" id="panel-clients">
+        <div class="section-header">
+            <h2><i class="fas fa-users" style="color:var(--blue)"></i> Clients <span class="count" id="clientsCount" style="background:var(--blue-pale); color:var(--blue);">0</span></h2>
+            <button class="btn-refresh" onclick="loadAdminClients()"><i class="fas fa-sync-alt"></i> Actualiser</button>
+        </div>
+
+        <div class="filters-bar" id="clientsFiltersBar">
+            <button class="filter-btn active" onclick="filterClients('all',this)">Tous</button>
+            <button class="filter-btn" onclick="filterClients('active',this)">Actifs</button>
+            <button class="filter-btn" onclick="filterClients('pending',this)">En attente</button>
+            <button class="filter-btn" onclick="filterClients('pro',this)">Pro</button>
+            <button class="filter-btn" onclick="filterClients('particulier',this)">Particulier</button>
+            <input type="text" class="search-input" id="clientsSearch" placeholder="Rechercher (nom, email, entreprise)..." oninput="renderClientsTable()">
+        </div>
+
+        <div class="table-card">
+            <div style="overflow-x:auto;">
+                <table class="data-table" id="clientsTable">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Type</th>
+                            <th>Entreprise</th>
+                            <th>Email</th>
+                            <th>Véhicules</th>
+                            <th>Missions</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                        <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--slate-400)"><i class="fas fa-spinner fa-spin"></i> Chargement...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
+        <!-- Détail client -->
+        <div class="detail-panel" id="clientDetailPanel"></div>
+    </div>
+
+    <!-- ============ TAB: EDL (Sprint I nouveau) ============ -->
+    <div class="admin-panel" id="panel-edl">
         <div class="section-header">
-            <h2>
-                <i class="fas fa-user-clock" style="color:var(--amber)"></i>
-                Comptes en attente
-                <span class="count" id="pendingCount">0</span>
-            </h2>
-            <button class="btn-refresh" onclick="loadPending()">
-                <i class="fas fa-sync-alt"></i> Actualiser
-            </button>
+            <h2><i class="fas fa-clipboard-list" style="color:var(--emerald)"></i> États des lieux <span class="count" id="edlCount" style="background:var(--emerald-pale); color:var(--emerald);">0</span></h2>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-refresh" onclick="openCreateDraftEdl()" style="background:var(--blue); color:white; border-color:var(--blue);">
+                    <i class="fas fa-plus"></i> Créer un EDL vierge
+                </button>
+                <button class="btn-refresh" onclick="loadAdminInspections()"><i class="fas fa-sync-alt"></i></button>
+            </div>
         </div>
-        <div class="table-card" id="pendingList">
-            <div class="empty-state">
-                <i class="fas fa-check-circle"></i>
-                <p>Aucun compte en attente de validation.</p>
+
+        <div class="filters-bar" id="edlFiltersBar">
+            <button class="filter-btn active" onclick="filterEdl('all',this)">Tous</button>
+            <button class="filter-btn" onclick="filterEdl('signed',this)">Signés</button>
+            <button class="filter-btn" onclick="filterEdl('contested',this)">Contestés</button>
+            <button class="filter-btn" onclick="filterEdl('draft',this)">Brouillons</button>
+            <button class="filter-btn" onclick="filterEdl('resolved',this)">Résolus</button>
+            <input type="text" class="search-input" id="edlSearch" placeholder="Rechercher (plaque, client, mission)..." oninput="renderEdlTable()">
+        </div>
+
+        <div class="table-card">
+            <div style="overflow-x:auto;">
+                <table class="data-table" id="edlTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Véhicule</th>
+                            <th>Client</th>
+                            <th>Type</th>
+                            <th>Mission</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="edlTableBody">
+                        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--slate-400)"><i class="fas fa-spinner fa-spin"></i> Chargement...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale création EDL vierge -->
+    <div class="modal-overlay" id="createEdlModal">
+        <div class="modal-content">
+            <h3 style="font-size:17px; font-weight:700; color:var(--navy); margin-bottom:20px;">
+                <i class="fas fa-plus-circle" style="color:var(--blue); margin-right:6px;"></i>Créer un EDL vierge
+            </h3>
+            <div style="margin-bottom:14px;">
+                <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Client *</label>
+                <select id="edlClientId" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                    <option value="">Chargement...</option>
+                </select>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
+                <div>
+                    <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Plaque *</label>
+                    <input type="text" id="edlPlate" placeholder="AB-123-CD" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif; text-transform:uppercase;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Marque</label>
+                    <input type="text" id="edlBrand" placeholder="Renault" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Modèle</label>
+                    <input type="text" id="edlModel" placeholder="Clio" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                </div>
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Type</label>
+                <select id="edlType" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                    <option value="standalone">Standalone (libre)</option>
+                    <option value="departure">Départ</option>
+                    <option value="arrival">Arrivée</option>
+                </select>
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Attribuer à un chauffeur (optionnel)</label>
+                <select id="edlDriverId" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                    <option value="">Aucun</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="submitCreateDraftEdl()" id="btnCreateEdl" style="flex:1; background:var(--blue); color:white; border:none; padding:12px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;">
+                    <i class="fas fa-check"></i> Créer
+                </button>
+                <button onclick="document.getElementById('createEdlModal').classList.remove('show')" style="background:none; border:1px solid var(--slate-200); color:var(--slate-500); padding:12px 20px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">
+                    Annuler
+                </button>
             </div>
         </div>
     </div>
@@ -473,57 +722,47 @@
         </div>
     </div>
 
-    <!-- ============ TAB: MISSIONS ============ -->
+    <!-- ============ TAB: MISSIONS (Sprint I refonte) ============ -->
     <div class="admin-panel" id="panel-missions">
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-card-label">Brouillons</div>
-                <div class="stat-card-value" style="color:var(--slate-500);" id="statMissionsDraft">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-label">Ouvertes</div>
-                <div class="stat-card-value pending" id="statMissionsOpen">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-label">Assignées</div>
-                <div class="stat-card-value" style="color:var(--blue);" id="statMissionsAssigned">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-label">En cours</div>
-                <div class="stat-card-value" style="color:var(--amber);" id="statMissionsProgress">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-label">Terminées</div>
-                <div class="stat-card-value active" id="statMissionsCompleted">0</div>
+        <div class="section-header">
+            <h2><i class="fas fa-car-side" style="color:var(--navy)"></i> Missions <span class="count" id="missionsCount" style="background:var(--blue-pale); color:var(--blue);">0</span></h2>
+            <button class="btn-refresh" onclick="openCreateMission()" style="background:var(--blue); color:white; border-color:var(--blue);">
+                <i class="fas fa-plus"></i> Nouvelle mission
+            </button>
+        </div>
+
+        <div class="filters-bar" id="missionsFiltersBar">
+            <button class="filter-btn active" onclick="filterMissions('all',this)">Toutes</button>
+            <button class="filter-btn" onclick="filterMissions('upcoming',this)">A venir</button>
+            <button class="filter-btn" onclick="filterMissions('in_progress',this)">En cours</button>
+            <button class="filter-btn" onclick="filterMissions('completed',this)">Terminées</button>
+            <button class="filter-btn" onclick="filterMissions('draft',this)">Brouillons</button>
+            <button class="filter-btn" onclick="filterMissions('late',this)">En retard</button>
+            <input type="text" class="search-input" id="missionsSearch" placeholder="Rechercher (devis, client, trajet)..." oninput="renderMissionsTable()">
+        </div>
+
+        <div class="table-card">
+            <div style="overflow-x:auto;">
+                <table class="data-table" id="missionsTable">
+                    <thead>
+                        <tr>
+                            <th>Réf</th>
+                            <th>Trajet</th>
+                            <th>Date</th>
+                            <th>Véhicule</th>
+                            <th>Chauffeur</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="missionsTableBody">
+                        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--slate-400)"><i class="fas fa-spinner fa-spin"></i> Chargement...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="section-header">
-            <h2>
-                <i class="fas fa-car-side" style="color:var(--navy)"></i>
-                Missions
-                <span class="count" id="missionsCount" style="background:var(--blue-pale); color:var(--blue);">0</span>
-            </h2>
-            <div style="display:flex; gap:8px;">
-                <button class="btn-refresh" onclick="openCreateMission()" style="background:var(--blue); color:white; border-color:var(--blue);">
-                    <i class="fas fa-plus"></i> Nouvelle mission
-                </button>
-                <select id="missionsFilter" onchange="loadAdminMissions()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
-                    <option value="draft">Brouillons</option>
-                    <option value="open">Ouvertes</option>
-                    <option value="assigned">Assignées</option>
-                    <option value="in_progress">En cours</option>
-                    <option value="completed">Terminées</option>
-                    <option value="all">Toutes</option>
-                </select>
-                <button class="btn-refresh" onclick="loadAdminMissions()">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-        </div>
-        <div class="table-card" id="adminMissionsList">
-            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
-        </div>
+        <!-- Sous-panels existants (création, candidatures, attribution, fiche, EDL) -->
         <div id="createMissionWrap" style="display:none; margin-top:24px;">
             <div class="table-card" style="padding:28px;" id="createMissionContent"></div>
         </div>
@@ -539,6 +778,8 @@
         <div id="missionEdlWrap" style="display:none; margin-top:24px;">
             <div class="table-card" style="padding:28px;" id="missionEdlContent"></div>
         </div>
+        <!-- Détail mission -->
+        <div class="detail-panel" id="missionDetailPanel"></div>
     </div>
 
     <!-- ============ TAB: CHAUFFEURS ============ -->
@@ -590,19 +831,23 @@
         window.location.href = '../';
     }
 
-    // ===== ADMIN TABS =====
+    // ===== ADMIN TABS (Sprint I — 7 onglets) =====
+    const TAB_IDS = ['dashboard', 'missions', 'clients', 'edl', 'quotes', 'invoices', 'drivers'];
+
     function switchAdminTab(tabId) {
         document.querySelectorAll('.admin-tab').forEach((t, i) => {
-            const tabs = ['dashboard', 'quotes', 'invoices', 'missions', 'drivers'];
-            t.classList.toggle('active', tabs[i] === tabId);
+            t.classList.toggle('active', TAB_IDS[i] === tabId);
         });
         document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
         document.getElementById('panel-' + tabId).classList.add('active');
 
         // Lazy load
+        if (tabId === 'dashboard') loadDashboard();
+        if (tabId === 'missions') loadAdminMissions();
+        if (tabId === 'clients') loadAdminClients();
+        if (tabId === 'edl') loadAdminInspections();
         if (tabId === 'quotes') loadAdminQuotes();
         if (tabId === 'invoices') loadAdminInvoices();
-        if (tabId === 'missions') loadAdminMissions();
         if (tabId === 'drivers') loadAdminDrivers();
     }
 
@@ -632,8 +877,8 @@
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('adminMain').style.display = 'block';
 
+            loadDashboard();
             loadPending();
-            loadStats();
 
         } catch (err) {
             console.error('Admin check failed:', err);
@@ -644,6 +889,57 @@
     function showAccessDenied() {
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('accessDenied').style.display = '';
+    }
+
+    // ===== DASHBOARD (Sprint I) =====
+    async function loadDashboard() {
+        try {
+            const res = await fetch(API + '/api/admin/dashboard', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) return;
+            const d = await res.json();
+
+            // Actions requises
+            const actions = [];
+            if (d.pending_clients > 0) actions.push({ icon: 'fa-user-clock', color: '#dc2626', bg: '#fee2e2', label: `${d.pending_clients} compte(s) client en attente de validation`, count: d.pending_clients, tab: 'clients', filter: 'pending' });
+            if (d.draft_missions > 0) actions.push({ icon: 'fa-file-alt', color: '#dc2626', bg: '#fee2e2', label: `${d.draft_missions} fiche(s) mission à remplir`, count: d.draft_missions, tab: 'missions', filter: 'draft' });
+            if (d.open_missions_with_candidates > 0) actions.push({ icon: 'fa-users', color: '#d97706', bg: '#fef3c7', label: `${d.open_missions_with_candidates} candidature(s) à valider`, count: d.open_missions_with_candidates, tab: 'missions', filter: 'all' });
+            if (d.contested_edl > 0) actions.push({ icon: 'fa-exclamation-triangle', color: '#d97706', bg: '#fef3c7', label: `${d.contested_edl} contestation(s) EDL à traiter`, count: d.contested_edl, tab: 'edl', filter: 'contested' });
+            if (d.upcoming_no_driver > 0) actions.push({ icon: 'fa-calendar-times', color: '#d97706', bg: '#fef3c7', label: `${d.upcoming_no_driver} mission(s) à venir sans chauffeur`, count: d.upcoming_no_driver, tab: 'missions', filter: 'upcoming' });
+            if (d.pending_expenses > 0) actions.push({ icon: 'fa-receipt', color: '#d97706', bg: '#fef3c7', label: `${d.pending_expenses} frais chauffeur en attente`, count: d.pending_expenses, tab: 'drivers', filter: null });
+            if (d.late_missions_today > 0) actions.push({ icon: 'fa-clock', color: '#dc2626', bg: '#fee2e2', label: `${d.late_missions_today} mission(s) du jour non démarrée(s)`, count: d.late_missions_today, tab: 'missions', filter: 'late' });
+
+            const container = document.getElementById('dashboardActions');
+            if (actions.length === 0) {
+                container.innerHTML = '<div style="padding:24px; text-align:center; color:var(--emerald); font-weight:600;"><i class="fas fa-check-circle" style="font-size:24px; margin-bottom:8px; display:block;"></i>Aucune action requise</div>';
+            } else {
+                container.innerHTML = actions.map(a => `
+                    <div class="action-card" onclick="switchAdminTab('${a.tab}')${a.filter ? ";setTimeout(()=>{const b=document.querySelector('#" + a.tab + "FiltersBar .filter-btn[onclick*=\\'" + a.filter + "\\']');if(b)b.click();},100)" : ''}">
+                        <div class="ac-icon" style="background:${a.bg}; color:${a.color};"><i class="fas ${a.icon}"></i></div>
+                        <div class="ac-label">${a.label}</div>
+                        <div class="ac-count" style="color:${a.color};">${a.count}</div>
+                    </div>
+                `).join('');
+            }
+
+            // KPIs
+            document.getElementById('kpiMissions').textContent = d.kpis.missions_this_month;
+            document.getElementById('kpiRevenue').textContent = d.kpis.revenue_this_month.toLocaleString('fr-FR') + ' €';
+            document.getElementById('kpiUpcoming').textContent = d.kpis.upcoming_missions;
+            document.getElementById('kpiClients').textContent = d.kpis.active_clients;
+            document.getElementById('kpiDrivers').textContent = d.kpis.approved_drivers;
+
+            // Badges sur onglets
+            const bClients = document.getElementById('tabBadgeClients');
+            if (d.pending_clients > 0) { bClients.textContent = d.pending_clients; bClients.style.display = 'inline'; } else bClients.style.display = 'none';
+            const bEdl = document.getElementById('tabBadgeEdl');
+            if (d.contested_edl > 0) { bEdl.textContent = d.contested_edl; bEdl.style.display = 'inline'; } else bEdl.style.display = 'none';
+            const bMissions = document.getElementById('tabBadgeMissions');
+            const mAction = d.draft_missions + d.late_missions_today;
+            if (mAction > 0) { bMissions.textContent = mAction; bMissions.style.display = 'inline'; } else bMissions.style.display = 'none';
+
+        } catch (err) { console.error('Dashboard failed:', err); }
     }
 
     // ===== LOAD PENDING =====
@@ -657,7 +953,6 @@
             const users = data.users || [];
 
             document.getElementById('pendingCount').textContent = users.length;
-            document.getElementById('statPending').textContent = users.length;
 
             const container = document.getElementById('pendingList');
 
@@ -706,22 +1001,6 @@
         }
     }
 
-    // ===== LOAD STATS =====
-    async function loadStats() {
-        try {
-            const res = await fetch(API + '/api/admin/stats', {
-                headers: { 'Authorization': 'Bearer ' + authToken }
-            });
-            if (!res.ok) return;
-            const data = await res.json();
-            document.getElementById('statPending').textContent = data.pending || 0;
-            document.getElementById('statActive').textContent = data.active || 0;
-            document.getElementById('statTotal').textContent = data.total || 0;
-        } catch (err) {
-            console.error('Stats failed:', err);
-        }
-    }
-
     // ===== VALIDATE USER =====
     async function validateUser(id, name, btn) {
         btn.disabled = true;
@@ -747,7 +1026,6 @@
                         // Update count
                         const remaining = document.querySelectorAll('.user-card').length;
                         document.getElementById('pendingCount').textContent = remaining;
-                        document.getElementById('statPending').textContent = remaining;
                         if (remaining === 0) {
                             document.getElementById('pendingList').innerHTML = `
                                 <div class="empty-state">
@@ -1420,116 +1698,234 @@
         } catch (err) { showToast('Erreur de connexion', 'error'); }
     }
 
-    // ===== ADMIN MISSIONS =====
+    // ===== ADMIN MISSIONS (Sprint I — refonte table) =====
     let adminMissionsData = [];
+    let missionsCurrentFilter = 'all';
+
+    const MISSION_STATUS_CONF = {
+        'draft': { label: 'Fiche à remplir', badge: 'badge-gray' },
+        'draft_sheet': { label: 'À attribuer', badge: 'badge-gray' },
+        'open': { label: 'Ouverte', badge: 'badge-blue' },
+        'assigned': { label: 'En attente chauffeur', badge: 'badge-orange' },
+        'assigned_confirmed': { label: 'Confirmée', badge: 'badge-green' },
+        'in_progress': { label: 'En cours', badge: 'badge-blue' },
+        'edl_departure_done': { label: 'EDL départ fait', badge: 'badge-blue' },
+        'in_transit': { label: 'En route', badge: 'badge-blue' },
+        'edl_arrival_done': { label: 'EDL arrivée fait', badge: 'badge-blue' },
+        'completed': { label: 'Terminée', badge: 'badge-green' },
+        'cancelled': { label: 'Annulée', badge: 'badge-gray' }
+    };
+
+    function getMissionDisplayStatus(m) {
+        if (m.status === 'draft' && m.sheet_completed_at) return 'draft_sheet';
+        if (m.status === 'assigned' && m.accepted_at) return 'assigned_confirmed';
+        return m.status;
+    }
+
+    function filterMissions(filter, btn) {
+        missionsCurrentFilter = filter;
+        document.querySelectorAll('#missionsFiltersBar .filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        renderMissionsTable();
+    }
+
+    function getFilteredMissions() {
+        const today = new Date().toISOString().slice(0, 10);
+        const search = (document.getElementById('missionsSearch')?.value || '').toLowerCase();
+        let filtered = adminMissionsData;
+
+        // Filtre par statut
+        if (missionsCurrentFilter === 'upcoming') filtered = filtered.filter(m => m.confirmed_date && m.confirmed_date > today && m.status !== 'completed' && m.status !== 'cancelled');
+        else if (missionsCurrentFilter === 'in_progress') filtered = filtered.filter(m => ['in_progress','edl_departure_done','in_transit','edl_arrival_done'].includes(m.status));
+        else if (missionsCurrentFilter === 'completed') filtered = filtered.filter(m => m.status === 'completed');
+        else if (missionsCurrentFilter === 'draft') filtered = filtered.filter(m => m.status === 'draft');
+        else if (missionsCurrentFilter === 'late') filtered = filtered.filter(m => m.confirmed_date && m.confirmed_date <= today && ['draft','assigned'].includes(m.status));
+
+        // Recherche texte
+        if (search) {
+            filtered = filtered.filter(m =>
+                (m.quote_number || '').toLowerCase().includes(search) ||
+                (m.origin_address || '').toLowerCase().includes(search) ||
+                (m.destination_address || '').toLowerCase().includes(search) ||
+                (m.client_first_name + ' ' + m.client_last_name).toLowerCase().includes(search) ||
+                (m.driver_name || '').toLowerCase().includes(search)
+            );
+        }
+        return filtered;
+    }
+
+    function renderMissionsTable() {
+        const filtered = getFilteredMissions();
+        const tbody = document.getElementById('missionsTableBody');
+        const today = new Date().toISOString().slice(0, 10);
+
+        document.getElementById('missionsCount').textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--slate-400)"><i class="fas fa-inbox" style="font-size:20px;margin-bottom:8px;display:block;"></i>Aucune mission</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(m => {
+            const ds = getMissionDisplayStatus(m);
+            const st = MISSION_STATUS_CONF[ds] || MISSION_STATUS_CONF[m.status] || { label: m.status, badge: 'badge-gray' };
+            const route = m.origin_address ? (m.origin_address.split(',')[0] + ' → ' + (m.destination_address || '').split(',')[0]) : '—';
+            const dateStr = m.confirmed_date ? formatDate(m.confirmed_date) : '—';
+
+            // Date urgence
+            let dateClass = '';
+            if (m.confirmed_date) {
+                const diff = Math.ceil((new Date(m.confirmed_date) - new Date(today)) / 86400000);
+                if (diff < 3) dateClass = 'date-urgent';
+                else if (diff < 7) dateClass = 'date-warning';
+            }
+
+            // Chauffeur
+            let driverHtml = '—';
+            if (m.driver_name) {
+                const stars = m.driver_reliability ? ' <span style="color:#f59e0b;font-size:10px;">' + '★'.repeat(m.driver_reliability) + '</span>' : '';
+                driverHtml = m.driver_name + stars;
+            } else if (m.application_count > 0) {
+                driverHtml = '<span style="color:var(--blue);font-weight:600;">' + m.application_count + ' candidat(s)</span>';
+            }
+
+            // Statut badge + candidatures
+            let statusHtml = '<span class="badge ' + st.badge + '">' + st.label + '</span>';
+            if (m.status === 'open' && m.application_count > 0) {
+                statusHtml += ' <span class="badge badge-blue">' + m.application_count + '</span>';
+            }
+
+            // Action button
+            let actionHtml = '';
+            if (m.status === 'draft' && !m.sheet_completed_at) actionHtml = '<button class="btn-action btn-action-blue" onclick="event.stopPropagation();openMissionDraft(' + m.id + ')"><i class="fas fa-edit"></i> Fiche</button>';
+            else if (m.status === 'draft' && m.sheet_completed_at) actionHtml = '<button class="btn-action btn-action-green" onclick="event.stopPropagation();openMissionDraft(' + m.id + ')"><i class="fas fa-user-plus"></i> Attribuer</button>';
+            else if (m.status === 'open') actionHtml = '<button class="btn-action btn-action-blue" onclick="event.stopPropagation();openMissionApps(' + m.id + ')"><i class="fas fa-users"></i> Candidats</button>';
+            else actionHtml = '<button class="btn-action btn-action-gray" onclick="event.stopPropagation();openMissionDetail(' + m.id + ')"><i class="fas fa-eye"></i> Détails</button>';
+
+            return `<tr onclick="openMissionDetail(${m.id})">
+                <td><strong>${m.quote_number || '#' + m.id}</strong></td>
+                <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m.origin_address || ''} → ${m.destination_address || ''}">${route}</td>
+                <td class="${dateClass}">${dateStr}</td>
+                <td>${m.vehicle_plate || '—'}</td>
+                <td>${driverHtml}</td>
+                <td>${statusHtml}</td>
+                <td>${actionHtml}</td>
+            </tr>`;
+        }).join('');
+    }
 
     async function loadAdminMissions() {
-        const container = document.getElementById('adminMissionsList');
-        const filter = document.getElementById('missionsFilter').value;
         document.getElementById('createMissionWrap').style.display = 'none';
         document.getElementById('missionAppsWrap').style.display = 'none';
         document.getElementById('missionAttributionWrap').style.display = 'none';
         document.getElementById('missionSheetWrap').style.display = 'none';
+        document.getElementById('missionDetailPanel').classList.remove('show');
 
         try {
             const res = await fetch(API + '/api/admin/missions', {
                 headers: { 'Authorization': 'Bearer ' + authToken }
             });
-            if (!res.ok) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur.</p></div>'; return; }
+            if (!res.ok) { document.getElementById('missionsTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--red)">Erreur de chargement</td></tr>'; return; }
             const data = await res.json();
             adminMissionsData = data.missions || [];
 
-            // Stats
-            const draft = adminMissionsData.filter(m => m.status === 'draft').length;
-            const open = adminMissionsData.filter(m => m.status === 'open').length;
-            const assigned = adminMissionsData.filter(m => m.status === 'assigned').length;
-            const inProgress = adminMissionsData.filter(m => ['in_progress','edl_departure_done','in_transit','edl_arrival_done'].includes(m.status)).length;
-            const completed = adminMissionsData.filter(m => m.status === 'completed').length;
-            document.getElementById('statMissionsDraft').textContent = draft;
-            document.getElementById('statMissionsOpen').textContent = open;
-            document.getElementById('statMissionsAssigned').textContent = assigned;
-            document.getElementById('statMissionsProgress').textContent = inProgress;
-            document.getElementById('statMissionsCompleted').textContent = completed;
-
-            // Badge onglet — afficher brouillons + ouvertes
-            const badge = document.getElementById('tabBadgeMissions');
-            const actionNeeded = draft + open;
-            if (actionNeeded > 0) { badge.textContent = actionNeeded; badge.style.display = 'inline'; }
-            else { badge.style.display = 'none'; }
-
-            // Filter
-            let filtered = adminMissionsData;
-            if (filter === 'draft') filtered = adminMissionsData.filter(m => m.status === 'draft');
-            else if (filter === 'open') filtered = adminMissionsData.filter(m => m.status === 'open');
-            else if (filter === 'assigned') filtered = adminMissionsData.filter(m => m.status === 'assigned');
-            else if (filter === 'in_progress') filtered = adminMissionsData.filter(m => ['in_progress','edl_departure_done','in_transit','edl_arrival_done'].includes(m.status));
-            else if (filter === 'completed') filtered = adminMissionsData.filter(m => m.status === 'completed');
-
-            document.getElementById('missionsCount').textContent = filtered.length;
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" style="color:var(--slate-300)"></i><p>Aucune mission dans cette catégorie.</p></div>';
-                return;
-            }
-
-            const statusConf = {
-                'draft': { label: 'Brouillon', color: '#64748b', bg: '#64748b15', icon: 'file-alt' },
-                'open': { label: 'Ouverte', color: '#2563eb', bg: '#2563eb15', icon: 'bullhorn' },
-                'assigned': { label: 'En attente chauffeur', color: '#d97706', bg: '#d9770615', icon: 'user-clock' },
-                'in_progress': { label: 'En cours', color: '#2563eb', bg: '#2563eb15', icon: 'play' },
-                'edl_departure_done': { label: 'EDL départ fait', color: '#2563eb', bg: '#2563eb15', icon: 'clipboard-check' },
-                'in_transit': { label: 'En route', color: '#2563eb', bg: '#2563eb15', icon: 'truck' },
-                'edl_arrival_done': { label: 'EDL arrivée fait', color: '#2563eb', bg: '#2563eb15', icon: 'clipboard-check' },
-                'completed': { label: 'Terminée', color: '#059669', bg: '#05966915', icon: 'check-circle' },
-                'cancelled': { label: 'Annulée', color: '#94a3b8', bg: '#94a3b815', icon: 'ban' }
-            };
-
-            container.innerHTML = filtered.map(m => {
-                const st = statusConf[m.status] || statusConf['open'];
-                const route = m.origin_address ? (m.origin_address.split(',')[0] + ' → ' + (m.destination_address || '').split(',')[0]) : '';
-                const date = m.mission_date ? m.mission_date.split('-').reverse().join('/') : '—';
-
-                // Badge assignation : attente vs confirmée
-                let assignBadge = '';
-                if (m.status === 'assigned' && m.accepted_at) {
-                    assignBadge = '<span class="type-badge" style="background:#d1fae5; color:#047857;">Confirmée ✓</span>';
-                } else if (m.status === 'assigned' && !m.accepted_at) {
-                    assignBadge = '<span class="type-badge" style="background:#fef3c7; color:#92400e;">En attente de confirmation</span>';
-                }
-
-                // Onclick selon statut
-                let clickAction = '';
-                if (m.status === 'draft') clickAction = 'openMissionDraft(' + m.id + ')';
-                else if (m.status === 'open') clickAction = 'openMissionApps(' + m.id + ')';
-                else if (['edl_departure_done','in_transit','edl_arrival_done','completed'].includes(m.status)) clickAction = 'openMissionEdl(' + m.id + ')';
-
-                return `
-                <div class="user-card" style="cursor:pointer;" onclick="${clickAction}">
-                    <div class="user-avatar" style="background:${st.bg}; color:${st.color};">
-                        <i class="fas fa-${st.icon}"></i>
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">
-                            ${m.quote_number || 'Mission #' + m.id}
-                            <span class="type-badge" style="background:${st.bg}; color:${st.color};">${m.status === 'assigned' && m.accepted_at ? 'Confirmée' : st.label}</span>
-                            ${m.status === 'open' && m.application_count ? '<span class="type-badge" style="background:#dbeafe; color:#1e40af;">' + m.application_count + ' candidature(s)</span>' : ''}
-                            ${assignBadge}
-                        </div>
-                        <div class="user-email">${route}</div>
-                        <div class="user-details">
-                            <span><i class="fas fa-road"></i> ${m.distance_km || '—'} km</span>
-                            <span style="${m.status === 'draft' ? 'color:#dc2626; font-weight:700;' : ''}"><i class="fas fa-calendar-day"></i> ${date}</span>
-                            ${m.driver_name ? '<span><i class="fas fa-user"></i> ' + m.driver_name + '</span>' : ''}
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:12px; flex-shrink:0;"></i>
-                </div>`;
-            }).join('');
+            renderMissionsTable();
 
         } catch (err) {
             console.error('Load missions failed:', err);
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de connexion.</p></div>';
+            document.getElementById('missionsTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--red)">Erreur de connexion</td></tr>';
         }
+    }
+
+    // ===== MISSION DETAIL PANEL =====
+    function openMissionDetail(missionId) {
+        const m = adminMissionsData.find(x => x.id === missionId);
+        if (!m) return;
+
+        // Si draft → ouvrir le formulaire fiche directement
+        if (m.status === 'draft') { openMissionDraft(missionId); return; }
+        // Si open → ouvrir les candidatures
+        if (m.status === 'open') { openMissionApps(missionId); return; }
+
+        const panel = document.getElementById('missionDetailPanel');
+        panel.classList.add('show');
+        panel.scrollIntoView({ behavior: 'smooth' });
+
+        const ds = getMissionDisplayStatus(m);
+        const st = MISSION_STATUS_CONF[ds] || { label: m.status, badge: 'badge-gray' };
+        const dateStr = m.confirmed_date ? formatDate(m.confirmed_date) : '—';
+
+        let html = `
+            <button onclick="document.getElementById('missionDetailPanel').classList.remove('show')" style="background:none;border:1px solid var(--slate-200);border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--slate-500);cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;">
+                <i class="fas fa-arrow-left" style="font-size:11px;"></i> Retour
+            </button>
+
+            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px;">
+                <div>
+                    <div style="font-size:20px;font-weight:800;color:var(--navy);">${m.quote_number || 'Mission #' + m.id}</div>
+                    <span class="badge ${st.badge}" style="font-size:12px;margin-top:4px;">${st.label}</span>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:16px;font-weight:800;color:var(--navy);">Date : ${dateStr}</div>
+                    ${m.total_ht ? '<div style="font-size:13px;color:var(--slate-500);">Prix client : ' + m.total_ht.toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' €</div>' : ''}
+                </div>
+            </div>`;
+
+        // Section 1: Infos mission
+        html += `<div class="detail-section">
+            <div class="detail-section-title"><i class="fas fa-route"></i> Trajet</div>
+            <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;">
+                <div><div style="font-size:12px;color:var(--slate-400);">Départ</div><div style="font-size:14px;font-weight:600;">${m.origin_address || '—'}</div></div>
+                <i class="fas fa-arrow-right" style="color:var(--blue);"></i>
+                <div><div style="font-size:12px;color:var(--slate-400);">Arrivée</div><div style="font-size:14px;font-weight:600;">${m.destination_address || '—'}</div></div>
+            </div>
+            <div style="margin-top:8px;font-size:13px;color:var(--slate-500);">Distance : ${m.distance_km || '—'} km — Client : ${m.client_first_name || ''} ${m.client_last_name || ''}</div>
+        </div>`;
+
+        // Section 2: Véhicule + contacts (fiche)
+        if (m.vehicle_plate) {
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-car"></i> Fiche mission</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div><strong>Véhicule :</strong> ${m.vehicle_plate} ${[m.vehicle_brand, m.vehicle_model].filter(Boolean).join(' ')}</div>
+                    ${m.pickup_address ? '<div><strong>Départ :</strong> ' + m.pickup_address + '</div>' : ''}
+                    ${m.pickup_contact_name ? '<div><strong>Contact départ :</strong> ' + m.pickup_contact_name + (m.pickup_contact_phone ? ' <a href="tel:' + m.pickup_contact_phone + '">' + m.pickup_contact_phone + '</a>' : '') + '</div>' : ''}
+                    ${m.delivery_address ? '<div><strong>Arrivée :</strong> ' + m.delivery_address + '</div>' : ''}
+                    ${m.delivery_contact_name ? '<div><strong>Contact arrivée :</strong> ' + m.delivery_contact_name + (m.delivery_contact_phone ? ' <a href="tel:' + m.delivery_contact_phone + '">' + m.delivery_contact_phone + '</a>' : '') + '</div>' : ''}
+                    ${m.mission_notes ? '<div style="grid-column:1/-1;"><strong>Notes :</strong> ' + m.mission_notes + '</div>' : ''}
+                </div>
+            </div>`;
+        }
+
+        // Section 3: Chauffeur
+        html += `<div class="detail-section">
+            <div class="detail-section-title"><i class="fas fa-user"></i> Chauffeur</div>`;
+        if (m.driver_name) {
+            const stars = m.driver_reliability ? '★'.repeat(m.driver_reliability) + '☆'.repeat(5 - m.driver_reliability) : '';
+            html += `<div style="font-size:14px;font-weight:600;">${m.driver_name} <span style="color:#f59e0b;letter-spacing:1px;">${stars}</span></div>`;
+            if (m.accepted_at) html += '<div style="font-size:12px;color:var(--emerald);margin-top:2px;">Confirmé le ' + formatDate(m.accepted_at.substring(0,10)) + '</div>';
+        } else {
+            html += '<div style="color:var(--slate-400);">Pas encore assigné</div>';
+        }
+        html += '</div>';
+
+        // Section 4: EDL
+        if (m.edl_count > 0) {
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-clipboard-list"></i> États des lieux (${m.edl_count})</div>
+                <button class="btn-action btn-action-blue" onclick="openMissionEdl(${m.id})"><i class="fas fa-eye"></i> Voir les EDL</button>
+            </div>`;
+        }
+
+        // Section 5: Frais
+        if (m.expense_count > 0) {
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-receipt"></i> Frais chauffeur (${m.expense_count})</div>
+                <div style="font-size:13px;color:var(--slate-500);">${m.expense_count} frais déclaré(s)</div>
+            </div>`;
+        }
+
+        panel.innerHTML = html;
     }
 
     async function openCreateMission() {
@@ -2280,6 +2676,383 @@
             showToast('Erreur de connexion', 'error');
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer la fiche mission';
+        }
+    }
+
+    // ===== ADMIN CLIENTS (Sprint I) =====
+    let adminClientsData = [];
+    let clientsCurrentFilter = 'all';
+
+    function filterClients(filter, btn) {
+        clientsCurrentFilter = filter;
+        document.querySelectorAll('#clientsFiltersBar .filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        renderClientsTable();
+    }
+
+    function renderClientsTable() {
+        const search = (document.getElementById('clientsSearch')?.value || '').toLowerCase();
+        let filtered = adminClientsData;
+
+        if (clientsCurrentFilter === 'active') filtered = filtered.filter(c => c.status === 'active');
+        else if (clientsCurrentFilter === 'pending') filtered = filtered.filter(c => c.status === 'pending');
+        else if (clientsCurrentFilter === 'pro') filtered = filtered.filter(c => c.account_type === 'pro');
+        else if (clientsCurrentFilter === 'particulier') filtered = filtered.filter(c => c.account_type === 'particulier');
+
+        if (search) {
+            filtered = filtered.filter(c =>
+                (c.first_name + ' ' + c.last_name).toLowerCase().includes(search) ||
+                (c.email || '').toLowerCase().includes(search) ||
+                (c.company_name || '').toLowerCase().includes(search)
+            );
+        }
+
+        const tbody = document.getElementById('clientsTableBody');
+        document.getElementById('clientsCount').textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--slate-400)">Aucun client</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(c => {
+            const stBadge = c.status === 'active' ? 'badge-green' : c.status === 'pending' ? 'badge-orange' : 'badge-red';
+            const stLabel = c.status === 'active' ? 'Actif' : c.status === 'pending' ? 'En attente' : 'Suspendu';
+            const typeBadge = c.account_type === 'pro' ? '<span class="badge badge-blue">Pro</span>' : '<span class="badge badge-gray">Part.</span>';
+            const actionHtml = c.status === 'pending'
+                ? '<button class="btn-action btn-action-green" onclick="event.stopPropagation();validateClientFromList(' + c.id + ',this)"><i class="fas fa-check"></i> Valider</button>'
+                : '<button class="btn-action btn-action-gray" onclick="event.stopPropagation();openClientDetail(' + c.id + ')"><i class="fas fa-eye"></i> Fiche</button>';
+
+            return `<tr onclick="openClientDetail(${c.id})">
+                <td><strong>${c.first_name} ${c.last_name}</strong></td>
+                <td>${typeBadge}</td>
+                <td>${c.company_name || '—'}</td>
+                <td style="font-size:12px;">${c.email}</td>
+                <td style="text-align:center;">${c.vehicle_count || 0}</td>
+                <td style="text-align:center;">${c.mission_count || 0}</td>
+                <td><span class="badge ${stBadge}">${stLabel}</span></td>
+                <td>${actionHtml}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    async function loadAdminClients() {
+        document.getElementById('clientDetailPanel').classList.remove('show');
+        try {
+            const res = await fetch(API + '/api/admin/clients', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { document.getElementById('clientsTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--red)">Erreur</td></tr>'; return; }
+            const data = await res.json();
+            adminClientsData = data.clients || [];
+            renderClientsTable();
+        } catch (err) {
+            console.error('Load clients failed:', err);
+            document.getElementById('clientsTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--red)">Erreur de connexion</td></tr>';
+        }
+    }
+
+    async function validateClientFromList(clientId, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch(API + '/api/admin/validate/' + clientId, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Client validé !');
+                loadAdminClients();
+                loadDashboard();
+                loadPending();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Valider';
+            }
+        } catch (err) {
+            showToast('Erreur', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Valider';
+        }
+    }
+
+    async function openClientDetail(clientId) {
+        const panel = document.getElementById('clientDetailPanel');
+        panel.classList.add('show');
+        panel.innerHTML = '<div style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin" style="font-size:20px;color:var(--blue)"></i></div>';
+        panel.scrollIntoView({ behavior: 'smooth' });
+
+        try {
+            const res = await fetch(API + '/api/admin/clients/' + clientId, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { panel.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de chargement.</p>'; return; }
+            const data = await res.json();
+            const c = data.client;
+
+            let html = `
+                <button onclick="document.getElementById('clientDetailPanel').classList.remove('show')" style="background:none;border:1px solid var(--slate-200);border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--slate-500);cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;">
+                    <i class="fas fa-arrow-left" style="font-size:11px;"></i> Retour
+                </button>
+
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                    <div style="width:56px;height:56px;border-radius:50%;background:var(--blue-pale);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;">
+                        ${((c.first_name||'?')[0]+(c.last_name||'?')[0]).toUpperCase()}
+                    </div>
+                    <div>
+                        <div style="font-size:20px;font-weight:800;color:var(--navy);">${c.first_name} ${c.last_name}</div>
+                        <div style="font-size:13px;color:var(--slate-500);">${c.email} · ${c.phone || '—'}</div>
+                        <span class="badge ${c.status==='active'?'badge-green':c.status==='pending'?'badge-orange':'badge-red'}" style="margin-top:4px;">${c.status==='active'?'Actif':c.status==='pending'?'En attente':'Suspendu'}</span>
+                    </div>
+                </div>`;
+
+            // Entreprise
+            if (c.company_name) {
+                html += `<div class="detail-section">
+                    <div class="detail-section-title"><i class="fas fa-building"></i> Entreprise</div>
+                    <div><strong>${c.company_name}</strong></div>
+                    ${c.siret ? '<div style="font-size:13px;color:var(--slate-500);">SIRET : ' + c.siret + '</div>' : ''}
+                    ${c.company_address ? '<div style="font-size:13px;color:var(--slate-500);">' + c.company_address + '</div>' : ''}
+                </div>`;
+            }
+
+            // Véhicules
+            const vehicles = data.vehicles || [];
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-car"></i> Véhicules (${vehicles.length})</div>`;
+            if (vehicles.length > 0) {
+                html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>Plaque</th><th>Marque</th><th>Modèle</th></tr></thead><tbody>';
+                html += vehicles.map(v => '<tr><td><strong>' + (v.plate||'—') + '</strong></td><td>' + (v.brand||'—') + '</td><td>' + (v.model||'—') + '</td></tr>').join('');
+                html += '</tbody></table>';
+            } else html += '<div style="color:var(--slate-400);font-size:13px;">Aucun véhicule</div>';
+            html += '</div>';
+
+            // Devis
+            const quotes = data.quotes || [];
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-file-alt"></i> Devis (${quotes.length})</div>`;
+            if (quotes.length > 0) {
+                html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>N°</th><th>Trajet</th><th>Montant</th><th>Statut</th></tr></thead><tbody>';
+                html += quotes.map(q => {
+                    const route = q.origin_address ? q.origin_address.split(',')[0] + ' → ' + (q.destination_address||'').split(',')[0] : '—';
+                    return '<tr><td>' + q.quote_number + '</td><td>' + route + '</td><td>' + (q.total_ht ? q.total_ht.toLocaleString('fr-FR',{minimumFractionDigits:2})+'€' : '—') + '</td><td><span class="badge badge-gray">' + q.status + '</span></td></tr>';
+                }).join('');
+                html += '</tbody></table>';
+            } else html += '<div style="color:var(--slate-400);font-size:13px;">Aucun devis</div>';
+            html += '</div>';
+
+            // Missions
+            const missions = data.missions || [];
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-car-side"></i> Missions (${missions.length})</div>`;
+            if (missions.length > 0) {
+                html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>Réf</th><th>Trajet</th><th>Date</th><th>Chauffeur</th><th>Statut</th></tr></thead><tbody>';
+                html += missions.map(m => {
+                    const route = m.origin_address ? m.origin_address.split(',')[0] + ' → ' + (m.destination_address||'').split(',')[0] : '—';
+                    const driver = m.driver_first_name ? m.driver_first_name + ' ' + m.driver_last_name : '—';
+                    return '<tr><td>' + (m.quote_number||'#'+m.id) + '</td><td>' + route + '</td><td>' + formatDate(m.confirmed_date) + '</td><td>' + driver + '</td><td><span class="badge badge-gray">' + m.status + '</span></td></tr>';
+                }).join('');
+                html += '</tbody></table>';
+            } else html += '<div style="color:var(--slate-400);font-size:13px;">Aucune mission</div>';
+            html += '</div>';
+
+            // Factures
+            const invoices = data.invoices || [];
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-file-invoice-dollar"></i> Factures (${invoices.length})</div>`;
+            if (invoices.length > 0) {
+                html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>N°</th><th>Montant HT</th><th>Statut</th></tr></thead><tbody>';
+                html += invoices.map(i => '<tr><td>' + i.invoice_number + '</td><td>' + (i.total_ht ? i.total_ht.toLocaleString('fr-FR',{minimumFractionDigits:2})+'€' : '—') + '</td><td><span class="badge ' + (i.status==='paid'?'badge-green':'badge-orange') + '">' + (i.status==='paid'?'Payée':'Impayée') + '</span></td></tr>').join('');
+                html += '</tbody></table>';
+            } else html += '<div style="color:var(--slate-400);font-size:13px;">Aucune facture</div>';
+            html += '</div>';
+
+            // EDL
+            const inspections = data.inspections || [];
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-clipboard-list"></i> États des lieux (${inspections.length})</div>`;
+            if (inspections.length > 0) {
+                html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>Date</th><th>Véhicule</th><th>Type</th><th>Statut</th><th></th></tr></thead><tbody>';
+                html += inspections.map(edl => {
+                    const stBadge = edl.status==='signed'?'badge-green':edl.status==='contested'?'badge-orange':edl.status==='resolved'?'badge-blue':'badge-gray';
+                    return '<tr><td>' + formatDate((edl.created_at||'').substring(0,10)) + '</td><td>' + (edl.plate||'—') + '</td><td>' + (edl.type==='departure'?'Départ':edl.type==='arrival'?'Arrivée':'Libre') + '</td><td><span class="badge ' + stBadge + '">' + (edl.status||'—') + '</span></td><td><a href="' + API + '/api/inspections/' + edl.id + '/pdf?token=' + authToken + '" target="_blank" class="btn-action btn-action-gray" style="font-size:11px;"><i class="fas fa-file-alt"></i></a></td></tr>';
+                }).join('');
+                html += '</tbody></table>';
+            } else html += '<div style="color:var(--slate-400);font-size:13px;">Aucun EDL</div>';
+            html += '</div>';
+
+            // Actions
+            html += '<div style="display:flex;gap:10px;margin-top:16px;">';
+            if (c.status === 'pending') {
+                html += '<button class="btn-action btn-action-green" onclick="updateClientStatus(' + c.id + ',\'active\')"><i class="fas fa-check"></i> Activer</button>';
+            } else if (c.status === 'active') {
+                html += '<button class="btn-action btn-action-gray" onclick="updateClientStatus(' + c.id + ',\'suspended\')"><i class="fas fa-ban"></i> Suspendre</button>';
+            } else {
+                html += '<button class="btn-action btn-action-green" onclick="updateClientStatus(' + c.id + ',\'active\')"><i class="fas fa-check"></i> Réactiver</button>';
+            }
+            html += '</div>';
+
+            panel.innerHTML = html;
+        } catch (err) {
+            console.error('Client detail failed:', err);
+            panel.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de connexion.</p>';
+        }
+    }
+
+    async function updateClientStatus(clientId, status) {
+        if (!confirm('Confirmer le changement de statut ?')) return;
+        try {
+            const res = await fetch(API + '/api/admin/clients/' + clientId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ status })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message);
+                loadAdminClients();
+                openClientDetail(clientId);
+            } else showToast(data.error || 'Erreur', 'error');
+        } catch (err) { showToast('Erreur de connexion', 'error'); }
+    }
+
+    // ===== ADMIN INSPECTIONS / EDL (Sprint I) =====
+    let adminEdlData = [];
+    let edlCurrentFilter = 'all';
+
+    function filterEdl(filter, btn) {
+        edlCurrentFilter = filter;
+        document.querySelectorAll('#edlFiltersBar .filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        renderEdlTable();
+    }
+
+    function renderEdlTable() {
+        const search = (document.getElementById('edlSearch')?.value || '').toLowerCase();
+        let filtered = adminEdlData;
+
+        if (edlCurrentFilter === 'signed') filtered = filtered.filter(e => e.status === 'signed' || e.status === 'signed_absent');
+        else if (edlCurrentFilter === 'contested') filtered = filtered.filter(e => e.status === 'contested');
+        else if (edlCurrentFilter === 'draft') filtered = filtered.filter(e => e.status === 'draft');
+        else if (edlCurrentFilter === 'resolved') filtered = filtered.filter(e => e.status === 'resolved');
+
+        if (search) {
+            filtered = filtered.filter(e =>
+                (e.plate || '').toLowerCase().includes(search) ||
+                (e.client_first_name + ' ' + e.client_last_name).toLowerCase().includes(search) ||
+                (e.quote_number || '').toLowerCase().includes(search)
+            );
+        }
+
+        const tbody = document.getElementById('edlTableBody');
+        document.getElementById('edlCount').textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--slate-400)">Aucun EDL</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(e => {
+            const dateStr = e.created_at ? formatDate(e.created_at.substring(0,10)) : '—';
+            const vehicle = (e.plate || '—') + ' ' + [e.brand, e.model].filter(Boolean).join(' ');
+            const client = e.client_first_name ? e.client_first_name + ' ' + e.client_last_name : '—';
+            const typeLabel = e.type === 'departure' ? 'Départ' : e.type === 'arrival' ? 'Arrivée' : 'Libre';
+            const missionRef = e.quote_number || (e.mission_id ? '#' + e.mission_id : '—');
+
+            const stMap = { 'signed': 'badge-green', 'signed_absent': 'badge-orange', 'contested': 'badge-red', 'resolved': 'badge-blue', 'draft': 'badge-gray' };
+            const stLabel = { 'signed': 'Signé', 'signed_absent': 'Absent', 'contested': 'Contesté', 'resolved': 'Résolu', 'draft': 'Brouillon' };
+
+            let actionHtml = '<a href="' + API + '/api/inspections/' + e.id + '/pdf?token=' + authToken + '" target="_blank" class="btn-action btn-action-gray" onclick="event.stopPropagation()"><i class="fas fa-file-alt"></i> PDF</a>';
+            if (e.status === 'contested') {
+                actionHtml += ' <button class="btn-action btn-action-green" onclick="event.stopPropagation();resolveContest(' + e.id + ',this)"><i class="fas fa-check"></i> Résoudre</button>';
+            }
+
+            return `<tr>
+                <td>${dateStr}</td>
+                <td>${vehicle}</td>
+                <td>${client}</td>
+                <td>${typeLabel}</td>
+                <td>${missionRef}</td>
+                <td><span class="badge ${stMap[e.status]||'badge-gray'}">${stLabel[e.status]||e.status}</span></td>
+                <td>${actionHtml}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    async function loadAdminInspections() {
+        try {
+            const res = await fetch(API + '/api/admin/inspections', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            if (!res.ok) { document.getElementById('edlTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--red)">Erreur</td></tr>'; return; }
+            const data = await res.json();
+            adminEdlData = data.inspections || [];
+            renderEdlTable();
+        } catch (err) {
+            console.error('Load inspections failed:', err);
+            document.getElementById('edlTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--red)">Erreur de connexion</td></tr>';
+        }
+    }
+
+    async function openCreateDraftEdl() {
+        const modal = document.getElementById('createEdlModal');
+        modal.classList.add('show');
+
+        // Charger clients et chauffeurs
+        try {
+            const [clientsRes, driversRes] = await Promise.all([
+                fetch(API + '/api/admin/clients', { headers: { 'Authorization': 'Bearer ' + authToken } }),
+                fetch(API + '/api/admin/drivers', { headers: { 'Authorization': 'Bearer ' + authToken } })
+            ]);
+            const clientsData = await clientsRes.json();
+            const driversData = await driversRes.json();
+
+            const clients = (clientsData.clients || []).filter(c => c.status === 'active');
+            const drivers = (driversData.drivers || []).filter(d => d.driver_status === 'approved');
+
+            document.getElementById('edlClientId').innerHTML = '<option value="">— Choisir —</option>' + clients.map(c => '<option value="' + c.id + '">' + c.first_name + ' ' + c.last_name + ' (' + c.email + ')</option>').join('');
+            document.getElementById('edlDriverId').innerHTML = '<option value="">Aucun</option>' + drivers.map(d => '<option value="' + d.id + '">' + d.first_name + ' ' + d.last_name + '</option>').join('');
+        } catch (err) { console.error('Load modal data:', err); }
+    }
+
+    async function submitCreateDraftEdl() {
+        const btn = document.getElementById('btnCreateEdl');
+        const clientId = document.getElementById('edlClientId').value;
+        const plate = document.getElementById('edlPlate').value.trim();
+        if (!clientId || !plate) { showToast('Client et plaque obligatoires', 'error'); return; }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création...';
+
+        try {
+            const res = await fetch(API + '/api/admin/inspections', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({
+                    client_id: parseInt(clientId),
+                    plate,
+                    brand: document.getElementById('edlBrand').value.trim() || null,
+                    model: document.getElementById('edlModel').value.trim() || null,
+                    type: document.getElementById('edlType').value,
+                    driver_id: document.getElementById('edlDriverId').value ? parseInt(document.getElementById('edlDriverId').value) : null
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message);
+                document.getElementById('createEdlModal').classList.remove('show');
+                loadAdminInspections();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Créer';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Créer';
         }
     }
 
