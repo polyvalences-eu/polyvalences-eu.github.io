@@ -176,7 +176,7 @@
         }
         .nav-item {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--slate-500); text-decoration: none; width: 25%;
+            color: var(--slate-500); text-decoration: none; width: 20%;
             font-size: 10px; font-weight: 600; gap: 4px;
         }
         .nav-item i { font-size: 20px; transition: 0.2s; }
@@ -448,6 +448,16 @@
     </div>
 </main>
 
+<main id="view-alertes" class="view">
+    <h1 class="view-title">Alertes</h1>
+    <div id="alertsContainer">
+        <div class="card" style="text-align:center;padding:40px 20px">
+            <i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--slate-200);margin-bottom:16px"></i>
+            <p style="font-size:14px;color:var(--slate-500)">Chargement...</p>
+        </div>
+    </div>
+</main>
+
 <main id="view-frais" class="view">
     <h1 class="view-title">Mes Frais</h1>
 
@@ -550,6 +560,11 @@
     <a href="#" class="nav-item" id="nav-missions" onclick="event.preventDefault();switchTab('missions')">
         <i class="fas fa-car"></i>
         <span>Missions</span>
+    </a>
+    <a href="#" class="nav-item" id="nav-alertes" onclick="event.preventDefault();switchTab('alertes')" style="position:relative">
+        <i class="fas fa-bell"></i>
+        <span>Alertes</span>
+        <span id="alertsBadge" style="display:none;position:absolute;top:2px;right:calc(50% - 16px);width:8px;height:8px;background:#dc2626;border-radius:50%"></span>
     </a>
     <a href="#" class="nav-item" id="nav-frais" onclick="event.preventDefault();switchTab('frais')">
         <i class="fas fa-receipt"></i>
@@ -964,6 +979,9 @@
     let currentUser = null;
     let driverDocs = [];
     let driverMissions = [];
+    let driverAlerts = [];
+    let edlInspectionId = null;
+    let edlAlertData = null;
 
     // ===== REQUIRED DOCS CONFIG =====
     const DOC_TYPES = [
@@ -1043,6 +1061,7 @@
                 enableFullAccess();
                 switchTab('missions');
                 loadAvailableMissions();
+                loadAlerts();
             }
         } else if (status === 'suspended') {
             document.getElementById('bannerSuspended').style.display = 'flex';
@@ -1067,18 +1086,21 @@
 
     function blockAppToDocs() {
         document.getElementById('nav-missions').classList.add('disabled');
+        document.getElementById('nav-alertes').classList.add('disabled');
         document.getElementById('nav-frais').classList.add('disabled');
         switchTab('docs');
     }
 
     function blockAppToCharter() {
         document.getElementById('nav-missions').classList.add('disabled');
+        document.getElementById('nav-alertes').classList.add('disabled');
         document.getElementById('nav-frais').classList.add('disabled');
         switchTab('charte');
     }
 
     function blockAll() {
         document.getElementById('nav-missions').classList.add('disabled');
+        document.getElementById('nav-alertes').classList.add('disabled');
         document.getElementById('nav-frais').classList.add('disabled');
         document.getElementById('nav-docs').classList.add('disabled');
         switchTab('profil');
@@ -1687,6 +1709,7 @@
 
         // Lazy load
         if (tabId === 'missions' && currentUser && currentUser.driver_status === 'approved') loadAvailableMissions();
+        if (tabId === 'alertes') loadAlerts();
         if (tabId === 'frais') loadExpenses();
     }
 
@@ -1702,6 +1725,79 @@
     function logout() {
         localStorage.removeItem('pv_token');
         window.location.href = '/driver/';
+    }
+
+    // ===== ALERTES (EDL libres assignés) =====
+    async function loadAlerts() {
+        const token = localStorage.getItem('pv_token');
+        try {
+            const res = await fetch(API + '/api/driver/alerts', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                driverAlerts = data.alerts || [];
+            } else {
+                driverAlerts = [];
+            }
+        } catch (e) {
+            console.error('Erreur chargement alertes:', e);
+            driverAlerts = [];
+        }
+        renderAlerts();
+        updateAlertsBadge();
+    }
+
+    function updateAlertsBadge() {
+        const badge = document.getElementById('alertsBadge');
+        if (driverAlerts.length > 0) {
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function renderAlerts() {
+        const container = document.getElementById('alertsContainer');
+        if (driverAlerts.length === 0) {
+            container.innerHTML = `
+                <div class="card" style="text-align:center;padding:40px 20px">
+                    <i class="fas fa-check-circle" style="font-size:40px;color:var(--emerald);margin-bottom:12px"></i>
+                    <p style="font-size:15px;font-weight:600;color:var(--slate-800)">Aucune alerte en attente</p>
+                    <p style="font-size:13px;color:var(--slate-500);margin-top:4px">Les EDL assignés par l'admin apparaîtront ici.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = driverAlerts.map(alert => {
+            const typeLabel = alert.type === 'departure' ? 'Départ' : alert.type === 'arrival' ? 'Arrivée' : 'Standalone';
+            const clientName = alert.client_first_name ? (alert.client_first_name + ' ' + alert.client_last_name) : 'Client inconnu';
+            const date = new Date(alert.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            return `
+                <div class="card" style="padding:16px;margin-bottom:12px">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+                        <div>
+                            <div style="font-size:16px;font-weight:700;color:var(--navy)">${alert.plate || '—'}</div>
+                            <div style="font-size:13px;color:var(--slate-500)">${alert.brand || ''} ${alert.model || ''}</div>
+                        </div>
+                        <span style="background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">${typeLabel}</span>
+                    </div>
+                    <div style="display:flex;gap:12px;font-size:13px;color:var(--slate-500);margin-bottom:12px">
+                        <span><i class="fas fa-user" style="margin-right:4px"></i>${clientName}</span>
+                        <span><i class="fas fa-clock" style="margin-right:4px"></i>${date}</span>
+                    </div>
+                    <button onclick="openEDLFromAlert(${alert.id})" style="width:100%;padding:12px;background:var(--navy);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">
+                        <i class="fas fa-clipboard-check" style="margin-right:6px"></i>Réaliser l'EDL
+                    </button>
+                </div>`;
+        }).join('');
+    }
+
+    function openEDLFromAlert(alertId) {
+        const alert = driverAlerts.find(a => a.id === alertId);
+        if (!alert) return;
+        edlAlertData = alert;
+        openEDL(null, alert.type || 'standalone', alert);
     }
 
     // ===== EDL WIZARD =====
@@ -1760,9 +1856,11 @@
         btn.classList.add(cls);
     }
 
-    function openEDL(missionId, type) {
+    function openEDL(missionId, type, alertData) {
         edlMissionId = missionId;
         edlType = type;
+        edlInspectionId = alertData ? alertData.id : null;
+        edlAlertData = alertData || null;
         edlCurrentStep = 1;
         edlFuelLevel = null;
         edlDamages = [];
@@ -1775,7 +1873,11 @@
         edlEquipment = {};
         edlVehicleCondition = {};
 
-        document.getElementById('edlTitle').textContent = type === 'departure' ? 'EDL de départ' : 'EDL d\'arrivée';
+        if (alertData) {
+            document.getElementById('edlTitle').textContent = 'EDL libre — ' + (alertData.plate || '');
+        } else {
+            document.getElementById('edlTitle').textContent = type === 'departure' ? 'EDL de départ' : 'EDL d\'arrivée';
+        }
         document.getElementById('edlMileage').value = '';
         document.getElementById('edlObservations').value = '';
         document.getElementById('edlPersonalItems').value = '';
@@ -2081,7 +2183,11 @@
                 if (file) {
                     try {
                         const fd = new FormData();
-                        fd.append('mission_id', edlMissionId);
+                        if (edlInspectionId) {
+                            fd.append('inspection_id', edlInspectionId);
+                        } else {
+                            fd.append('mission_id', edlMissionId);
+                        }
                         fd.append('type', edlType);
                         fd.append('category', 'global');
                         fd.append('file', file);
@@ -2110,7 +2216,11 @@
                 if (dmg.photoFile) {
                     try {
                         const fd = new FormData();
-                        fd.append('mission_id', edlMissionId);
+                        if (edlInspectionId) {
+                            fd.append('inspection_id', edlInspectionId);
+                        } else {
+                            fd.append('mission_id', edlMissionId);
+                        }
                         fd.append('type', edlType);
                         fd.append('category', 'damage');
                         fd.append('file', dmg.photoFile);
@@ -2151,7 +2261,6 @@
 
             // 5. Envoyer POST /api/inspections
             const payload = {
-                mission_id: edlMissionId,
                 type: edlType,
                 mileage: parseInt(document.getElementById('edlMileage').value) || null,
                 fuel_level: edlFuelLevel,
@@ -2177,12 +2286,22 @@
                 signature_client: sigClientData
             };
 
-            // Récupérer infos véhicule depuis la mission affichée
-            const mission = driverMissions.find(m => m.id === edlMissionId);
-            if (mission) {
-                payload.plate = mission.vehicle_plate || null;
-                payload.brand = mission.vehicle_brand || null;
-                payload.model = mission.vehicle_model || null;
+            if (edlInspectionId) {
+                // Mode 4 : EDL libre assigné par admin
+                payload.inspection_id = edlInspectionId;
+                payload.mission_id = null;
+                payload.plate = edlAlertData.plate || null;
+                payload.brand = edlAlertData.brand || null;
+                payload.model = edlAlertData.model || null;
+            } else {
+                // Mode standard : mission
+                payload.mission_id = edlMissionId;
+                const mission = driverMissions.find(m => m.id === edlMissionId);
+                if (mission) {
+                    payload.plate = mission.vehicle_plate || null;
+                    payload.brand = mission.vehicle_brand || null;
+                    payload.model = mission.vehicle_model || null;
+                }
             }
 
             const res = await fetch(API + '/api/inspections', {
@@ -2200,7 +2319,14 @@
                 document.getElementById('edlOverlay').classList.remove('active');
                 document.body.style.overflow = '';
                 showToast('État des lieux enregistré !');
-                await loadMissions();
+                if (edlInspectionId) {
+                    edlInspectionId = null;
+                    edlAlertData = null;
+                    await loadAlerts();
+                    switchTab('alertes');
+                } else {
+                    await loadMissions();
+                }
             } else {
                 showToast(result.error || 'Erreur lors de l\'envoi.', 'error');
             }
