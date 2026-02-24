@@ -449,7 +449,7 @@
 <!-- MAIN (hidden until loaded) -->
 <main class="admin-main" id="adminMain" style="display:none">
 
-    <!-- ONGLETS — 7 tabs Sprint I -->
+    <!-- ONGLETS — 8 tabs -->
     <div class="admin-tabs" id="adminTabs">
         <button class="admin-tab active" onclick="switchAdminTab('dashboard')"><i class="fas fa-chart-bar"></i><span class="tab-text">Dashboard</span></button>
         <button class="admin-tab" onclick="switchAdminTab('missions')"><i class="fas fa-car-side"></i><span class="tab-text">Missions</span><span class="tab-badge" id="tabBadgeMissions" style="display:none">0</span></button>
@@ -458,6 +458,7 @@
         <button class="admin-tab" onclick="switchAdminTab('quotes')"><i class="fas fa-file-alt"></i><span class="tab-text">Devis</span><span class="tab-badge" id="tabBadgeQuotes" style="display:none">0</span></button>
         <button class="admin-tab" onclick="switchAdminTab('invoices')"><i class="fas fa-file-invoice-dollar"></i><span class="tab-text">Factures</span></button>
         <button class="admin-tab" onclick="switchAdminTab('drivers')"><i class="fas fa-id-badge"></i><span class="tab-text">Chauffeurs</span></button>
+        <button class="admin-tab" onclick="switchAdminTab('expenses')"><i class="fas fa-receipt"></i><span class="tab-text">Frais</span><span class="tab-badge" id="tabBadgeExpenses" style="display:none">0</span></button>
     </div>
 
     <!-- ============ TAB: DASHBOARD (Sprint I) ============ -->
@@ -726,9 +727,14 @@
     <div class="admin-panel" id="panel-missions">
         <div class="section-header">
             <h2><i class="fas fa-car-side" style="color:var(--navy)"></i> Missions <span class="count" id="missionsCount" style="background:var(--blue-pale); color:var(--blue);">0</span></h2>
-            <button class="btn-refresh" onclick="openCreateMission()" style="background:var(--blue); color:white; border-color:var(--blue);">
-                <i class="fas fa-plus"></i> Nouvelle mission
-            </button>
+            <div style="display:flex;gap:8px;">
+                <button class="btn-refresh" onclick="openMissionLibre()" style="background:var(--emerald); color:white; border-color:var(--emerald);">
+                    <i class="fas fa-bolt"></i> Mission libre
+                </button>
+                <button class="btn-refresh" onclick="openCreateMission()" style="background:var(--blue); color:white; border-color:var(--blue);">
+                    <i class="fas fa-plus"></i> Nouvelle mission
+                </button>
+            </div>
         </div>
 
         <div class="filters-bar" id="missionsFiltersBar">
@@ -802,6 +808,136 @@
         </div>
     </div>
 
+    <!-- ============ TAB: FRAIS (8ème onglet) ============ -->
+    <div class="admin-panel" id="panel-expenses">
+        <div class="section-header">
+            <h2><i class="fas fa-receipt" style="color:var(--navy)"></i> Frais chauffeurs <span class="count" id="expensesCount" style="background:var(--amber-pale); color:var(--amber);">0</span></h2>
+            <button class="btn-refresh" onclick="loadAdminExpenses()"><i class="fas fa-sync-alt"></i> Actualiser</button>
+        </div>
+        <div class="filters-bar" id="expensesFiltersBar">
+            <button class="filter-btn active" onclick="filterExpenses('all',this)">Tous</button>
+            <button class="filter-btn" onclick="filterExpenses('pending',this)">En attente</button>
+            <button class="filter-btn" onclick="filterExpenses('approved',this)">Validés</button>
+            <button class="filter-btn" onclick="filterExpenses('rejected',this)">Rejetés</button>
+        </div>
+        <div class="table-card">
+            <div style="overflow-x:auto;">
+                <table class="data-table" id="expensesTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Chauffeur</th>
+                            <th>Mission</th>
+                            <th>Type</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="expenseDetailWrap" style="display:none; margin-top:24px;">
+            <div class="table-card" style="padding:28px;" id="expenseDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: Mission Libre -->
+    <div id="missionLibreOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; overflow-y:auto; padding:40px 20px;">
+        <div style="background:white; border-radius:16px; max-width:700px; margin:0 auto; padding:32px; position:relative;">
+            <button onclick="closeMissionLibre()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:20px; color:var(--slate-400); cursor:pointer;"><i class="fas fa-times"></i></button>
+            <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:4px;"><i class="fas fa-bolt" style="color:var(--emerald); margin-right:8px;"></i>Mission libre</h2>
+            <p style="font-size:13px; color:var(--slate-500); margin-bottom:24px;">Créer une mission + facture directement suite à un email ou appel.</p>
+
+            <div id="mlibreMsg" style="display:none; padding:12px; border-radius:8px; font-size:13px; margin-bottom:16px;"></div>
+
+            <!-- Client -->
+            <div style="margin-bottom:16px;">
+                <label style="font-size:12px; font-weight:700; color:var(--slate-500); display:block; margin-bottom:6px;">Client *</label>
+                <select id="mlibreClient" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                    <option value="">Chargement...</option>
+                </select>
+            </div>
+
+            <!-- Initiated by -->
+            <div style="margin-bottom:16px;">
+                <label style="font-size:12px; font-weight:700; color:var(--slate-500); display:block; margin-bottom:6px;">Demande initiée par</label>
+                <input type="text" id="mlibreInitiatedBy" placeholder="Email ou téléphone du demandeur" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+            </div>
+
+            <!-- Véhicule -->
+            <div style="font-size:13px; font-weight:700; color:var(--slate-600); margin-bottom:8px;"><i class="fas fa-car" style="margin-right:6px; color:var(--blue);"></i>Véhicule</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+                <div>
+                    <label style="font-size:11px; color:var(--slate-400); display:block; margin-bottom:4px;">Immatriculation *</label>
+                    <input type="text" id="mlibrePlate" placeholder="AB-123-CD" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px; text-transform:uppercase;">
+                </div>
+                <div>
+                    <label style="font-size:11px; color:var(--slate-400); display:block; margin-bottom:4px;">Marque</label>
+                    <input type="text" id="mlibreBrand" placeholder="Peugeot" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                </div>
+                <div>
+                    <label style="font-size:11px; color:var(--slate-400); display:block; margin-bottom:4px;">Modèle</label>
+                    <input type="text" id="mlibreModel" placeholder="308" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                </div>
+            </div>
+
+            <!-- Adresses -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group" style="position:relative;">
+                    <label style="font-size:12px; font-weight:700; color:var(--slate-500); display:block; margin-bottom:6px;"><i class="fas fa-map-marker-alt" style="color:var(--emerald); margin-right:4px;"></i>Départ *</label>
+                    <input type="text" id="mlibreOrigin" placeholder="Adresse de départ..." style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                    <div class="ac-dropdown" id="mlibreOriginDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:2px solid var(--blue);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 12px 32px rgba(0,0,0,0.15);z-index:50;display:none;max-height:200px;overflow-y:auto;"></div>
+                </div>
+                <div class="form-group" style="position:relative;">
+                    <label style="font-size:12px; font-weight:700; color:var(--slate-500); display:block; margin-bottom:6px;"><i class="fas fa-flag-checkered" style="color:var(--red); margin-right:4px;"></i>Arrivée *</label>
+                    <input type="text" id="mlibreDest" placeholder="Adresse d'arrivée..." style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                    <div class="ac-dropdown" id="mlibreDestDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:2px solid var(--blue);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 12px 32px rgba(0,0,0,0.15);z-index:50;display:none;max-height:200px;overflow-y:auto;"></div>
+                </div>
+            </div>
+
+            <!-- Prix auto -->
+            <div id="mlibrePricePreview" style="display:none; padding:14px 18px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:16px;">
+                <div style="font-size:12px; font-weight:700; color:var(--slate-400);">PRIX CONVOYAGE AUTO</div>
+                <div id="mlibreConvoyagePrice" style="font-size:20px; font-weight:800; color:#059669;">— €</div>
+                <div id="mlibrePriceDetails" style="font-size:11px; color:var(--slate-500); margin-top:4px;"></div>
+            </div>
+
+            <!-- Date + Options -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+                <div>
+                    <label style="font-size:12px; font-weight:700; color:var(--slate-500); display:block; margin-bottom:6px;">Date du convoyage</label>
+                    <input type="date" id="mlibreDate" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                </div>
+                <div style="display:flex; align-items:end; gap:16px;">
+                    <label style="font-size:13px; color:var(--slate-600); display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="checkbox" id="mlibreRestitution"> Restitution
+                    </label>
+                    <label style="font-size:13px; color:var(--slate-600); display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="checkbox" id="mlibrePeage"> Péage
+                    </label>
+                </div>
+            </div>
+
+            <!-- Complement -->
+            <div style="font-size:13px; font-weight:700; color:var(--slate-600); margin-bottom:8px;"><i class="fas fa-plus-circle" style="margin-right:6px; color:var(--amber);"></i>Ligne complément (optionnel)</div>
+            <div style="display:grid; grid-template-columns:2fr 1fr; gap:12px; margin-bottom:24px;">
+                <div>
+                    <input type="text" id="mlibreCompDesc" placeholder="Description du complément" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                </div>
+                <div>
+                    <input type="number" id="mlibreCompAmount" placeholder="Montant €" min="0" step="0.01" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <button id="mlibreSubmitBtn" onclick="submitMissionLibre()" style="width:100%; padding:14px; background:var(--emerald); color:white; border:none; border-radius:8px; font-family:inherit; font-size:15px; font-weight:700; cursor:pointer;">
+                <i class="fas fa-check-double" style="margin-right:8px;"></i>Créer mission + facture
+            </button>
+        </div>
+    </div>
+
 </main>
 
 <!-- TOAST -->
@@ -831,8 +967,8 @@
         window.location.href = '../';
     }
 
-    // ===== ADMIN TABS (Sprint I — 7 onglets) =====
-    const TAB_IDS = ['dashboard', 'missions', 'clients', 'edl', 'quotes', 'invoices', 'drivers'];
+    // ===== ADMIN TABS (8 onglets) =====
+    const TAB_IDS = ['dashboard', 'missions', 'clients', 'edl', 'quotes', 'invoices', 'drivers', 'expenses'];
 
     function switchAdminTab(tabId) {
         document.querySelectorAll('.admin-tab').forEach((t, i) => {
@@ -849,6 +985,7 @@
         if (tabId === 'quotes') loadAdminQuotes();
         if (tabId === 'invoices') loadAdminInvoices();
         if (tabId === 'drivers') loadAdminDrivers();
+        if (tabId === 'expenses') loadAdminExpenses();
     }
 
     // ===== CHECK ADMIN =====
@@ -3267,6 +3404,272 @@
             }
         } catch (err) { showToast('Erreur de connexion', 'error'); }
     }
+
+    // ===== EXPENSES TAB =====
+    let allExpenses = [];
+    let expensesFilter = 'all';
+
+    async function loadAdminExpenses() {
+        try {
+            const res = await fetch(API + '/api/admin/expenses', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            allExpenses = data.expenses || [];
+            document.getElementById('expensesCount').textContent = allExpenses.length;
+
+            const pendingCount = allExpenses.filter(e => e.status === 'pending').length;
+            const badge = document.getElementById('tabBadgeExpenses');
+            if (pendingCount > 0) { badge.textContent = pendingCount; badge.style.display = 'inline'; }
+            else { badge.style.display = 'none'; }
+
+            renderExpensesTable();
+        } catch (err) {
+            console.error('Load expenses failed:', err);
+            document.getElementById('expensesBody').innerHTML = '<tr><td colspan="7" style="color:var(--red);padding:20px;">Erreur de chargement.</td></tr>';
+        }
+    }
+
+    function filterExpenses(filter, btn) {
+        expensesFilter = filter;
+        document.querySelectorAll('#expensesFiltersBar .filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        renderExpensesTable();
+    }
+
+    function renderExpensesTable() {
+        let filtered = allExpenses;
+        if (expensesFilter !== 'all') filtered = filtered.filter(e => e.status === expensesFilter);
+
+        const typeLabels = { 'toll': 'Péage', 'fuel': 'Carburant', 'train': 'Train', 'other': 'Autre' };
+        const statusLabels = { 'pending': ['En attente', 'var(--amber)', 'var(--amber-pale)'], 'approved': ['Validé', 'var(--emerald)', 'var(--emerald-pale)'], 'rejected': ['Rejeté', 'var(--red)', 'var(--red-pale)'] };
+
+        const body = document.getElementById('expensesBody');
+        if (filtered.length === 0) {
+            body.innerHTML = '<tr><td colspan="7" style="color:var(--slate-400);padding:20px;text-align:center;">Aucun frais.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = filtered.map(e => {
+            const st = statusLabels[e.status] || ['—', 'var(--slate-500)', 'var(--slate-100)'];
+            const date = e.created_at ? e.created_at.substring(0, 10).split('-').reverse().join('/') : '—';
+            return `<tr style="cursor:pointer;" onclick="openExpenseDetail(${e.id})">
+                <td>${date}</td>
+                <td>${e.driver_first_name || ''} ${e.driver_last_name || ''}</td>
+                <td>${e.quote_number || 'Mission #' + (e.quote_id || '—')}</td>
+                <td>${typeLabels[e.type] || e.type || '—'}</td>
+                <td style="font-weight:700;">${Number(e.amount || 0).toLocaleString('fr-FR', {minimumFractionDigits:2})} €</td>
+                <td><span style="background:${st[2]};color:${st[0] === 'En attente' ? st[1] : st[1]};padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;">${st[0]}</span></td>
+                <td>${e.status === 'pending' ? '<button onclick="event.stopPropagation();reviewExpense('+e.id+',\'approved\')" style="background:var(--emerald);color:white;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;margin-right:4px;"><i class="fas fa-check"></i></button><button onclick="event.stopPropagation();reviewExpense('+e.id+',\'rejected\')" style="background:var(--red);color:white;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;"><i class="fas fa-times"></i></button>' : '—'}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    function openExpenseDetail(expenseId) {
+        const e = allExpenses.find(x => x.id === expenseId);
+        if (!e) return;
+        const wrap = document.getElementById('expenseDetailWrap');
+        const content = document.getElementById('expenseDetailContent');
+        const typeLabels = { 'toll': 'Péage', 'fuel': 'Carburant', 'train': 'Train', 'other': 'Autre' };
+        const date = e.created_at ? e.created_at.substring(0, 10).split('-').reverse().join('/') : '—';
+
+        content.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                <div>
+                    <h3 style="font-size:18px;font-weight:800;color:var(--navy);">${typeLabels[e.type] || e.type} — ${Number(e.amount || 0).toLocaleString('fr-FR', {minimumFractionDigits:2})} €</h3>
+                    <div style="font-size:13px;color:var(--slate-500);">${e.driver_first_name || ''} ${e.driver_last_name || ''} · ${date}</div>
+                </div>
+                <button onclick="document.getElementById('expenseDetailWrap').style.display='none'" style="background:none;border:none;font-size:18px;color:var(--slate-400);cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            ${e.description ? '<p style="font-size:14px;color:var(--slate-700);margin-bottom:16px;">' + e.description + '</p>' : ''}
+            ${e.receipt_url ? '<div style="margin-bottom:16px;"><label style="font-size:12px;font-weight:700;color:var(--slate-400);">Justificatif</label><br><img src="' + API + '/api/r2/' + e.receipt_url + '" style="max-width:400px;max-height:300px;border-radius:8px;border:1px solid var(--slate-200);margin-top:8px;" onerror="this.outerHTML=\'<div style=padding:20px;background:var(--slate-50);border-radius:8px;color:var(--slate-400);>Image non disponible</div>\'"></div>' : '<p style="color:var(--slate-400);font-size:13px;margin-bottom:16px;">Aucun justificatif.</p>'}
+            ${e.admin_note ? '<div style="padding:12px;background:var(--slate-50);border-radius:8px;margin-bottom:16px;"><strong style="font-size:12px;color:var(--slate-400);">Note admin :</strong><br><span style="font-size:14px;color:var(--slate-700);">' + e.admin_note + '</span></div>' : ''}
+            ${e.status === 'pending' ? '<div style="display:flex;gap:12px;"><button onclick="reviewExpense('+e.id+',\'approved\')" style="flex:1;padding:12px;background:var(--emerald);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;"><i class="fas fa-check" style="margin-right:6px;"></i>Valider</button><button onclick="reviewExpense('+e.id+',\'rejected\')" style="flex:1;padding:12px;background:var(--red);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;"><i class="fas fa-times" style="margin-right:6px;"></i>Rejeter</button></div>' : ''}`;
+        wrap.style.display = 'block';
+        wrap.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function reviewExpense(expenseId, status) {
+        const note = status === 'rejected' ? prompt('Raison du rejet (optionnel) :') : null;
+        try {
+            const res = await fetch(API + '/api/admin/expenses/' + expenseId + '/review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ status, admin_note: note })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Frais ' + (status === 'approved' ? 'validé' : 'rejeté') + '.');
+                loadAdminExpenses();
+                document.getElementById('expenseDetailWrap').style.display = 'none';
+            } else { showToast(data.error || 'Erreur', 'error'); }
+        } catch (err) { showToast('Erreur de connexion', 'error'); }
+    }
+
+    // ===== MISSION LIBRE =====
+    let mlibreOriginData = null, mlibreDestData = null, mlibreAcTimeout = null;
+
+    async function openMissionLibre() {
+        document.getElementById('missionLibreOverlay').style.display = 'block';
+        mlibreOriginData = null;
+        mlibreDestData = null;
+
+        // Load clients dropdown
+        try {
+            const res = await fetch(API + '/api/admin/clients', {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            const sel = document.getElementById('mlibreClient');
+            sel.innerHTML = '<option value="">-- Sélectionner un client --</option>' +
+                (data.clients || []).map(c => `<option value="${c.id}">${c.first_name} ${c.last_name} (${c.email})</option>`).join('');
+        } catch (err) {
+            document.getElementById('mlibreClient').innerHTML = '<option value="">Erreur de chargement</option>';
+        }
+
+        // Init autocomplete
+        const originInput = document.getElementById('mlibreOrigin');
+        const destInput = document.getElementById('mlibreDest');
+        originInput.value = ''; destInput.value = '';
+        originInput.oninput = () => handleMlibreAc(originInput, 'origin');
+        destInput.oninput = () => handleMlibreAc(destInput, 'destination');
+
+        // Recalculate on option change
+        document.getElementById('mlibreRestitution').onchange = () => { if (mlibreOriginData && mlibreDestData) recalcMlibrePrice(); };
+        document.getElementById('mlibrePeage').onchange = () => { if (mlibreOriginData && mlibreDestData) recalcMlibrePrice(); };
+    }
+
+    function closeMissionLibre() {
+        document.getElementById('missionLibreOverlay').style.display = 'none';
+    }
+
+    async function handleMlibreAc(input, type) {
+        const q = input.value.trim();
+        const dropdownId = type === 'origin' ? 'mlibreOriginDropdown' : 'mlibreDestDropdown';
+        const dropdown = document.getElementById(dropdownId);
+        if (q.length < 3) { dropdown.style.display = 'none'; return; }
+
+        clearTimeout(mlibreAcTimeout);
+        mlibreAcTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+                const data = await res.json();
+                const items = data.items || [];
+                if (items.length === 0) { dropdown.style.display = 'none'; return; }
+
+                dropdown.innerHTML = items.map(item =>
+                    `<div class="ac-item" style="padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--slate-50);" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
+                ).join('');
+                dropdown.style.display = 'block';
+
+                dropdown.querySelectorAll('.ac-item').forEach(el => {
+                    el.onclick = () => {
+                        input.value = el.dataset.address;
+                        const selected = { lat: parseFloat(el.dataset.lat), lng: parseFloat(el.dataset.lng), address: el.dataset.address };
+                        if (type === 'origin') mlibreOriginData = selected;
+                        else mlibreDestData = selected;
+                        dropdown.style.display = 'none';
+                        if (mlibreOriginData && mlibreDestData) recalcMlibrePrice();
+                    };
+                    el.onmouseover = () => el.style.background = 'var(--blue-pale)';
+                    el.onmouseout = () => el.style.background = '';
+                });
+            } catch (err) { console.error('AC error:', err); }
+        }, 350);
+    }
+
+    async function recalcMlibrePrice() {
+        const preview = document.getElementById('mlibrePricePreview');
+        const priceEl = document.getElementById('mlibreConvoyagePrice');
+        const detailsEl = document.getElementById('mlibrePriceDetails');
+        priceEl.textContent = 'Calcul...';
+        preview.style.display = 'block';
+
+        try {
+            const res = await fetch(API + '/api/quote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({
+                    origin: mlibreOriginData, destination: mlibreDestData,
+                    restitution: document.getElementById('mlibreRestitution').checked,
+                    peage: document.getElementById('mlibrePeage').checked
+                })
+            });
+            const data = await res.json();
+            if (data.amount) {
+                priceEl.textContent = Number(data.amount).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
+                detailsEl.innerHTML = (data.details || []).join(' · ') + ' · ' + data.distance_km + ' km';
+            } else {
+                priceEl.textContent = 'Sur devis';
+                detailsEl.textContent = data.message || '';
+            }
+        } catch (err) {
+            priceEl.textContent = 'Erreur';
+        }
+    }
+
+    async function submitMissionLibre() {
+        const btn = document.getElementById('mlibreSubmitBtn');
+        const msg = document.getElementById('mlibreMsg');
+        const clientId = document.getElementById('mlibreClient').value;
+
+        if (!clientId) { msg.style.display = 'block'; msg.style.background = 'var(--red-pale)'; msg.style.color = 'var(--red)'; msg.textContent = 'Sélectionnez un client.'; return; }
+        if (!mlibreOriginData) { msg.style.display = 'block'; msg.style.background = 'var(--red-pale)'; msg.style.color = 'var(--red)'; msg.textContent = 'Sélectionnez une adresse de départ.'; return; }
+        if (!mlibreDestData) { msg.style.display = 'block'; msg.style.background = 'var(--red-pale)'; msg.style.color = 'var(--red)'; msg.textContent = 'Sélectionnez une adresse d\'arrivée.'; return; }
+        const plate = document.getElementById('mlibrePlate').value.trim();
+        if (!plate) { msg.style.display = 'block'; msg.style.background = 'var(--red-pale)'; msg.style.color = 'var(--red)'; msg.textContent = 'Immatriculation requise.'; return; }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i>Création en cours...';
+        msg.style.display = 'none';
+
+        try {
+            const res = await fetch(API + '/api/admin/missions/libre', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({
+                    user_id: parseInt(clientId),
+                    initiated_by: document.getElementById('mlibreInitiatedBy').value.trim() || null,
+                    vehicle_plate: plate,
+                    vehicle_brand: document.getElementById('mlibreBrand').value.trim() || null,
+                    vehicle_model: document.getElementById('mlibreModel').value.trim() || null,
+                    origin_address: mlibreOriginData.address,
+                    origin_lat: mlibreOriginData.lat, origin_lng: mlibreOriginData.lng,
+                    destination_address: mlibreDestData.address,
+                    destination_lat: mlibreDestData.lat, destination_lng: mlibreDestData.lng,
+                    mission_date: document.getElementById('mlibreDate').value || null,
+                    restitution: document.getElementById('mlibreRestitution').checked,
+                    peage: document.getElementById('mlibrePeage').checked,
+                    complement_description: document.getElementById('mlibreCompDesc').value.trim() || null,
+                    complement_amount: parseFloat(document.getElementById('mlibreCompAmount').value) || 0
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Mission libre créée ! Devis ' + data.quote_number + ' + Facture ' + data.invoice_number);
+                closeMissionLibre();
+                loadAdminMissions();
+            } else {
+                msg.style.display = 'block'; msg.style.background = 'var(--red-pale)'; msg.style.color = 'var(--red)';
+                msg.textContent = data.error || 'Erreur.';
+            }
+        } catch (err) {
+            msg.style.display = 'block'; msg.style.background = 'var(--red-pale)'; msg.style.color = 'var(--red)';
+            msg.textContent = 'Erreur de connexion.';
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-double" style="margin-right:8px;"></i>Créer mission + facture';
+    }
+
+    // Close dropdowns on click outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.form-group')) {
+            ['mlibreOriginDropdown', 'mlibreDestDropdown'].forEach(id => {
+                const d = document.getElementById(id);
+                if (d) d.style.display = 'none';
+            });
+        }
+    });
 
     // ===== INIT =====
     checkAdmin();

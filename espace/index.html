@@ -3960,7 +3960,7 @@ async function openQuoteDetail(quoteId) {
 
         const statusConf = {
             'submitted': { label: 'En attente de validation', color: '#d97706', bg: '#d9770610' },
-            'validated': { label: 'Devis validé — en attente de votre réponse', color: '#2563eb', bg: '#2563eb10' },
+            'validated': { label: q.completed_at ? 'Devis validé — détails complétés, confirmez pour accepter' : 'Devis validé — complétez les détails pour finaliser', color: '#2563eb', bg: '#2563eb10' },
             'accepted': { label: 'Accepté', color: '#059669', bg: '#05966910' },
             'refused': { label: 'Refusé', color: '#dc2626', bg: '#dc262610' },
             'invoiced': { label: 'Facturé', color: '#059669', bg: '#05966910' },
@@ -4101,12 +4101,103 @@ async function openQuoteDetail(quoteId) {
                     </div>`;
         }
 
-        // ACTION BUTTONS (seulement si statut = sent)
-        if (q.status === 'validated') {
+        // ACTION: Completion form OR accept/refuse
+        if (q.status === 'validated' && !q.completed_at) {
+            html += `
+                    <div style="padding-top:20px; border-top:2px solid var(--blue); margin-top:20px;">
+                        <div style="font-size:16px; font-weight:800; color:var(--navy); margin-bottom:4px;"><i class="fas fa-clipboard-list" style="margin-right:8px; color:var(--blue);"></i>Complétez les détails de votre mission</div>
+                        <p style="font-size:13px; color:var(--slate-500); margin-bottom:20px;">Renseignez les adresses exactes, le véhicule et les contacts. Le prix sera recalculé automatiquement.</p>
+
+                        <div id="completionMsg" style="display:none; padding:12px 14px; border-radius:8px; font-size:13px; margin-bottom:16px;"></div>
+
+                        <!-- Adresses exactes -->
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                            <div class="form-group" style="position:relative;">
+                                <label style="font-size:12px; font-weight:700; color:var(--slate-500); margin-bottom:6px; display:block;"><i class="fas fa-map-marker-alt" style="color:var(--emerald); margin-right:4px;"></i>Adresse exacte de départ *</label>
+                                <input type="text" id="cmpOriginAddr" placeholder="Tapez l'adresse exacte..." style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;" value="${q.origin_address || ''}">
+                                <div class="ac-dropdown" id="cmpOriginDropdown"></div>
+                            </div>
+                            <div class="form-group" style="position:relative;">
+                                <label style="font-size:12px; font-weight:700; color:var(--slate-500); margin-bottom:6px; display:block;"><i class="fas fa-flag-checkered" style="color:var(--red); margin-right:4px;"></i>Adresse exacte d'arrivée *</label>
+                                <input type="text" id="cmpDestAddr" placeholder="Tapez l'adresse exacte..." style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;" value="${q.destination_address || ''}">
+                                <div class="ac-dropdown" id="cmpDestDropdown"></div>
+                            </div>
+                        </div>
+
+                        <!-- Recalcul prix -->
+                        <div id="cmpPricePreview" style="display:none; padding:14px 18px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:16px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                                <div>
+                                    <div style="font-size:12px; font-weight:700; color:var(--slate-400);">PRIX RECALCULÉ</div>
+                                    <div id="cmpNewPrice" style="font-size:22px; font-weight:800; color:#059669;">— €</div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="font-size:11px; color:var(--slate-400);">Prix initial estimé</div>
+                                    <div style="font-size:14px; color:var(--slate-500); text-decoration:line-through;">${(q.admin_total_ht || q.total_ht || 0).toLocaleString('fr-FR', {minimumFractionDigits:2})} €</div>
+                                </div>
+                            </div>
+                            <div id="cmpPriceDetails" style="font-size:12px; color:var(--slate-500); margin-top:8px;"></div>
+                        </div>
+
+                        <!-- Véhicule -->
+                        <div style="font-size:13px; font-weight:700; color:var(--slate-600); margin-bottom:8px;"><i class="fas fa-car" style="margin-right:6px; color:var(--blue);"></i>Véhicule</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+                            <div>
+                                <label style="font-size:11px; color:var(--slate-400); display:block; margin-bottom:4px;">Immatriculation *</label>
+                                <input type="text" id="cmpPlate" placeholder="AB-123-CD" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px; text-transform:uppercase;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px; color:var(--slate-400); display:block; margin-bottom:4px;">Marque</label>
+                                <input type="text" id="cmpBrand" placeholder="Peugeot" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px; color:var(--slate-400); display:block; margin-bottom:4px;">Modèle</label>
+                                <input type="text" id="cmpModel" placeholder="308" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                            </div>
+                        </div>
+
+                        <!-- Date -->
+                        <div style="margin-bottom:16px;">
+                            <label style="font-size:13px; font-weight:700; color:var(--slate-600); margin-bottom:6px; display:block;"><i class="fas fa-calendar" style="margin-right:6px; color:var(--blue);"></i>Date souhaitée du convoyage</label>
+                            <input type="date" id="cmpDate" value="${q.confirmed_date || q.preferred_date_1 || ''}" style="padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                        </div>
+
+                        <!-- Contacts -->
+                        <div style="font-size:13px; font-weight:700; color:var(--slate-600); margin-bottom:8px;"><i class="fas fa-address-book" style="margin-right:6px; color:var(--blue);"></i>Contacts</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                            <div style="padding:14px; background:var(--slate-50); border-radius:10px;">
+                                <div style="font-size:11px; font-weight:700; color:var(--slate-400); margin-bottom:8px;">CONTACT DÉPART</div>
+                                <input type="text" id="cmpDepName" placeholder="Nom du contact" style="width:100%; padding:8px 12px; border:1px solid var(--slate-200); border-radius:6px; font-family:inherit; font-size:13px; margin-bottom:6px;">
+                                <input type="tel" id="cmpDepPhone" placeholder="Téléphone" style="width:100%; padding:8px 12px; border:1px solid var(--slate-200); border-radius:6px; font-family:inherit; font-size:13px;">
+                            </div>
+                            <div style="padding:14px; background:var(--slate-50); border-radius:10px;">
+                                <div style="font-size:11px; font-weight:700; color:var(--slate-400); margin-bottom:8px;">CONTACT ARRIVÉE</div>
+                                <input type="text" id="cmpArrName" placeholder="Nom du contact" style="width:100%; padding:8px 12px; border:1px solid var(--slate-200); border-radius:6px; font-family:inherit; font-size:13px; margin-bottom:6px;">
+                                <input type="tel" id="cmpArrPhone" placeholder="Téléphone" style="width:100%; padding:8px 12px; border:1px solid var(--slate-200); border-radius:6px; font-family:inherit; font-size:13px;">
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div style="margin-bottom:20px;">
+                            <label style="font-size:13px; font-weight:700; color:var(--slate-600); margin-bottom:6px; display:block;"><i class="fas fa-sticky-note" style="margin-right:6px; color:var(--blue);"></i>Notes (optionnel)</label>
+                            <textarea id="cmpNotes" placeholder="Informations complémentaires (code portail, clés, instructions...)" rows="3" style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:13px; resize:vertical;"></textarea>
+                        </div>
+
+                        <!-- Submit -->
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <button id="cmpSubmitBtn" onclick="submitQuoteCompletion(${q.id})" class="btn-primary" style="flex:2; justify-content:center; padding:14px; font-size:15px;">
+                                <i class="fas fa-check-double"></i> Valider les détails et accepter le devis
+                            </button>
+                            <button onclick="respondQuote(${q.id}, 'refused')" class="btn-primary" style="flex:1; justify-content:center; padding:14px; background:var(--red); font-size:14px;">
+                                <i class="fas fa-times"></i> Refuser
+                            </button>
+                        </div>
+                    </div>`;
+        } else if (q.status === 'validated' && q.completed_at) {
             html += `
                     <div style="display:flex; gap:12px; padding-top:16px; border-top:1px solid var(--slate-200); flex-wrap:wrap;">
                         <button onclick="respondQuote(${q.id}, 'accepted')" class="btn-primary" style="flex:1; justify-content:center; padding:14px; background:var(--emerald); font-size:15px;">
-                            <i class="fas fa-check"></i> Accepter le devis
+                            <i class="fas fa-check"></i> Accepter le devis (${(q.recalculated_total_ht || q.admin_total_ht || q.total_ht || 0).toLocaleString('fr-FR', {minimumFractionDigits:2})} €)
                         </button>
                         <button onclick="respondQuote(${q.id}, 'refused')" class="btn-primary" style="flex:1; justify-content:center; padding:14px; background:var(--red); font-size:15px;">
                             <i class="fas fa-times"></i> Refuser
@@ -4158,9 +4249,179 @@ async function openQuoteDetail(quoteId) {
 
         container.innerHTML = html;
 
+        // Init autocomplete for completion form if present
+        if (q.status === 'validated' && !q.completed_at) {
+            initCompletionAutocomplete(q);
+        }
+
     } catch (err) {
         console.error('Quote detail failed:', err);
         container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de connexion.</p>';
+    }
+}
+
+// ===== COMPLETION FORM HELPERS =====
+let cmpOriginData = null, cmpDestData = null, cmpAcTimeout = null;
+
+function initCompletionAutocomplete(quote) {
+    const originInput = document.getElementById('cmpOriginAddr');
+    const destInput = document.getElementById('cmpDestAddr');
+    if (!originInput || !destInput) return;
+
+    // Pre-fill coords from original quote
+    if (quote.origin_lat) {
+        cmpOriginData = { lat: quote.origin_lat, lng: quote.origin_lng, address: quote.origin_address };
+    }
+    if (quote.destination_lat) {
+        cmpDestData = { lat: quote.destination_lat, lng: quote.destination_lng, address: quote.destination_address };
+    }
+
+    originInput.addEventListener('input', () => handleCmpAutocomplete(originInput, 'origin'));
+    destInput.addEventListener('input', () => handleCmpAutocomplete(destInput, 'destination'));
+}
+
+async function handleCmpAutocomplete(input, type) {
+    const q = input.value.trim();
+    const dropdownId = type === 'origin' ? 'cmpOriginDropdown' : 'cmpDestDropdown';
+    const dropdown = document.getElementById(dropdownId);
+    if (!dropdown) return;
+
+    if (q.length < 3) { dropdown.classList.remove('show'); return; }
+
+    clearTimeout(cmpAcTimeout);
+    cmpAcTimeout = setTimeout(async () => {
+        try {
+            const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q));
+            const data = await res.json();
+            const items = data.items || [];
+            if (items.length === 0) { dropdown.classList.remove('show'); return; }
+
+            dropdown.innerHTML = items.map(item =>
+                `<div class="ac-item" data-lat="${item.lat}" data-lng="${item.lng}" data-address="${item.address}">${item.address}</div>`
+            ).join('');
+            dropdown.classList.add('show');
+
+            dropdown.querySelectorAll('.ac-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    input.value = el.dataset.address;
+                    const selected = { lat: parseFloat(el.dataset.lat), lng: parseFloat(el.dataset.lng), address: el.dataset.address };
+                    if (type === 'origin') cmpOriginData = selected;
+                    else cmpDestData = selected;
+                    dropdown.classList.remove('show');
+                    // Trigger price recalculation
+                    if (cmpOriginData && cmpDestData) recalculateCompletionPrice();
+                });
+            });
+        } catch (err) { console.error('Autocomplete error:', err); }
+    }, 350);
+}
+
+async function recalculateCompletionPrice() {
+    const preview = document.getElementById('cmpPricePreview');
+    const priceEl = document.getElementById('cmpNewPrice');
+    const detailsEl = document.getElementById('cmpPriceDetails');
+    if (!preview || !cmpOriginData || !cmpDestData) return;
+
+    priceEl.textContent = 'Calcul...';
+    preview.style.display = 'block';
+
+    try {
+        const res = await fetch(API + '/api/quote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+            body: JSON.stringify({ origin: cmpOriginData, destination: cmpDestData, restitution: false, peage: false })
+        });
+        const data = await res.json();
+        if (data.amount) {
+            priceEl.textContent = Number(data.amount).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
+            detailsEl.innerHTML = (data.details || []).map(d => '<div>' + d + '</div>').join('') +
+                '<div style="margin-top:4px;"><i class="fas fa-route" style="margin-right:4px;"></i>' + data.distance_km + ' km · ' + data.duration_minutes + ' min</div>';
+        } else if (data.contact_required) {
+            priceEl.textContent = 'Sur devis';
+            detailsEl.textContent = data.message || 'Contactez-nous pour un devis personnalisé.';
+        }
+    } catch (err) {
+        priceEl.textContent = 'Erreur';
+        detailsEl.textContent = 'Impossible de recalculer le prix.';
+    }
+}
+
+async function submitQuoteCompletion(quoteId) {
+    const btn = document.getElementById('cmpSubmitBtn');
+    const msg = document.getElementById('completionMsg');
+
+    // Validation
+    if (!cmpOriginData || !cmpOriginData.lat) {
+        msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
+        msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>Sélectionnez une adresse exacte de départ dans les suggestions.';
+        return;
+    }
+    if (!cmpDestData || !cmpDestData.lat) {
+        msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
+        msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>Sélectionnez une adresse exacte d\'arrivée dans les suggestions.';
+        return;
+    }
+    const plate = document.getElementById('cmpPlate').value.trim();
+    if (!plate) {
+        msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
+        msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>L\'immatriculation du véhicule est obligatoire.';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i>Envoi en cours...';
+    msg.style.display = 'none';
+
+    try {
+        // Step 1: Complete the quote
+        const completeRes = await fetch(API + '/api/quotes/' + quoteId + '/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+            body: JSON.stringify({
+                exact_origin_address: cmpOriginData.address,
+                exact_origin_lat: cmpOriginData.lat,
+                exact_origin_lng: cmpOriginData.lng,
+                exact_destination_address: cmpDestData.address,
+                exact_destination_lat: cmpDestData.lat,
+                exact_destination_lng: cmpDestData.lng,
+                vehicle_plate: plate,
+                vehicle_brand: document.getElementById('cmpBrand').value.trim() || null,
+                vehicle_model: document.getElementById('cmpModel').value.trim() || null,
+                contact_departure_name: document.getElementById('cmpDepName').value.trim() || null,
+                contact_departure_phone: document.getElementById('cmpDepPhone').value.trim() || null,
+                contact_arrival_name: document.getElementById('cmpArrName').value.trim() || null,
+                contact_arrival_phone: document.getElementById('cmpArrPhone').value.trim() || null,
+                client_notes: document.getElementById('cmpNotes').value.trim() || null,
+                preferred_date: document.getElementById('cmpDate').value || null
+            })
+        });
+        const completeData = await completeRes.json();
+        if (!completeRes.ok || !completeData.success) {
+            msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
+            msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>' + (completeData.error || 'Erreur lors de la complétion.');
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Valider les détails et accepter le devis';
+            return;
+        }
+
+        // Step 2: Accept the quote
+        const acceptRes = await fetch(API + '/api/quotes/' + quoteId + '/accept', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+            body: JSON.stringify({})
+        });
+        const acceptData = await acceptRes.json();
+        if (acceptRes.ok && acceptData.success) {
+            showToast('Devis accepté ! Facture ' + acceptData.invoice_number + ' générée.');
+            openQuoteDetail(quoteId);
+        } else {
+            msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
+            msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>' + (acceptData.error || 'Erreur lors de l\'acceptation.');
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Valider les détails et accepter le devis';
+        }
+    } catch (err) {
+        msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
+        msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>Erreur de connexion. Réessayez.';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Valider les détails et accepter le devis';
     }
 }
 
