@@ -894,10 +894,39 @@
         </div>
     </div>
 
-    <!-- ÉTAPE 3/3 — Double signature -->
+    <!-- ÉTAPE 3/3 — Identités & Signatures -->
     <div class="edl-step" id="edlStep3">
-        <h3>3/3 — Signatures</h3>
-        <p class="subtitle">Signez et faites signer le client</p>
+        <h3>3/3 — Identités & Signatures</h3>
+        <p class="subtitle">Identifiez les parties et signez</p>
+
+        <div class="edl-field">
+            <label>Date et heure</label>
+            <input type="datetime-local" id="edlDatetime">
+        </div>
+
+        <div style="background:var(--slate-50);border-radius:12px;padding:16px;margin-bottom:16px">
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px"><i class="fas fa-sign-out-alt" style="margin-right:6px"></i>CÉDANT (remet le véhicule)</div>
+            <div class="edl-field" style="margin-bottom:8px">
+                <label>Nom / Prénom</label>
+                <input type="text" id="edlCedantName" placeholder="Nom et prénom du cédant">
+            </div>
+            <div class="edl-field" style="margin-bottom:0">
+                <label>Entreprise</label>
+                <input type="text" id="edlCedantCompany" placeholder="Entreprise (optionnel)">
+            </div>
+        </div>
+
+        <div style="background:var(--slate-50);border-radius:12px;padding:16px;margin-bottom:16px">
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px"><i class="fas fa-sign-in-alt" style="margin-right:6px"></i>PRENANT (reçoit le véhicule)</div>
+            <div class="edl-field" style="margin-bottom:8px">
+                <label>Nom / Prénom</label>
+                <input type="text" id="edlPrenantName" placeholder="Nom et prénom du prenant">
+            </div>
+            <div class="edl-field" style="margin-bottom:0">
+                <label>Entreprise</label>
+                <input type="text" id="edlPrenantCompany" placeholder="Entreprise (optionnel)">
+            </div>
+        </div>
 
         <div class="edl-field">
             <label>Signature chauffeur</label>
@@ -1856,7 +1885,7 @@
         btn.classList.add(cls);
     }
 
-    function openEDL(missionId, type, alertData) {
+    async function openEDL(missionId, type, alertData) {
         edlMissionId = missionId;
         edlType = type;
         edlInspectionId = alertData ? alertData.id : null;
@@ -1884,6 +1913,47 @@
         document.getElementById('edlClientAbsent').checked = false;
         document.getElementById('edlAbsentReason').value = '';
         toggleAbsent();
+
+        // Pré-remplir date/heure avec maintenant
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        document.getElementById('edlDatetime').value = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+
+        // Pré-remplir cédant/prenant selon le type
+        const driverFullName = currentUser ? (currentUser.first_name + ' ' + currentUser.last_name) : '';
+        document.getElementById('edlCedantName').value = '';
+        document.getElementById('edlCedantCompany').value = '';
+        document.getElementById('edlPrenantName').value = '';
+        document.getElementById('edlPrenantCompany').value = '';
+
+        if (type === 'departure') {
+            // Départ : prenant = chauffeur PolyValences, cédant = vide (à saisir)
+            document.getElementById('edlPrenantName').value = driverFullName;
+            document.getElementById('edlPrenantCompany').value = 'PolyValences';
+        } else if (type === 'arrival' && missionId) {
+            // Arrivée : cédant = prenant du départ (auto-rempli), prenant = vide (à saisir)
+            document.getElementById('edlCedantName').value = driverFullName;
+            document.getElementById('edlCedantCompany').value = 'PolyValences';
+            // Tenter de récupérer le prenant du départ depuis la mission détaillée
+            try {
+                const token = localStorage.getItem('pv_token');
+                const detailRes = await fetch(API + '/api/driver/missions/' + missionId, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (detailRes.ok) {
+                    const detailData = await detailRes.json();
+                    const departureEdl = (detailData.inspections || []).find(i => i.type === 'departure');
+                    if (departureEdl && departureEdl.prenant_name) {
+                        document.getElementById('edlCedantName').value = departureEdl.prenant_name;
+                        document.getElementById('edlCedantCompany').value = departureEdl.prenant_company || '';
+                    }
+                }
+            } catch (e) { /* fallback : valeurs par défaut */ }
+        } else if (alertData) {
+            // EDL libre : prenant = chauffeur connecté
+            document.getElementById('edlPrenantName').value = driverFullName;
+            document.getElementById('edlPrenantCompany').value = 'PolyValences';
+        }
 
         // Reset checklist buttons
         document.querySelectorAll('.checklist-options button').forEach(b => b.classList.remove('selected', 'selected-warn', 'selected-danger'));
@@ -2283,7 +2353,12 @@
                 client_absent: absent,
                 absent_reason: absent ? document.getElementById('edlAbsentReason').value.trim() : null,
                 signature_driver: sigDriverData,
-                signature_client: sigClientData
+                signature_client: sigClientData,
+                cedant_name: document.getElementById('edlCedantName').value.trim() || null,
+                cedant_company: document.getElementById('edlCedantCompany').value.trim() || null,
+                prenant_name: document.getElementById('edlPrenantName').value.trim() || null,
+                prenant_company: document.getElementById('edlPrenantCompany').value.trim() || null,
+                edl_datetime: document.getElementById('edlDatetime').value || null
             };
 
             if (edlInspectionId) {
