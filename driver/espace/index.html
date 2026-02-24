@@ -366,7 +366,7 @@
             .fuel-btns { gap: 4px; }
             .fuel-btn { padding: 10px 4px; font-size: 12px; }
             .photo-grid { gap: 6px; }
-            .zone-btn { width: 26px; height: 26px; font-size: 10px; }
+            .zone-btn { width: 32px; height: 32px; font-size: 11px; }
             .btn-start-mission { font-size: 12px; padding: 8px; }
             .edl-step { padding: 14px; }
             .edl-field input, .edl-field textarea { padding: 10px; font-size: 14px; }
@@ -1568,11 +1568,13 @@
         document.getElementById('edlOverlay').classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        // Init signature canvases
-        setTimeout(() => {
-            initSigCanvas('sigDriver');
-            initSigCanvas('sigClient');
-        }, 200);
+        // Init signature canvases (wait for layout)
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                initSigCanvas('sigDriver');
+                initSigCanvas('sigClient');
+            });
+        });
     }
 
     function closeEDL() {
@@ -1606,8 +1608,12 @@
 
     function edlNext() {
         if (edlCurrentStep === 1) {
-            if (!document.getElementById('edlMileage').value) {
+            const mileageVal = parseInt(document.getElementById('edlMileage').value);
+            if (!document.getElementById('edlMileage').value || isNaN(mileageVal)) {
                 showToast('Veuillez saisir le kilométrage.', 'error'); return;
+            }
+            if (mileageVal < 0 || mileageVal > 999999) {
+                showToast('Le kilométrage doit être entre 0 et 999 999 km.', 'error'); return;
             }
             if (!edlFuelLevel) {
                 showToast('Veuillez sélectionner le niveau de carburant.', 'error'); return;
@@ -1747,7 +1753,7 @@
         if (!canvas) return;
         const wrap = canvas.parentElement;
         canvas.width = wrap.clientWidth - 4;
-        canvas.height = 160;
+        canvas.height = Math.max(120, wrap.clientHeight || 160);
         const ctx = canvas.getContext('2d');
         ctx.lineWidth = 2.5;
         ctx.lineCap = 'round';
@@ -1798,6 +1804,11 @@
 
     // --- Soumission ---
     async function submitEDL() {
+        // Confirm if no damages
+        if (edlDamages.length === 0) {
+            if (!confirm('Aucun dommage signalé. Confirmer que le véhicule est en parfait état ?')) return;
+        }
+
         const token = localStorage.getItem('pv_token');
         const absent = document.getElementById('edlClientAbsent').checked;
 
@@ -1819,46 +1830,65 @@
 
         try {
             // 1. Upload photos globales
+            let uploadFailed = false;
             const globalSlots = { front: 'slotFront', rear: 'slotRear', left: 'slotLeft', right: 'slotRight' };
             for (const [key, slotId] of Object.entries(globalSlots)) {
                 const file = edlGlobalPhotos[key];
                 if (file) {
-                    const fd = new FormData();
-                    fd.append('mission_id', edlMissionId);
-                    fd.append('type', edlType);
-                    fd.append('category', 'global');
-                    fd.append('file', file);
-                    const res = await fetch(API + '/api/inspections/upload', {
-                        method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + token },
-                        body: fd
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        edlGlobalKeys[key] = data.key;
+                    try {
+                        const fd = new FormData();
+                        fd.append('mission_id', edlMissionId);
+                        fd.append('type', edlType);
+                        fd.append('category', 'global');
+                        fd.append('file', file);
+                        const res = await fetch(API + '/api/inspections/upload', {
+                            method: 'POST',
+                            headers: { 'Authorization': 'Bearer ' + token },
+                            body: fd
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            edlGlobalKeys[key] = data.key;
+                        } else {
+                            showToast('Erreur upload photo ' + key + '. Réessayez.', 'error');
+                            uploadFailed = true; break;
+                        }
+                    } catch (uploadErr) {
+                        showToast('Erreur réseau upload photo ' + key + '.', 'error');
+                        uploadFailed = true; break;
                     }
                 }
             }
+            if (uploadFailed) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Valider et Signer'; return; }
 
             // 2. Upload photos dommages
             for (const dmg of edlDamages) {
                 if (dmg.photoFile) {
-                    const fd = new FormData();
-                    fd.append('mission_id', edlMissionId);
-                    fd.append('type', edlType);
-                    fd.append('category', 'damage');
-                    fd.append('file', dmg.photoFile);
-                    const res = await fetch(API + '/api/inspections/upload', {
-                        method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + token },
-                        body: fd
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        dmg.photoKey = data.key;
+                    try {
+                        const fd = new FormData();
+                        fd.append('mission_id', edlMissionId);
+                        fd.append('type', edlType);
+                        fd.append('category', 'damage');
+                        fd.append('file', dmg.photoFile);
+                        const res = await fetch(API + '/api/inspections/upload', {
+                            method: 'POST',
+                            headers: { 'Authorization': 'Bearer ' + token },
+                            body: fd
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            dmg.photoKey = data.key;
+                        } else {
+                            showToast('Erreur upload photo dommage. Réessayez.', 'error');
+                            uploadFailed = true; break;
+                        }
+                    } catch (uploadErr) {
+                        showToast('Erreur réseau upload photo dommage.', 'error');
+                        uploadFailed = true; break;
                     }
                 }
             }
+            if (uploadFailed) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Valider et Signer'; return; }
 
             // 3. Préparer les signatures base64
             const sigDriverData = sigDriverCanvas.toDataURL('image/png');
