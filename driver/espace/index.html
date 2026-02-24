@@ -253,6 +253,20 @@
         .zone-btn.has-damage { background: #fca5a5; border-color: var(--danger); color: var(--danger); }
         .zone-btn:active { transform: translate(-50%, -50%) scale(1.2); }
 
+        /* Checklist groups (documents, equipment, vehicle condition) */
+        .checklist-group { display: flex; flex-direction: column; gap: 10px; }
+        .checklist-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--slate-100); }
+        .checklist-item span { font-size: 13px; font-weight: 500; color: var(--navy); flex-shrink: 0; max-width: 45%; }
+        .checklist-options { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+        .checklist-options button {
+            padding: 5px 10px; border: 1.5px solid var(--slate-200); border-radius: 8px;
+            background: #fff; color: var(--slate-600); font-size: 11px; font-weight: 600;
+            cursor: pointer; font-family: 'DM Sans', sans-serif; transition: 0.15s;
+        }
+        .checklist-options button.selected { background: var(--navy); color: #fff; border-color: var(--navy); }
+        .checklist-options button.selected-warn { background: #f59e0b; color: #fff; border-color: #f59e0b; }
+        .checklist-options button.selected-danger { background: #dc2626; color: #fff; border-color: #dc2626; }
+
         /* Photo captures */
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
         .photo-slot {
@@ -592,6 +606,194 @@
                 <div class="fuel-btn" onclick="selectFuel('3/4')">3/4</div>
                 <div class="fuel-btn" onclick="selectFuel('full')">Plein</div>
             </div>
+        </div>
+
+        <!-- Météo -->
+        <div class="edl-field">
+            <label>Conditions météo</label>
+            <div class="fuel-btns" id="weatherBtns">
+                <div class="fuel-btn" onclick="selectWeather('soleil')">☀️ Soleil</div>
+                <div class="fuel-btn" onclick="selectWeather('nuageux')">☁️ Nuageux</div>
+                <div class="fuel-btn" onclick="selectWeather('pluie')">🌧️ Pluie</div>
+                <div class="fuel-btn" onclick="selectWeather('neige')">❄️ Neige</div>
+            </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--slate-200);margin:16px 0">
+
+        <!-- Documents remis -->
+        <div class="edl-field">
+            <label>Documents remis</label>
+            <div class="checklist-group">
+                <div class="checklist-item">
+                    <span>Carte grise</span>
+                    <div class="checklist-options" id="doc_carte_grise">
+                        <button type="button" onclick="setDoc('carte_grise','Original',this)">Original</button>
+                        <button type="button" onclick="setDoc('carte_grise','Copie',this)">Copie</button>
+                        <button type="button" onclick="setDoc('carte_grise','Absente',this)">Absente</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Attestation assurance</span>
+                    <div class="checklist-options" id="doc_attestation_assurance">
+                        <button type="button" onclick="setDoc('attestation_assurance','Présente',this)">Présente</button>
+                        <button type="button" onclick="setDoc('attestation_assurance','Absente',this)">Absente</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Badge Crit'Air</span>
+                    <div class="checklist-options" id="doc_badge_critair">
+                        <button type="button" onclick="setDoc('badge_critair','Présent',this)">Présent</button>
+                        <button type="button" onclick="setDoc('badge_critair','Absent',this)">Absent</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Badge télépéage</span>
+                    <div class="checklist-options" id="doc_badge_telepeage">
+                        <button type="button" onclick="setDoc('badge_telepeage','Présent',this)">Présent</button>
+                        <button type="button" onclick="setDoc('badge_telepeage','Absent',this)">Absent</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Carte d'assurance (verte)</span>
+                    <div class="checklist-options" id="doc_carte_assurance_verte">
+                        <button type="button" onclick="setDoc('carte_assurance_verte','Présente',this)">Présente</button>
+                        <button type="button" onclick="setDoc('carte_assurance_verte','Absente',this)">Absente</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Carte essence</span>
+                    <div class="checklist-options" id="doc_carte_essence">
+                        <button type="button" onclick="setDoc('carte_essence','Présente',this)">Présente</button>
+                        <button type="button" onclick="setDoc('carte_essence','Absente',this)">Absente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--slate-200);margin:16px 0">
+
+        <!-- Équipements véhicule -->
+        <div class="edl-field">
+            <label>Équipements véhicule</label>
+            <div class="checklist-group">
+                <div class="checklist-item">
+                    <span>Enjoliveurs</span>
+                    <div class="checklist-options" id="eq_enjoliveurs">
+                        <button type="button" onclick="setEquip('enjoliveurs','Complets',this)">Complets</button>
+                        <button type="button" onclick="setEquip('enjoliveurs','Partiels',this)">Partiels</button>
+                        <button type="button" onclick="setEquip('enjoliveurs','Jantes nues',this)">Jantes nues</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Type de roues</span>
+                    <div class="checklist-options" id="eq_type_roues">
+                        <button type="button" onclick="setEquip('type_roues','Jantes tôle',this)">Jantes tôle</button>
+                        <button type="button" onclick="setEquip('type_roues','Jantes alu',this)">Jantes alu</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Roue de secours</span>
+                    <div class="checklist-options" id="eq_roue_secours">
+                        <button type="button" onclick="setEquip('roue_secours','Présente',this)">Présente</button>
+                        <button type="button" onclick="setEquip('roue_secours','Absente',this)">Absente</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Kit sécurité (gilet + triangle)</span>
+                    <div class="checklist-options" id="eq_kit_securite">
+                        <button type="button" onclick="setEquip('kit_securite','Complet',this)">Complet</button>
+                        <button type="button" onclick="setEquip('kit_securite','Partiel',this)">Partiel</button>
+                        <button type="button" onclick="setEquip('kit_securite','Absent',this)">Absent</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>Kit réparation (bombe anti-crevaison)</span>
+                    <div class="checklist-options" id="eq_kit_reparation">
+                        <button type="button" onclick="setEquip('kit_reparation','Présent',this)">Présent</button>
+                        <button type="button" onclick="setEquip('kit_reparation','Absent',this)">Absent</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--slate-200);margin:16px 0">
+
+        <!-- État du véhicule -->
+        <div class="edl-field">
+            <label>État du véhicule — Intérieur</label>
+            <div class="checklist-group">
+                <div class="checklist-item">
+                    <span>Propreté habitacle</span>
+                    <div class="checklist-options" id="vc_proprete_habitacle">
+                        <button type="button" onclick="setCondition('proprete_habitacle','Propre',this)">Propre</button>
+                        <button type="button" onclick="setCondition('proprete_habitacle','Correct',this)">Correct</button>
+                        <button type="button" onclick="setCondition('proprete_habitacle','Sale',this)">Sale</button>
+                        <button type="button" onclick="setCondition('proprete_habitacle','Très sale',this)">Très sale</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>État des banquettes</span>
+                    <div class="checklist-options" id="vc_etat_banquettes">
+                        <button type="button" onclick="setCondition('etat_banquettes','Bon état',this)">Bon état</button>
+                        <button type="button" onclick="setCondition('etat_banquettes','Usure normale',this)">Usure normale</button>
+                        <button type="button" onclick="setCondition('etat_banquettes','Taches',this)">Taches</button>
+                        <button type="button" onclick="setCondition('etat_banquettes','Déchirures',this)">Déchirures</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>État du coffre</span>
+                    <div class="checklist-options" id="vc_etat_coffre">
+                        <button type="button" onclick="setCondition('etat_coffre','Propre',this)">Propre</button>
+                        <button type="button" onclick="setCondition('etat_coffre','Correct',this)">Correct</button>
+                        <button type="button" onclick="setCondition('etat_coffre','Sale',this)">Sale</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="edl-field">
+            <label>État du véhicule — Extérieur</label>
+            <div class="checklist-group">
+                <div class="checklist-item">
+                    <span>Propreté extérieure</span>
+                    <div class="checklist-options" id="vc_proprete_exterieure">
+                        <button type="button" onclick="setCondition('proprete_exterieure','Propre',this)">Propre</button>
+                        <button type="button" onclick="setCondition('proprete_exterieure','Correct',this)">Correct</button>
+                        <button type="button" onclick="setCondition('proprete_exterieure','Sale',this)">Sale</button>
+                        <button type="button" onclick="setCondition('proprete_exterieure','Très sale',this)">Très sale</button>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <span>État du pare-brise</span>
+                    <div class="checklist-options" id="vc_etat_pare_brise">
+                        <button type="button" onclick="setCondition('etat_pare_brise','Intact',this)">Intact</button>
+                        <button type="button" onclick="setCondition('etat_pare_brise','Impact(s)',this)">Impact(s)</button>
+                        <button type="button" onclick="setCondition('etat_pare_brise','Fissure(s)',this)">Fissure(s)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="edl-field">
+            <label>Moteur / Tableau de bord</label>
+            <div class="checklist-group">
+                <div class="checklist-item">
+                    <span>Voyant(s) allumé(s) au tableau de bord</span>
+                    <div class="checklist-options" id="vc_voyants_moteur">
+                        <button type="button" onclick="setCondition('voyants_moteur','Aucun',this)">Aucun</button>
+                        <button type="button" onclick="setCondition('voyants_moteur','Oui',this)">Oui</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--slate-200);margin:16px 0">
+
+        <!-- Objets personnels -->
+        <div class="edl-field">
+            <label>Objets personnels laissés dans le véhicule</label>
+            <textarea id="edlPersonalItems" rows="3" placeholder="Ex : GPS TomTom dans la boîte à gants, siège bébé sur banquette arrière..." style="width:100%;padding:12px;border:2px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
         </div>
     </div>
 
@@ -1524,6 +1726,39 @@
     let sigDriverCtx = null;
     let sigClientCtx = null;
     let sigDrawing = false;
+    let edlWeather = null;
+    let edlDocuments = {};
+    let edlEquipment = {};
+    let edlVehicleCondition = {};
+
+    function selectWeather(val) {
+        edlWeather = val;
+        document.querySelectorAll('#weatherBtns .fuel-btn').forEach(b => b.classList.remove('selected'));
+        event.target.classList.add('selected');
+    }
+
+    function setDoc(key, val, btn) {
+        edlDocuments[key] = val;
+        btn.parentElement.querySelectorAll('button').forEach(b => { b.classList.remove('selected', 'selected-warn', 'selected-danger'); });
+        const cls = (val === 'Absente' || val === 'Absent') ? 'selected-danger' : (val === 'Copie') ? 'selected-warn' : 'selected';
+        btn.classList.add(cls);
+    }
+
+    function setEquip(key, val, btn) {
+        edlEquipment[key] = val;
+        btn.parentElement.querySelectorAll('button').forEach(b => { b.classList.remove('selected', 'selected-warn', 'selected-danger'); });
+        const cls = (val === 'Absent' || val === 'Absente' || val === 'Jantes nues') ? 'selected-danger' : (val === 'Partiels' || val === 'Partiel') ? 'selected-warn' : 'selected';
+        btn.classList.add(cls);
+    }
+
+    function setCondition(key, val, btn) {
+        edlVehicleCondition[key] = val;
+        btn.parentElement.querySelectorAll('button').forEach(b => { b.classList.remove('selected', 'selected-warn', 'selected-danger'); });
+        const danger = ['Sale', 'Très sale', 'Déchirures', 'Fissure(s)', 'Oui'];
+        const warn = ['Correct', 'Usure normale', 'Taches', 'Impact(s)'];
+        const cls = danger.includes(val) ? 'selected-danger' : warn.includes(val) ? 'selected-warn' : 'selected';
+        btn.classList.add(cls);
+    }
 
     function openEDL(missionId, type) {
         edlMissionId = missionId;
@@ -1535,13 +1770,22 @@
         edlGlobalKeys = { front: null, rear: null, left: null, right: null };
         edlMileagePhotoFile = null;
         selectedDamageType = null;
+        edlWeather = null;
+        edlDocuments = {};
+        edlEquipment = {};
+        edlVehicleCondition = {};
 
         document.getElementById('edlTitle').textContent = type === 'departure' ? 'EDL de départ' : 'EDL d\'arrivée';
         document.getElementById('edlMileage').value = '';
         document.getElementById('edlObservations').value = '';
+        document.getElementById('edlPersonalItems').value = '';
         document.getElementById('edlClientAbsent').checked = false;
         document.getElementById('edlAbsentReason').value = '';
         toggleAbsent();
+
+        // Reset checklist buttons
+        document.querySelectorAll('.checklist-options button').forEach(b => b.classList.remove('selected', 'selected-warn', 'selected-danger'));
+        document.querySelectorAll('#weatherBtns .fuel-btn').forEach(b => b.classList.remove('selected'));
 
         // Reset photos
         ['slotFront','slotRear','slotLeft','slotRight','slotMileagePhoto'].forEach(id => {
@@ -1911,9 +2155,14 @@
                 type: edlType,
                 mileage: parseInt(document.getElementById('edlMileage').value) || null,
                 fuel_level: edlFuelLevel,
+                weather: edlWeather,
+                vehicle_condition: Object.keys(edlVehicleCondition).length > 0 ? edlVehicleCondition : null,
                 location: locationStr,
                 location_lat: lat,
                 location_lng: lng,
+                documents_checklist: Object.keys(edlDocuments).length > 0 ? edlDocuments : null,
+                equipment_checklist: Object.keys(edlEquipment).length > 0 ? edlEquipment : null,
+                personal_items: document.getElementById('edlPersonalItems').value.trim() || null,
                 damages: edlDamages.map(d => ({
                     zone: d.zone, zoneLabel: d.zoneLabel,
                     type: d.type, description: d.description,
