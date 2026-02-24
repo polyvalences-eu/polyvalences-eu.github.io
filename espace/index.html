@@ -512,21 +512,93 @@
         .footer-inner a { color: var(--slate-400); text-decoration: none; margin-left: 16px; }
         .footer-inner a:hover { color: white; }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== RESPONSIVE TABLET (max-width: 768px) ===== */
         @media (max-width: 768px) {
             .nav-links { display: none !important; }
             .nav-burger { display: flex; }
-            .espace-main { grid-template-columns: 1fr; gap: 0; }
+            .espace-main { grid-template-columns: 1fr; gap: 0; padding: 20px 16px 60px; }
             .sidebar-nav {
                 display: flex; gap: 4px; overflow-x: auto;
-                padding-bottom: 16px; margin-bottom: 16px;
+                padding-bottom: 12px; margin-bottom: 16px;
                 border-bottom: 1px solid var(--slate-200);
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
             }
+            .sidebar-nav::-webkit-scrollbar { display: none; }
             .sidebar-nav li { flex-shrink: 0; }
-            .sidebar-nav a { padding: 10px 14px; font-size: 13px; white-space: nowrap; }
+            .sidebar-nav a { padding: 10px 14px; font-size: 13px; white-space: nowrap; border-radius: 8px; }
+            .sidebar-nav a.active { background: var(--blue); color: white; }
             .form-row { flex-direction: column; gap: 0; }
             .company-fields { grid-template-columns: 1fr; }
-            .section-card { padding: 24px 18px; }
+            .section-card { padding: 20px 16px; border-radius: 14px; }
+            .section-card h2 { font-size: 18px; }
+            .page-header { padding: 88px 16px 24px; }
+            .page-header h1 { font-size: 24px; }
+            .page-header p { font-size: 13px; }
+            .toast { left: 16px; right: 16px; bottom: 16px; text-align: center; justify-content: center; }
+            .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+            /* Vehicle cards mobile */
+            .vehicle-card { flex-wrap: wrap; padding: 14px; gap: 10px; }
+            .vehicle-actions { width: 100%; justify-content: flex-end; }
+            /* Contact rows mobile */
+            .contact-row { flex-wrap: wrap; gap: 8px; }
+        }
+
+        /* ===== RESPONSIVE SMALL PHONES (max-width: 480px) ===== */
+        @media (max-width: 480px) {
+            .nav-inner { padding: 0 12px; height: 60px; }
+            .nav-logo img { height: 44px; }
+            .espace-main { padding: 14px 10px 60px; }
+            .sidebar-nav a { padding: 8px 12px; font-size: 12px; }
+            .section-card { padding: 16px 12px; }
+            .section-card h2 { font-size: 16px; }
+            .page-header { padding: 76px 12px 20px; }
+            .page-header h1 { font-size: 20px; }
+            .page-header-welcome { font-size: 12px; }
+            .btn-primary { width: 100%; justify-content: center; padding: 12px 20px; font-size: 13px; }
+            .form-group input, .form-group select { padding: 10px 12px; font-size: 14px; }
+            .company-header { flex-direction: column; text-align: center; padding: 16px; }
+            .company-icon { margin: 0 auto; }
+            .toast { font-size: 13px; padding: 12px 16px; }
+
+            /* Dynamic list items (invoices, quotes, EDL) - stack on small screens */
+            #invoicesList > div,
+            #quotesList > div {
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+                padding: 14px !important;
+            }
+            #invoicesList > div > div:last-of-type,
+            #quotesList > div > div:last-of-type {
+                /* Price block - left align on mobile */
+                text-align: left !important;
+                width: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+            #invoicesList > div > i.fa-chevron-right,
+            #quotesList > div > i.fa-chevron-right {
+                display: none !important;
+            }
+            /* EDL items stack */
+            #edlList > div {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+                padding: 14px !important;
+            }
+            #edlList > div > div:last-child {
+                width: 100% !important;
+                justify-content: flex-start !important;
+            }
+        }
+
+        /* ===== MODALS RESPONSIVE (all mobile) ===== */
+        @media (max-width: 768px) {
+            #contestModalBg { padding: 10px !important; }
+            #contestModalBg > div { width: 100% !important; max-width: none !important; padding: 20px 16px !important; border-radius: 14px !important; }
+            #contestModalBg textarea { font-size: 16px !important; }
         }
     </style>
 </head>
@@ -3345,8 +3417,20 @@ async function signCharter() {
             const res = await fetch(API + '/api/folders', {
                 headers: { 'Authorization': 'Bearer ' + authToken }
             });
-            if (!res.ok) { container.innerHTML = '<p style="color:var(--red);padding:20px;">Erreur de chargement.</p>'; return; }
             const data = await res.json();
+            if (!res.ok) {
+                if (res.status === 403) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:48px 20px; color:var(--slate-400);">
+                            <i class="fas fa-building" style="font-size:36px; margin-bottom:12px; display:block; color:var(--slate-300);"></i>
+                            <p style="font-size:14px; margin-bottom:4px;">Entreprise non configurée</p>
+                            <p style="font-size:13px;">Complétez d'abord votre fiche entreprise dans l'onglet <a href="#entreprise" onclick="showSection('entreprise', document.querySelector('.sidebar-nav a[href=\\'#entreprise\\']'))" style="color:var(--blue); font-weight:600; text-decoration:none;">Entreprise</a> pour accéder aux dossiers.</p>
+                        </div>`;
+                } else {
+                    container.innerHTML = '<p style="color:var(--red);padding:20px;">' + (data.error || 'Erreur de chargement.') + '</p>';
+                }
+                return;
+            }
             foldersData = data.folders || [];
             const unclassified = data.unclassified_count || 0;
 
