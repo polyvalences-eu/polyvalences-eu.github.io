@@ -1965,7 +1965,7 @@
                 showToast('Veuillez sélectionner le niveau de carburant.', 'error'); return;
             }
         }
-        if (edlCurrentStep === 2) {
+        if (edlCurrentStep === 2 && !edlInspectionId) {
             const hasAll = edlGlobalPhotos.front && edlGlobalPhotos.rear && edlGlobalPhotos.left && edlGlobalPhotos.right;
             if (!hasAll) {
                 showToast('Les 4 photos globales sont obligatoires.', 'error'); return;
