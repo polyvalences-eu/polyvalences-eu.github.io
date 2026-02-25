@@ -503,26 +503,101 @@
     <h1 class="view-title">Charte Chauffeur</h1>
     <div class="card" style="padding:24px">
         <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;color:var(--navy)">
-            <i class="fas fa-file-signature" style="color:var(--blue);margin-right:8px"></i>Charte PolyValences
+            <i class="fas fa-file-signature" style="color:var(--blue);margin-right:8px"></i>Charte PolyValences — Chauffeur-Convoyeur
         </h3>
-        <div style="font-size:13px;color:var(--slate-600);line-height:1.8;margin-bottom:20px">
-            <p style="margin-bottom:12px">En signant cette charte, je m'engage à :</p>
-            <ul style="padding-left:20px;display:flex;flex-direction:column;gap:8px">
-                <li>Réaliser un état des lieux complet au départ et à l'arrivée de chaque mission</li>
-                <li>Prendre les photos obligatoires du véhicule</li>
-                <li><strong>Ne jamais utiliser le badge télépéage ou la carte carburant du client</strong></li>
-                <li>Payer mes frais personnellement et fournir un justificatif photo pour remboursement</li>
-                <li>Respecter le code de la route et les limitations de vitesse</li>
-                <li>Signaler immédiatement tout incident à PolyValences</li>
-                <li>Traiter les véhicules confiés avec le plus grand soin</li>
+        <p style="font-size:13px;color:var(--slate-500);margin-bottom:20px">Veuillez lire attentivement chaque section et cocher la case correspondante pour confirmer votre compréhension.</p>
+
+        <!-- Section 1 — Assurance RC Pro -->
+        <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px">
+            <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-shield-alt" style="color:var(--blue);margin-right:6px"></i>1. Assurance RC Pro & Responsabilité</h4>
+            <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
+                <li>Je dispose d'une assurance <strong>Responsabilité Civile Professionnelle (RC Pro)</strong> en cours de validité</li>
+                <li>Le convoyage est couvert par l'assurance COVEA de PolyValences</li>
+                <li>En cas de sinistre, je signale immédiatement et fournis un constat amiable</li>
+                <li>Je suis responsable des infractions au code de la route commises pendant la mission</li>
             </ul>
-            <p style="margin-top:16px;padding:12px;background:#fef3c7;border-radius:8px;color:#92400e;font-weight:600">
-                <i class="fas fa-exclamation-triangle" style="margin-right:6px"></i>
-                Rappel : Pas de justificatif photo = pas de remboursement de frais.
-            </p>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
+                <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
+                J'ai lu et compris cette section
+            </label>
         </div>
-        <button id="charterBtn" onclick="signCharter()" style="width:100%;padding:14px;background:var(--navy);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px">
-            <i class="fas fa-signature"></i> J'accepte et je signe la charte
+
+        <!-- Section 2 — État des lieux -->
+        <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px">
+            <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-clipboard-check" style="color:var(--emerald);margin-right:6px"></i>2. État des lieux (EDL)</h4>
+            <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
+                <li>Réaliser un EDL complet au <strong>départ ET à l'arrivée</strong> de chaque mission</li>
+                <li>Prendre les <strong>4 photos obligatoires</strong> du véhicule (avant, arrière, côté gauche, côté droit)</li>
+                <li>Faire signer le client ou documenter son absence avec motif</li>
+            </ul>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
+                <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
+                J'ai lu et compris cette section
+            </label>
+        </div>
+
+        <!-- Section 3 — Remboursement des frais -->
+        <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px">
+            <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-receipt" style="color:var(--amber);margin-right:6px"></i>3. Remboursement des frais</h4>
+            <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
+                <li><strong>Péages</strong> : remboursés sur justificatif photo (ticket ou relevé)</li>
+                <li><strong>Carburant</strong> : remboursé sur justificatif photo (ticket station)</li>
+                <li><strong>Train retour</strong> : remboursé à hauteur de <strong>50 € maximum</strong>. Les cartes de réduction (Grand Voyageur, etc.) sont à ma charge</li>
+                <li><strong>Taxi</strong> : participation PolyValences de <strong>20 € maximum</strong> sur justificatif</li>
+                <li><strong>Ne jamais utiliser le badge télépéage ou la carte carburant du client</strong></li>
+            </ul>
+            <div style="padding:10px;background:#fef3c7;border-radius:8px;color:#92400e;font-size:12px;font-weight:600;margin-bottom:12px">
+                <i class="fas fa-exclamation-triangle" style="margin-right:4px"></i> Pas de justificatif photo = pas de remboursement
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
+                <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
+                J'ai lu et compris cette section
+            </label>
+        </div>
+
+        <!-- Section 4 — Conduite & Comportement -->
+        <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px">
+            <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-car" style="color:var(--navy);margin-right:6px"></i>4. Conduite & Comportement</h4>
+            <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
+                <li>Respecter le code de la route et les limitations de vitesse</li>
+                <li>Traiter les véhicules confiés avec le plus grand soin</li>
+                <li>Présentation correcte et ponctualité</li>
+            </ul>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
+                <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
+                J'ai lu et compris cette section
+            </label>
+        </div>
+
+        <!-- Section 5 — Communication -->
+        <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px">
+            <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-phone-alt" style="color:var(--blue);margin-right:6px"></i>5. Communication</h4>
+            <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
+                <li>Signaler immédiatement tout incident à PolyValences</li>
+                <li>Prévenir en cas de retard ou d'imprévu</li>
+                <li>Rester joignable pendant toute la durée de la mission</li>
+            </ul>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
+                <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
+                J'ai lu et compris cette section
+            </label>
+        </div>
+
+        <!-- Section 6 — Paiement -->
+        <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:20px">
+            <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-euro-sign" style="color:var(--emerald);margin-right:6px"></i>6. Paiement</h4>
+            <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
+                <li>Rémunération versée sous <strong>7 jours ouvrés</strong> après validation de la mission et réception des justificatifs</li>
+                <li>Les frais non justifiés ne seront pas remboursés</li>
+            </ul>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
+                <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
+                J'ai lu et compris cette section
+            </label>
+        </div>
+
+        <button id="charterBtn" onclick="signCharter()" disabled style="width:100%;padding:14px;background:var(--slate-300);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:not-allowed;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .3s">
+            <i class="fas fa-signature"></i> Cochez toutes les sections pour valider
         </button>
     </div>
 </main>
@@ -1235,7 +1310,29 @@
     }
 
     // ===== CHARTER =====
+    function updateCharterBtn() {
+        const checks = document.querySelectorAll('.charter-check');
+        const allChecked = [...checks].every(c => c.checked);
+        const btn = document.getElementById('charterBtn');
+        if (allChecked) {
+            btn.disabled = false;
+            btn.style.background = 'var(--navy)';
+            btn.style.cursor = 'pointer';
+            btn.innerHTML = '<i class="fas fa-signature"></i> Je valide et je signe la charte';
+        } else {
+            btn.disabled = true;
+            btn.style.background = 'var(--slate-300)';
+            btn.style.cursor = 'not-allowed';
+            btn.innerHTML = '<i class="fas fa-signature"></i> Cochez toutes les sections pour valider';
+        }
+    }
+
     async function signCharter() {
+        const checks = document.querySelectorAll('.charter-check');
+        if (![...checks].every(c => c.checked)) {
+            showToast('Veuillez cocher toutes les sections.', 'error');
+            return;
+        }
         const token = localStorage.getItem('pv_token');
         const btn = document.getElementById('charterBtn');
         btn.disabled = true;
@@ -1245,7 +1342,7 @@
             const res = await fetch(API + '/api/driver/charter', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                body: JSON.stringify({ version: '2026-02' })
+                body: JSON.stringify({ version: '2026-02-v2' })
             });
 
             if (res.ok) {
@@ -1259,7 +1356,7 @@
             showToast('Erreur réseau.', 'error');
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-signature"></i> J\'accepte et je signe la charte';
+            updateCharterBtn();
         }
     }
 
@@ -1616,12 +1713,12 @@
             return;
         }
 
-        const typeLabels = { 'toll': 'Péage', 'fuel': 'Carburant', 'train_return': 'Train retour', 'other': 'Autre' };
-        const statusLabels = { 'pending': 'En attente', 'approved': 'Validé', 'rejected': 'Rejeté' };
+        const typeLabels = { 'toll': 'Péage', 'fuel': 'Carburant', 'train_return': 'Train retour', 'taxi': 'Taxi', 'other': 'Autre' };
+        const statusLabels = { 'pending': 'En attente', 'approved': 'Validé', 'rejected': 'Rejeté', 'rescan_requested': 'Rescan demandé' };
 
         let html = '';
         expenses.forEach(e => {
-            const statusColor = e.status === 'approved' ? 'var(--emerald)' : e.status === 'rejected' ? 'var(--danger)' : 'var(--amber)';
+            const statusColor = e.status === 'approved' ? 'var(--emerald)' : e.status === 'rejected' ? 'var(--danger)' : e.status === 'rescan_requested' ? 'var(--blue)' : 'var(--amber)';
             html += `
                 <div class="card" style="padding:14px 16px">
                     <div style="display:flex;justify-content:space-between;align-items:center">
@@ -1634,7 +1731,8 @@
                             <span style="font-size:11px;font-weight:600;color:${statusColor}">${statusLabels[e.status] || e.status}</span>
                         </div>
                     </div>
-                    ${e.admin_note ? '<div style="margin-top:8px;font-size:12px;color:var(--danger)"><i class="fas fa-info-circle"></i> ' + e.admin_note + '</div>' : ''}
+                    ${e.admin_note ? '<div style="margin-top:8px;font-size:12px;color:' + (e.status === 'rescan_requested' ? 'var(--blue)' : 'var(--danger)') + '"><i class="fas fa-info-circle"></i> ' + e.admin_note + '</div>' : ''}
+                    ${e.status === 'rescan_requested' ? '<button onclick="openRescanForm(' + e.id + ',' + e.quote_id + ',\'' + e.type + '\',' + e.amount + ')" style="margin-top:8px;width:100%;padding:10px;background:var(--blue);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'DM Sans\',sans-serif"><i class="fas fa-camera-retro" style="margin-right:4px"></i> Renvoyer le justificatif</button>' : ''}
                 </div>`;
         });
 
@@ -1665,12 +1763,14 @@
                 <span style="font-size:13px;font-weight:700">Frais #${id}</span>
                 ${id > 1 ? '<button type="button" onclick="document.getElementById(\'expenseLine' + id + '\').remove()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px"><i class="fas fa-trash"></i></button>' : ''}
             </div>
-            <select id="expType${id}" style="width:100%;padding:10px;border:1px solid var(--slate-200);border-radius:8px;font-size:14px;margin-bottom:8px;font-family:'DM Sans',sans-serif">
+            <select id="expType${id}" onchange="updateExpenseHint(${id})" style="width:100%;padding:10px;border:1px solid var(--slate-200);border-radius:8px;font-size:14px;margin-bottom:8px;font-family:'DM Sans',sans-serif">
                 <option value="fuel">Carburant</option>
                 <option value="toll">Péage</option>
-                <option value="train_return">Train retour</option>
+                <option value="train_return">Train retour (max 50 €)</option>
+                <option value="taxi">Taxi (max 20 €)</option>
                 <option value="other">Autre</option>
             </select>
+            <div id="expHint${id}" style="display:none;font-size:11px;color:var(--blue);margin-bottom:8px;padding:6px 10px;background:#dbeafe;border-radius:6px"></div>
             <input type="number" id="expAmount${id}" placeholder="Montant (€)" step="0.01" min="0.01" style="width:100%;padding:10px;border:1px solid var(--slate-200);border-radius:8px;font-size:14px;margin-bottom:8px;box-sizing:border-box">
             <input type="text" id="expDesc${id}" placeholder="Description (optionnel)" style="width:100%;padding:10px;border:1px solid var(--slate-200);border-radius:8px;font-size:14px;margin-bottom:8px;box-sizing:border-box">
             <label style="display:block;padding:14px;border:2px dashed var(--slate-200);border-radius:8px;text-align:center;cursor:pointer;font-size:13px;color:var(--slate-500)">
@@ -1728,6 +1828,33 @@
 
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-paper-plane"></i> Soumettre mes frais';
+    }
+
+    function updateExpenseHint(lineId) {
+        const type = document.getElementById('expType' + lineId).value;
+        const hint = document.getElementById('expHint' + lineId);
+        if (type === 'taxi') {
+            hint.textContent = 'Participation PolyValences : 20 € maximum sur justificatif.';
+            hint.style.display = 'block';
+        } else if (type === 'train_return') {
+            hint.textContent = 'Remboursement plafonné à 50 €. Les cartes de réduction (Grand Voyageur, etc.) sont à votre charge.';
+            hint.style.display = 'block';
+        } else {
+            hint.style.display = 'none';
+        }
+    }
+
+    function openRescanForm(expenseId, quoteId, type, amount) {
+        currentExpenseQuoteId = quoteId;
+        expenseLineCount = 0;
+        document.getElementById('expenseLines').innerHTML = '';
+        addExpenseLine();
+        // Pré-remplir le type et montant
+        document.getElementById('expType1').value = type;
+        document.getElementById('expAmount1').value = amount;
+        updateExpenseHint(1);
+        document.getElementById('expenseForm').style.display = 'block';
+        switchTab('frais');
     }
 
     // ===== NAVIGATION =====
