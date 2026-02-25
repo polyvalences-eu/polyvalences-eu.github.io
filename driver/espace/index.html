@@ -600,8 +600,8 @@
             </label>
         </div>
 
-        <button id="charterBtn" onclick="signCharter()" disabled style="width:100%;padding:14px;background:var(--slate-300);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:not-allowed;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .3s">
-            <i class="fas fa-signature"></i> Cochez toutes les sections pour valider
+        <button id="charterBtn" onclick="signCharter()" disabled style="width:100%;padding:14px;background:#cbd5e1;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:not-allowed;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .3s">
+            <i class="fas fa-lock"></i> Cochez toutes les sections pour valider
         </button>
     </div>
 </main>
@@ -1325,7 +1325,7 @@
             btn.innerHTML = '<i class="fas fa-check-circle"></i> Je valide et je signe la charte';
         } else {
             btn.disabled = true;
-            btn.style.background = 'var(--slate-300)';
+            btn.style.background = '#cbd5e1';
             btn.style.cursor = 'not-allowed';
             btn.innerHTML = '<i class="fas fa-lock"></i> Cochez toutes les sections pour valider';
         }
