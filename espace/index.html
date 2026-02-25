@@ -3057,6 +3057,7 @@ async function signCharter() {
             const data = await res.json();
             const inv = data.invoice;
             const lines = data.lines || [];
+            const q = data.quote || {};
 
             const statusConf = {
                 'pending': { label: 'En attente de paiement', color: '#dc2626', bg: '#dc262610' },
