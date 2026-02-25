@@ -627,6 +627,15 @@
             </div>
         </div>
     </div>
+    <div class="card" style="margin-top:12px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:12px"><i class="fas fa-map-marker-alt" style="color:var(--blue);margin-right:6px"></i>Adresse de domicile</h3>
+        <p style="font-size:12px;color:var(--slate-500);margin-bottom:10px">Utilisée pour vous proposer les missions les plus proches en priorité.</p>
+        <div style="position:relative">
+            <input type="text" id="profileAddressInput" placeholder="Tapez votre adresse..." style="width:100%;padding:12px 14px;border:1px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;box-sizing:border-box" oninput="handleProfileAddressAc(this)">
+            <div id="profileAddressDropdown" style="display:none;position:absolute;left:0;right:0;top:100%;background:white;border:1px solid var(--slate-200);border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.1)"></div>
+        </div>
+        <div id="profileAddressStatus" style="display:none;margin-top:8px;padding:8px 12px;border-radius:8px;font-size:13px"></div>
+    </div>
     <button onclick="logout()" style="width:100%;padding:14px;background:#fee2e2;color:#b91c1c;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px">
         <i class="fas fa-sign-out-alt" style="margin-right:6px"></i> Se déconnecter
     </button>
@@ -1135,6 +1144,65 @@
         }
     }
 
+    // --- Adresse profil avec autocomplétion ---
+    let profileAcTimeout = null;
+    function handleProfileAddressAc(input) {
+        const q = input.value.trim();
+        const dropdown = document.getElementById('profileAddressDropdown');
+        if (q.length < 3) { dropdown.style.display = 'none'; return; }
+        clearTimeout(profileAcTimeout);
+        profileAcTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch(API + '/api/autocomplete?q=' + encodeURIComponent(q), { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('pv_token') } });
+                const data = await res.json();
+                const items = data.items || [];
+                if (items.length === 0) { dropdown.style.display = 'none'; return; }
+                dropdown.innerHTML = items.map(item =>
+                    '<div style="padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--slate-50)" data-address="' + item.address + '">' + item.address + '</div>'
+                ).join('');
+                dropdown.style.display = 'block';
+                dropdown.querySelectorAll('div').forEach(el => {
+                    el.onclick = () => {
+                        input.value = el.dataset.address;
+                        dropdown.style.display = 'none';
+                        saveProfileAddress(el.dataset.address);
+                    };
+                    el.onmouseover = () => el.style.background = '#eff6ff';
+                    el.onmouseout = () => el.style.background = '';
+                });
+            } catch (err) { console.error('AC error:', err); }
+        }, 350);
+    }
+
+    async function saveProfileAddress(address) {
+        const statusEl = document.getElementById('profileAddressStatus');
+        statusEl.style.display = 'block';
+        statusEl.style.background = '#eff6ff';
+        statusEl.style.color = '#2563eb';
+        statusEl.textContent = 'Enregistrement...';
+        try {
+            const res = await fetch(API + '/api/driver/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('pv_token') },
+                body: JSON.stringify({ driver_address: address })
+            });
+            const data = await res.json();
+            if (data.success) {
+                statusEl.style.background = '#dcfce7';
+                statusEl.style.color = '#166534';
+                statusEl.textContent = data.lat ? 'Adresse enregistrée — position GPS localisée' : 'Adresse enregistrée (GPS non trouvé)';
+            } else {
+                statusEl.style.background = '#fee2e2';
+                statusEl.style.color = '#b91c1c';
+                statusEl.textContent = data.error || 'Erreur';
+            }
+        } catch (err) {
+            statusEl.style.background = '#fee2e2';
+            statusEl.style.color = '#b91c1c';
+            statusEl.textContent = 'Erreur réseau';
+        }
+    }
+
     function setupUI() {
         const initials = (currentUser.first_name[0] + currentUser.last_name[0]).toUpperCase();
         document.getElementById('userInitials').innerText = initials;
@@ -1144,6 +1212,9 @@
         document.getElementById('profilePhone').innerText = currentUser.phone || '—';
         document.getElementById('profileStatus').innerText = statusLabel(currentUser.driver_status);
         document.getElementById('profileStatus').className = 'profile-status ' + currentUser.driver_status;
+        if (currentUser.driver_address) {
+            document.getElementById('profileAddressInput').value = currentUser.driver_address;
+        }
 
         const status = currentUser.driver_status;
 
@@ -1456,10 +1527,11 @@
                             ${m.total_applicants} candidat${m.total_applicants > 1 ? 's' : ''}
                         </span>
                     </div>
-                    <div style="display:flex;gap:12px;align-items:center;font-size:13px;color:var(--slate-500);margin-bottom:4px">
+                    <div style="display:flex;gap:12px;align-items:center;font-size:13px;color:var(--slate-500);margin-bottom:4px;flex-wrap:wrap">
                         <span><i class="fas fa-road" style="margin-right:4px"></i>${m.distance_km || '—'} km</span>
                         <span class="mission-date-badge"><i class="fas fa-calendar-day"></i> ${date}</span>
                         ${m.driver_fee ? '<span style="color:#059669;font-weight:700"><i class="fas fa-euro-sign" style="margin-right:4px"></i>' + m.driver_fee + ' €</span>' : ''}
+                        ${m.distance_from_driver != null ? '<span style="color:#7c3aed;font-weight:600"><i class="fas fa-map-marker-alt" style="margin-right:4px"></i>' + m.distance_from_driver + ' km de vous</span>' : ''}
                     </div>
                     ${m.notes ? '<div style="font-size:12px;color:var(--slate-500);margin-top:6px;padding:8px;background:var(--slate-50);border-radius:6px"><i class="fas fa-info-circle" style="margin-right:4px"></i>' + m.notes + '</div>' : ''}
                     ${expireDate ? '<div class="mission-deadline"><i class="fas fa-hourglass-half"></i> Candidature avant le ' + expireDate + '</div>' : ''}

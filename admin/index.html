@@ -2331,6 +2331,13 @@
             if (m.status === 'open' && m.application_count > 0) {
                 statusHtml += ' <span class="badge badge-blue">' + m.application_count + '</span>';
             }
+            if (m.status === 'open' && m.nearby_drivers_count != null) {
+                const nb = m.nearby_drivers_count || 0;
+                const ne = m.neighbor_drivers_count || 0;
+                if (nb > 0) statusHtml += ' <span style="font-size:10px;color:#166534" title="' + nb + ' driver(s) proche(s)">&#x1F7E2;' + nb + '</span>';
+                else if (ne > 0) statusHtml += ' <span style="font-size:10px;color:#92400e" title="' + ne + ' driver(s) voisin(s)">&#x1F7E0;' + ne + '</span>';
+                else if (m.origin_lat) statusHtml += ' <span style="font-size:10px;color:#dc2626" title="Aucun driver dans la zone">&#x1F534;</span>';
+            }
             if (m.released_by && m.status === 'draft') {
                 statusHtml += ' <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#fee2e2;color:#dc2626;">Abandon : ' + m.released_by + '</span>';
             }
@@ -2609,6 +2616,21 @@
                 <h3 style="font-size:16px; font-weight:700; margin-bottom:16px; color:var(--navy);">
                     <i class="fas fa-users" style="color:var(--blue); margin-right:6px;"></i>Candidatures — Mission #${missionId}
                 </h3>`;
+
+            // Indicateur drivers proches/voisins
+            const mData = adminMissionsData.find(x => x.id === missionId);
+            if (mData && mData.status === 'open') {
+                const nearby = mData.nearby_drivers_count || 0;
+                const neighbor = mData.neighbor_drivers_count || 0;
+                if (nearby > 0 || neighbor > 0) {
+                    html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">';
+                    if (nearby > 0) html += '<span style="background:#dcfce7;color:#166534;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700"><i class="fas fa-map-marker-alt" style="margin-right:4px"></i>' + nearby + ' driver' + (nearby > 1 ? 's' : '') + ' proche' + (nearby > 1 ? 's' : '') + ' (&lt; 80 km)</span>';
+                    if (neighbor > 0) html += '<span style="background:#fef3c7;color:#92400e;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700"><i class="fas fa-map-marker-alt" style="margin-right:4px"></i>' + neighbor + ' driver' + (neighbor > 1 ? 's' : '') + ' voisin' + (neighbor > 1 ? 's' : '') + ' (80-200 km)</span>';
+                    html += '</div>';
+                } else if (mData.origin_lat) {
+                    html += '<div style="background:#fee2e2;color:#dc2626;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:14px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Aucun driver dans la zone</div>';
+                }
+            }
 
             if (apps.length === 0) {
                 html += '<div class="empty-state"><i class="fas fa-inbox" style="color:var(--slate-300)"></i><p>Aucune candidature pour le moment.</p></div>';
