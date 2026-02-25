@@ -466,7 +466,7 @@
         <div class="card" style="padding:16px">
             <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">Déclarer mes frais</h3>
             <div style="background:#fef3c7;border:1px solid #fcd34d;padding:12px;border-radius:8px;font-size:12px;color:#92400e;margin-bottom:16px">
-                <strong>Prenez vos photos directement depuis l'appareil photo du téléphone</strong> (pas via WhatsApp). Le texte du justificatif doit être lisible. Vous pouvez aussi importer un PDF.
+                <strong>Photo ou scan depuis votre mobile.</strong> La qualité doit être très lisible (pas de photo via WhatsApp). Vous pouvez aussi importer un PDF.
             </div>
             <div id="expenseLines"></div>
             <button type="button" onclick="addExpenseLine()" style="width:100%;padding:10px;border:2px dashed var(--slate-200);background:white;color:var(--blue);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin:12px 0">
@@ -511,10 +511,9 @@
         <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px">
             <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-shield-alt" style="color:var(--blue);margin-right:6px"></i>1. Assurance RC Pro & Responsabilité</h4>
             <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
-                <li>Je dispose d'une assurance <strong>Responsabilité Civile Professionnelle (RC Pro)</strong> en cours de validité</li>
+                <li>Vous devez disposer d'une assurance <strong>Responsabilité Civile Professionnelle (RC Pro)</strong> en cours de validité</li>
                 <li>Le convoyage est couvert par l'assurance COVEA de PolyValences</li>
-                <li>En cas de sinistre, je signale immédiatement et fournis un constat amiable</li>
-                <li>Je suis responsable des infractions au code de la route commises pendant la mission</li>
+                <li>En cas de sinistre, vous devez signaler immédiatement et fournir un constat amiable</li>
             </ul>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
                 <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
@@ -540,14 +539,14 @@
         <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px">
             <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-receipt" style="color:var(--amber);margin-right:6px"></i>3. Remboursement des frais</h4>
             <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
-                <li><strong>Péages</strong> : remboursés sur justificatif photo (ticket ou relevé)</li>
-                <li><strong>Carburant</strong> : remboursé sur justificatif photo (ticket station)</li>
-                <li><strong>Train retour</strong> : remboursé à hauteur de <strong>50 € maximum</strong>. Les cartes de réduction (Grand Voyageur, etc.) sont à ma charge</li>
+                <li><strong>Péages</strong> : remboursés sur photo/scan depuis votre mobile (ticket ou relevé). La qualité doit être très lisible</li>
+                <li><strong>Carburant</strong> : remboursé sur photo/scan depuis votre mobile (ticket station). La qualité doit être très lisible</li>
+                <li><strong>Train retour</strong> : remboursé à hauteur de <strong>50 € maximum</strong>. Les cartes de réduction (Grand Voyageur, etc.) sont à votre charge</li>
                 <li><strong>Taxi</strong> : participation PolyValences de <strong>20 € maximum</strong> sur justificatif</li>
                 <li><strong>Ne jamais utiliser le badge télépéage ou la carte carburant du client</strong></li>
             </ul>
             <div style="padding:10px;background:#fef3c7;border-radius:8px;color:#92400e;font-size:12px;font-weight:600;margin-bottom:12px">
-                <i class="fas fa-exclamation-triangle" style="margin-right:4px"></i> Pas de justificatif photo = pas de remboursement
+                <i class="fas fa-exclamation-triangle" style="margin-right:4px"></i> Pas de justificatif (photo/scan lisible depuis votre mobile) = pas de remboursement
             </div>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
                 <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
@@ -555,14 +554,18 @@
             </label>
         </div>
 
-        <!-- Section 4 — Conduite & Comportement -->
+        <!-- Section 4 — Conduite, Infractions & Comportement -->
         <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px">
-            <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-car" style="color:var(--navy);margin-right:6px"></i>4. Conduite & Comportement</h4>
+            <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-car" style="color:var(--navy);margin-right:6px"></i>4. Conduite, Infractions & Comportement</h4>
             <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
                 <li>Respecter le code de la route et les limitations de vitesse</li>
                 <li>Traiter les véhicules confiés avec le plus grand soin</li>
                 <li>Présentation correcte et ponctualité</li>
             </ul>
+            <div style="padding:10px;background:#fee2e2;border-radius:8px;color:#991b1b;font-size:12px;line-height:1.7;margin-bottom:12px">
+                <i class="fas fa-exclamation-circle" style="margin-right:4px"></i>
+                <strong>Toute infraction durant le convoyage</strong>, quel qu'en soit le motif (excès de vitesse, stationnement, contravention, etc.), <strong>sera intégralement à votre charge</strong>. PolyValences procédera à la désignation du conducteur au moment des faits. Les amendes et contraventions vous seront réexpédiées à votre adresse.
+            </div>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
                 <input type="checkbox" class="charter-check" onchange="updateCharterBtn()" style="width:18px;height:18px;accent-color:var(--emerald)">
                 J'ai lu et compris cette section
@@ -587,7 +590,8 @@
         <div style="border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:20px">
             <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px"><i class="fas fa-euro-sign" style="color:var(--emerald);margin-right:6px"></i>6. Paiement</h4>
             <ul style="font-size:13px;color:var(--slate-600);line-height:1.8;padding-left:18px;margin-bottom:12px">
-                <li>Rémunération versée sous <strong>7 jours ouvrés</strong> après validation de la mission et réception des justificatifs</li>
+                <li>Rémunération versée dans un délai de <strong>15 jours</strong> après validation de la mission et réception des justificatifs</li>
+                <li>Le délai moyen de paiement des clients est actuellement de 21 jours</li>
                 <li>Les frais non justifiés ne seront pas remboursés</li>
             </ul>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy)">
