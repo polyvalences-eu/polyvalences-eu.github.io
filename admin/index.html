@@ -3726,16 +3726,53 @@
                 <!-- DOCUMENTS -->
                 <div style="margin-bottom:20px;">
                     <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:10px;"><i class="fas fa-folder-open" style="margin-right:6px;"></i>Documents</div>
-                    ${docs.length === 0 ? '<p style="font-size:13px; color:var(--slate-400);">Aucun document uploadé.</p>' : docs.map(doc => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--slate-100);">
-                        <div>
-                            <div style="font-size:13px; font-weight:600;">${doc.doc_type}</div>
-                            <div style="font-size:11px; color:var(--slate-400);">${doc.created_at ? doc.created_at.substring(0,10) : ''}</div>
+                    ${docs.length === 0 ? '<p style="font-size:13px; color:var(--slate-400);">Aucun document uploadé.</p>' : docs.map(doc => {
+                        const docLabels = {
+                            'id_front': 'Pièce d\'identité (recto)', 'id_back': 'Pièce d\'identité (verso)',
+                            'license_front': 'Permis de conduire (recto)', 'license_back': 'Permis de conduire (verso)',
+                            'address_proof': 'Justificatif de domicile', 'rib': 'RIB', 'kbis': 'Kbis', 'insurance_rc': 'Assurance RC Pro'
+                        };
+                        const label = docLabels[doc.doc_type] || doc.doc_type;
+
+                        // Status badge
+                        const statusMap = {
+                            'approved': ['Validé', '#d1fae5', '#047857'],
+                            'rejected': ['Rejeté', '#fee2e2', '#dc2626'],
+                            'requested': ['Demandé', '#dbeafe', '#2563eb'],
+                            'pending': ['En attente', '#fef3c7', '#b45309']
+                        };
+                        const [statusLabel, statusBg, statusColor] = statusMap[doc.status] || statusMap['pending'];
+
+                        // Expiry badge
+                        let expiryHtml = '';
+                        if (doc.expiry_date) {
+                            const exp = new Date(doc.expiry_date);
+                            const now = new Date();
+                            const daysLeft = Math.ceil((exp - now) / (1000*60*60*24));
+                            if (daysLeft < 0) {
+                                expiryHtml = '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#fee2e2;color:#dc2626;margin-left:6px;">Expiré</span>';
+                            } else if (daysLeft <= 30) {
+                                expiryHtml = '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#fef3c7;color:#b45309;margin-left:6px;">Expire dans ' + daysLeft + 'j</span>';
+                            } else {
+                                expiryHtml = '<span style="font-size:10px;font-weight:600;color:var(--slate-400);margin-left:6px;">Exp. ' + doc.expiry_date.substring(0,10) + '</span>';
+                            }
+                        }
+
+                        return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--slate-100); gap:8px; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:140px;">
+                            <div style="font-size:13px; font-weight:600;">${label}</div>
+                            <div style="font-size:11px; color:var(--slate-400);">${doc.uploaded_at ? doc.uploaded_at.substring(0,10) : (doc.created_at ? doc.created_at.substring(0,10) : '')}${expiryHtml}</div>
+                            ${doc.admin_note ? '<div style="font-size:11px;color:#d97706;margin-top:2px;"><i class="fas fa-sticky-note" style="margin-right:3px;"></i>' + doc.admin_note + '</div>' : ''}
                         </div>
-                        <span style="font-size:11px; font-weight:700; padding:3px 8px; border-radius:4px; background:${doc.status === 'approved' ? '#d1fae5' : doc.status === 'rejected' ? '#fee2e2' : '#fef3c7'}; color:${doc.status === 'approved' ? '#047857' : doc.status === 'rejected' ? '#dc2626' : '#b45309'};">
-                            ${doc.status === 'approved' ? 'Validé' : doc.status === 'rejected' ? 'Rejeté' : 'En attente'}
-                        </span>
-                    </div>`).join('')}
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <span style="font-size:11px; font-weight:700; padding:3px 8px; border-radius:4px; background:${statusBg}; color:${statusColor};">${statusLabel}</span>
+                            ${doc.r2_path ? '<button onclick="viewDriverDoc(\'' + doc.r2_path + '\')" style="background:none;border:1px solid var(--slate-200);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;color:var(--blue);font-weight:600;" title="Voir le document"><i class="fas fa-eye"></i></button>' : ''}
+                            <button onclick="requestSingleDoc(${driverId},'${doc.doc_type}')" style="background:none;border:1px solid #d97706;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;color:#d97706;font-weight:600;" title="Demander nouveau"><i class="fas fa-redo"></i></button>
+                            <input type="date" value="${doc.expiry_date ? doc.expiry_date.substring(0,10) : ''}" onchange="updateDocExpiry(${driverId},${doc.id},this.value)" style="font-size:11px;padding:3px 6px;border:1px solid var(--slate-200);border-radius:6px;font-family:'DM Sans',sans-serif;color:var(--slate-600);max-width:130px;" title="Date d'expiration">
+                        </div>
+                    </div>`;
+                    }).join('')}
                 </div>
 
                 <!-- ACTIONS REVIEW -->
@@ -3760,10 +3797,16 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div style="font-size:13px; font-weight:700; color:#047857;">
                             <i class="fas fa-check-circle" style="margin-right:4px;"></i> Chauffeur validé
+                            ${d.driver_charter_signed_at ? '<span style="font-size:11px;font-weight:600;color:#059669;margin-left:8px;"><i class="fas fa-file-signature"></i> Charte signée</span>' : '<span style="font-size:11px;font-weight:600;color:#d97706;margin-left:8px;"><i class="fas fa-exclamation-triangle"></i> Charte non signée</span>'}
                         </div>
-                        <button onclick="reviewDriver(${driverId},'suspend')" style="background:none; border:1px solid var(--red); color:var(--red); padding:8px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
-                            <i class="fas fa-ban"></i> Suspendre
-                        </button>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button onclick="resetCharter(${driverId})" style="background:none; border:1px solid #d97706; color:#d97706; padding:8px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
+                                <i class="fas fa-undo"></i> Réinitialiser charte
+                            </button>
+                            <button onclick="reviewDriver(${driverId},'suspend')" style="background:none; border:1px solid var(--red); color:var(--red); padding:8px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
+                                <i class="fas fa-ban"></i> Suspendre
+                            </button>
+                        </div>
                     </div>
                 </div>`}`;
 
@@ -3811,6 +3854,71 @@
                 showToast(data.message || 'Action effectuée !');
                 openDriverDetail(driverId);
                 loadAdminDrivers();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) { showToast('Erreur de connexion', 'error'); }
+    }
+
+    function viewDriverDoc(r2Path) {
+        window.open(API + '/api/r2/' + r2Path + '?token=' + authToken, '_blank');
+    }
+
+    async function requestSingleDoc(driverId, docType) {
+        const docLabels = {
+            'id_front': 'Pièce d\'identité (recto)', 'id_back': 'Pièce d\'identité (verso)',
+            'license_front': 'Permis de conduire (recto)', 'license_back': 'Permis de conduire (verso)',
+            'address_proof': 'Justificatif de domicile', 'rib': 'RIB', 'kbis': 'Kbis', 'insurance_rc': 'Assurance RC Pro'
+        };
+        const label = docLabels[docType] || docType;
+        const note = prompt('Note pour le chauffeur (raison de la demande de ' + label + ') :');
+        if (note === null) return;
+
+        try {
+            const res = await fetch(API + '/api/admin/drivers/' + driverId + '/request-document', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ doc_type: docType, note: note || null })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Document demandé !');
+                openDriverDetail(driverId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) { showToast('Erreur de connexion', 'error'); }
+    }
+
+    async function updateDocExpiry(driverId, docId, expiryDate) {
+        try {
+            const res = await fetch(API + '/api/admin/drivers/' + driverId + '/documents/' + docId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ expiry_date: expiryDate || null })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Expiration mise à jour');
+                openDriverDetail(driverId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (err) { showToast('Erreur de connexion', 'error'); }
+    }
+
+    async function resetCharter(driverId) {
+        if (!confirm('Réinitialiser la charte ? Le chauffeur devra la re-signer.')) return;
+        try {
+            const res = await fetch(API + '/api/admin/drivers/' + driverId + '/request-document', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ reset_charter: true })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Charte réinitialisée !');
+                openDriverDetail(driverId);
             } else {
                 showToast(data.error || 'Erreur', 'error');
             }

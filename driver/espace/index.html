@@ -1234,6 +1234,7 @@
     function renderDocs() {
         const container = document.getElementById('docsContainer');
         const allDocs = [...DOC_TYPES, ...DOC_OPTIONAL];
+        const isApproved = currentUser && currentUser.driver_status === 'approved';
         let html = '';
 
         allDocs.forEach(docDef => {
@@ -1245,12 +1246,18 @@
             html += '<h4>' + docDef.label + (isOptional ? ' <span style="color:var(--slate-500);font-size:11px;font-weight:400">(optionnel)</span>' : '') + '</h4>';
             html += '<p>' + docDef.desc + '</p>';
             if (uploaded && uploaded.admin_note) {
-                html += '<p style="color:#dc2626;font-size:11px;margin-top:4px"><i class="fas fa-info-circle"></i> ' + uploaded.admin_note + '</p>';
+                html += '<p style="color:' + (uploaded.status === 'requested' ? '#d97706' : '#dc2626') + ';font-size:11px;margin-top:4px"><i class="fas fa-info-circle"></i> ' + uploaded.admin_note + '</p>';
             }
             html += '</div>';
 
             if (uploaded) {
-                if (uploaded.status === 'approved') {
+                if (uploaded.status === 'requested') {
+                    // Admin a demandé ce document → bouton orange "Renvoyer"
+                    html += '<label class="btn-upload" style="background:#d97706;"><i class="fas fa-exclamation-circle"></i> Demandé — Renvoyer<input type="file" accept="image/*,.pdf" onchange="uploadDoc(\'' + docDef.type + '\', this)" hidden></label>';
+                } else if (uploaded.status === 'approved' && isApproved) {
+                    // Driver approuvé + doc approuvé → cadenas vert
+                    html += '<span class="badge-ok"><i class="fas fa-lock" style="margin-right:4px;"></i> Validé</span>';
+                } else if (uploaded.status === 'approved') {
                     html += '<span class="badge-ok"><i class="fas fa-check"></i> Validé</span>';
                 } else if (uploaded.status === 'rejected') {
                     html += '<label class="btn-upload btn-danger"><i class="fas fa-redo"></i> Renvoyer<input type="file" accept="image/*,.pdf" onchange="uploadDoc(\'' + docDef.type + '\', this)" hidden></label>';
@@ -1258,7 +1265,12 @@
                     html += '<span class="badge-pending"><i class="fas fa-clock"></i> Envoyé</span>';
                 }
             } else {
-                html += '<label class="btn-upload"><i class="fas fa-upload"></i> Uploader<input type="file" accept="image/*,.pdf" onchange="uploadDoc(\'' + docDef.type + '\', this)" hidden></label>';
+                if (isApproved) {
+                    // Driver approuvé mais doc jamais uploadé (optionnel) → pas de bouton
+                    html += '<span style="font-size:12px;color:var(--slate-400);"><i class="fas fa-minus-circle"></i> Non fourni</span>';
+                } else {
+                    html += '<label class="btn-upload"><i class="fas fa-upload"></i> Uploader<input type="file" accept="image/*,.pdf" onchange="uploadDoc(\'' + docDef.type + '\', this)" hidden></label>';
+                }
             }
 
             html += '</div>';
@@ -1572,7 +1584,7 @@
                         </div>
                         ${m.mission_notes ? '<div style="margin-top:8px; padding:8px 10px; background:white; border-radius:6px; border:1px solid var(--slate-200); font-size:12px; color:var(--slate-600);"><i class="fas fa-sticky-note" style="margin-right:4px; color:var(--slate-400);"></i>' + m.mission_notes + '</div>' : ''}
                     </div>` : ''}
-                    ${m.status === 'assigned' && !m.accepted_at ? '<div style="margin-top:12px;padding:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;font-size:14px;font-weight:700;color:#dc2626;text-align:center;margin-bottom:8px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Date impérative : ' + date + '</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn-start-mission" onclick="event.stopPropagation();acceptMission(' + m.id + ', this)" style="background:#059669;flex:1"><i class="fas fa-check"></i> Accepter la mission</button><button class="btn-start-mission" onclick="event.stopPropagation();refuseMission(' + m.id + ', this)" style="background:#dc2626;flex:0 0 auto;padding:12px 18px"><i class="fas fa-times"></i> Refuser</button></div>' : ''}
+                    ${m.status === 'assigned' && !m.accepted_at ? '<div style="margin-top:12px;padding:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;font-size:14px;font-weight:700;color:#dc2626;text-align:center;margin-bottom:8px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Date impérative : ' + date + '</div><div style="margin-top:8px"><button class="btn-start-mission" onclick="event.stopPropagation();acceptMission(' + m.id + ', this)" style="background:#059669;width:100%;font-size:16px;padding:14px 20px"><i class="fas fa-check" style="margin-right:6px"></i> Accepter la mission</button><button class="btn-start-mission" onclick="event.stopPropagation();refuseMission(' + m.id + ', this)" style="background:none;border:1px solid #dc2626;color:#dc2626;width:100%;margin-top:12px;font-size:13px;padding:10px 16px"><i class="fas fa-times" style="margin-right:4px"></i> Refuser la mission</button></div>' : ''}
                     ${m.status === 'assigned' && m.accepted_at ? '<button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button>' : ''}
                     ${m.status === 'in_progress' ? '<button class="btn-start-mission" onclick="event.stopPropagation();openEDL(' + m.id + ', \'departure\')" style="background:var(--amber)"><i class="fas fa-clipboard-check"></i> État des lieux de départ</button>' : ''}
                     ${m.status === 'edl_departure_done' ? '<button class="btn-start-mission" onclick="event.stopPropagation();goInTransit(' + m.id + ', this)" style="background:var(--amber)"><i class="fas fa-truck"></i> Confirmer le départ — En route</button>' : ''}
