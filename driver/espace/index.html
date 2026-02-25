@@ -1585,7 +1585,7 @@
                         ${m.mission_notes ? '<div style="margin-top:8px; padding:8px 10px; background:white; border-radius:6px; border:1px solid var(--slate-200); font-size:12px; color:var(--slate-600);"><i class="fas fa-sticky-note" style="margin-right:4px; color:var(--slate-400);"></i>' + m.mission_notes + '</div>' : ''}
                     </div>` : ''}
                     ${m.status === 'assigned' && !m.accepted_at ? '<div style="margin-top:12px;padding:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;font-size:14px;font-weight:700;color:#dc2626;text-align:center;margin-bottom:8px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Date impérative : ' + date + '</div><div style="margin-top:8px"><button class="btn-start-mission" onclick="event.stopPropagation();acceptMission(' + m.id + ', this)" style="background:#059669;width:100%;font-size:16px;padding:14px 20px"><i class="fas fa-check" style="margin-right:6px"></i> Accepter la mission</button><button class="btn-start-mission" onclick="event.stopPropagation();refuseMission(' + m.id + ', this)" style="background:none;border:1px solid #dc2626;color:#dc2626;width:100%;margin-top:12px;font-size:13px;padding:10px 16px"><i class="fas fa-times" style="margin-right:4px"></i> Refuser la mission</button></div>' : ''}
-                    ${m.status === 'assigned' && m.accepted_at ? '<div style="margin-top:12px;padding:10px;background:#dbeafe;color:#1e40af;border-radius:8px;font-size:13px;font-weight:700;text-align:center;margin-bottom:8px"><i class="fas fa-calendar-check" style="margin-right:4px"></i>Mission à venir — Préparez votre course</div><button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button><button class="btn-start-mission" onclick="event.stopPropagation();releaseMission(' + m.id + ', this)" style="background:none;border:1px solid #dc2626;color:#dc2626;width:100%;margin-top:12px;font-size:12px;padding:8px 16px"><i class="fas fa-undo" style="margin-right:4px"></i> Je ne peux plus assurer cette mission</button>' : ''}
+                    ${m.status === 'assigned' && m.accepted_at ? '<div style="margin-top:12px;padding:10px;background:#dbeafe;color:#1e40af;border-radius:8px;font-size:13px;font-weight:700;text-align:center;margin-bottom:8px"><i class="fas fa-calendar-check" style="margin-right:4px"></i>Mission à venir — Préparez votre course</div><button class="btn-start-mission" onclick="event.stopPropagation();startMission(' + m.id + ', this)"><i class="fas fa-play"></i> Démarrer la mission</button><button class="btn-start-mission" onclick="event.stopPropagation();releaseMission(' + m.id + ', \'' + (m.accepted_at || '') + '\', this)" style="background:none;border:1px solid #dc2626;color:#dc2626;width:100%;margin-top:12px;font-size:12px;padding:8px 16px"><i class="fas fa-undo" style="margin-right:4px"></i> Je ne peux plus assurer cette mission</button>' : ''}
                     ${m.status === 'in_progress' ? '<button class="btn-start-mission" onclick="event.stopPropagation();openEDL(' + m.id + ', \'departure\')" style="background:var(--amber)"><i class="fas fa-clipboard-check"></i> État des lieux de départ</button>' : ''}
                     ${m.status === 'edl_departure_done' ? '<button class="btn-start-mission" onclick="event.stopPropagation();goInTransit(' + m.id + ', this)" style="background:var(--amber)"><i class="fas fa-truck"></i> Confirmer le départ — En route</button>' : ''}
                     ${m.status === 'in_transit' ? '<button class="btn-start-mission" onclick="event.stopPropagation();openEDL(' + m.id + ', \'arrival\')" style="background:var(--emerald)"><i class="fas fa-clipboard-check"></i> État des lieux d\'arrivée</button>' : ''}
@@ -1674,8 +1674,13 @@
         }
     }
 
-    async function releaseMission(missionId, btn) {
-        if (!confirm('Vous ne pourrez plus assurer cette mission. L\'admin sera notifié pour réattribuer un autre chauffeur. Confirmer ?')) return;
+    async function releaseMission(missionId, acceptedAt, btn) {
+        const hoursElapsed = acceptedAt ? (Date.now() - new Date(acceptedAt + 'Z').getTime()) / (1000 * 60 * 60) : 0;
+        const isLate = hoursElapsed >= 72;
+        const msg = isLate
+            ? '⚠️ ATTENTION : Cette action aura des conséquences dans l\'organisation des missions et un impact pour le client.\n\nVous avez accepté cette mission il y a plus de 72h. Êtes-vous sûr de vouloir la rendre ?'
+            : 'Vous ne pourrez plus assurer cette mission. L\'admin sera notifié pour réattribuer un autre chauffeur. Confirmer ?';
+        if (!confirm(msg)) return;
         const token = localStorage.getItem('pv_token');
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';

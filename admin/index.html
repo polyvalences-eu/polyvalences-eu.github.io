@@ -1139,6 +1139,7 @@
             <button class="filter-btn" onclick="filterMissions('in_progress',this)">En cours</button>
             <button class="filter-btn" onclick="filterMissions('completed',this)">Terminées</button>
             <button class="filter-btn" onclick="filterMissions('draft',this)">Brouillons</button>
+            <button class="filter-btn" onclick="filterMissions('abandoned',this)">Abandons</button>
             <button class="filter-btn" onclick="filterMissions('late',this)">En retard</button>
             <input type="text" class="search-input" id="missionsSearch" placeholder="Rechercher (devis, client, trajet)..." oninput="renderMissionsTable()">
         </div>
@@ -1442,6 +1443,7 @@
             if (d.contested_edl > 0) actions.push({ icon: 'fa-exclamation-triangle', color: '#d97706', bg: '#fef3c7', label: `${d.contested_edl} contestation(s) EDL à traiter`, count: d.contested_edl, tab: 'edl', filter: 'contested' });
             if (d.upcoming_no_driver > 0) actions.push({ icon: 'fa-calendar-times', color: '#d97706', bg: '#fef3c7', label: `${d.upcoming_no_driver} mission(s) à venir sans chauffeur`, count: d.upcoming_no_driver, tab: 'missions', filter: 'upcoming' });
             if (d.pending_expenses > 0) actions.push({ icon: 'fa-receipt', color: '#d97706', bg: '#fef3c7', label: `${d.pending_expenses} frais chauffeur en attente`, count: d.pending_expenses, tab: 'drivers', filter: null });
+            if (d.abandoned_missions > 0) actions.push({ icon: 'fa-exclamation-circle', color: '#dc2626', bg: '#fee2e2', label: `${d.abandoned_missions} mission(s) abandonnée(s) à réattribuer`, count: d.abandoned_missions, tab: 'missions', filter: 'abandoned' });
             if (d.late_missions_today > 0) actions.push({ icon: 'fa-clock', color: '#dc2626', bg: '#fee2e2', label: `${d.late_missions_today} mission(s) du jour non démarrée(s)`, count: d.late_missions_today, tab: 'missions', filter: 'late' });
 
             const container = document.getElementById('dashboardActions');
@@ -2273,6 +2275,7 @@
         else if (missionsCurrentFilter === 'in_progress') filtered = filtered.filter(m => ['in_progress','edl_departure_done','in_transit','edl_arrival_done'].includes(m.status));
         else if (missionsCurrentFilter === 'completed') filtered = filtered.filter(m => m.status === 'completed');
         else if (missionsCurrentFilter === 'draft') filtered = filtered.filter(m => m.status === 'draft');
+        else if (missionsCurrentFilter === 'abandoned') filtered = filtered.filter(m => m.status === 'draft' && m.released_by);
         else if (missionsCurrentFilter === 'late') filtered = filtered.filter(m => m.confirmed_date && m.confirmed_date <= today && ['draft','assigned'].includes(m.status));
 
         // Recherche texte
@@ -2323,10 +2326,13 @@
                 driverHtml = '<span style="color:var(--blue);font-weight:600;">' + m.application_count + ' candidat(s)</span>';
             }
 
-            // Statut badge + candidatures
+            // Statut badge + candidatures + abandon
             let statusHtml = '<span class="badge ' + st.badge + '">' + st.label + '</span>';
             if (m.status === 'open' && m.application_count > 0) {
                 statusHtml += ' <span class="badge badge-blue">' + m.application_count + '</span>';
+            }
+            if (m.released_by && m.status === 'draft') {
+                statusHtml += ' <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#fee2e2;color:#dc2626;">Abandon : ' + m.released_by + '</span>';
             }
 
             // Action button
@@ -3720,6 +3726,33 @@
                             </button>
                         `).join('')}
                         <span style="font-size:14px; font-weight:700; color:#92400e; margin-left:8px;">${score}/5</span>
+                    </div>
+                </div>
+
+                <!-- STATS MISSIONS -->
+                <div style="padding:16px 18px; background:var(--slate-50); border-radius:10px; margin-bottom:20px;">
+                    <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:12px;"><i class="fas fa-chart-bar" style="margin-right:6px;"></i>Historique missions</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:12px;">
+                        <div style="flex:1; min-width:80px; text-align:center; padding:10px; background:white; border-radius:8px; border:1px solid var(--slate-200);">
+                            <div style="font-size:20px; font-weight:800; color:var(--navy);">${data.stats.total_missions || 0}</div>
+                            <div style="font-size:10px; font-weight:600; color:var(--slate-400); text-transform:uppercase;">Total</div>
+                        </div>
+                        <div style="flex:1; min-width:80px; text-align:center; padding:10px; background:white; border-radius:8px; border:1px solid var(--slate-200);">
+                            <div style="font-size:20px; font-weight:800; color:#059669;">${data.stats.completed_missions || 0}</div>
+                            <div style="font-size:10px; font-weight:600; color:var(--slate-400); text-transform:uppercase;">Terminées</div>
+                        </div>
+                        <div style="flex:1; min-width:80px; text-align:center; padding:10px; background:white; border-radius:8px; border:1px solid ${(d.missions_refused_count || 0) > 0 ? '#fca5a5' : 'var(--slate-200)'};">
+                            <div style="font-size:20px; font-weight:800; color:${(d.missions_refused_count || 0) > 0 ? '#dc2626' : 'var(--slate-400)'};">${d.missions_refused_count || 0}</div>
+                            <div style="font-size:10px; font-weight:600; color:var(--slate-400); text-transform:uppercase;">Refusées</div>
+                        </div>
+                        <div style="flex:1; min-width:80px; text-align:center; padding:10px; background:white; border-radius:8px; border:1px solid var(--slate-200);">
+                            <div style="font-size:20px; font-weight:800; color:#d97706;">${d.missions_released_early_count || 0}</div>
+                            <div style="font-size:10px; font-weight:600; color:var(--slate-400); text-transform:uppercase;">Rendues &lt;72h</div>
+                        </div>
+                        <div style="flex:1; min-width:80px; text-align:center; padding:10px; background:white; border-radius:8px; border:1px solid ${(d.missions_released_late_count || 0) > 0 ? '#fca5a5' : 'var(--slate-200)'};">
+                            <div style="font-size:20px; font-weight:800; color:${(d.missions_released_late_count || 0) > 0 ? '#dc2626' : 'var(--slate-400)'};">${d.missions_released_late_count || 0}</div>
+                            <div style="font-size:10px; font-weight:600; color:var(--slate-400); text-transform:uppercase;">Rendues &gt;72h</div>
+                        </div>
                     </div>
                 </div>
 
