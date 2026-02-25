@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politique de confidentialité | PolyValences</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="canonical" href="https://polyvalences.eu/confidentialite/">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7W30WDQNB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z7W30WDQNB');
+    </script>
+    <meta name="description" content="Politique de confidentialité de PolyValences. Informations sur la collecte, le traitement et la protection de vos données personnelles conformément au RGPD.">
+    <meta name="robots" content="noindex, follow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1a2e;
+            --navy-light: #132743;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --blue-pale: #dbeafe;
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --emerald: #059669;
+            --amber: #d97706;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --radius: 12px;
+            --radius-lg: 20px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ===== NAV ===== */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--slate-200);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0 24px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-link {
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            color: var(--slate-600); transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--blue); }
+        .nav-link.active { color: var(--blue); font-weight: 700; }
+        .nav-email {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--navy);
+            text-decoration: none;
+        }
+        .nav-email i { color: var(--blue); font-size: 12px; }
+        .nav-email:hover { color: var(--blue); }
+        .nav-cta {
+            background: var(--navy); color: white;
+            padding: 10px 22px; border-radius: 10px;
+            font-size: 14px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+            border: none; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .nav-cta:hover { background: var(--blue); }
+        .nav-sep { width: 1px; height: 24px; background: var(--slate-200); }
+
+        /* Burger */
+        .nav-burger {
+            display: none; width: 44px; height: 44px;
+            border: 1px solid var(--slate-200); border-radius: 10px;
+            background: white; cursor: pointer;
+            align-items: center; justify-content: center;
+            font-size: 18px; color: var(--slate-700);
+            transition: all 0.2s;
+        }
+        .nav-burger:hover { background: var(--slate-50); }
+
+        /* Mobile menu */
+        .mobile-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(11,26,46,0.6); backdrop-filter: blur(4px);
+        }
+        .mobile-overlay.active { display: block; }
+        .mobile-menu {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 300px; max-width: 85vw; z-index: 201;
+            background: white; padding: 24px;
+            box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .mobile-menu-close {
+            width: 40px; height: 40px; border-radius: 10px;
+            border: 1px solid var(--slate-200); background: white;
+            cursor: pointer; font-size: 16px; color: var(--slate-500);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .mobile-menu-close:hover { background: var(--slate-50); }
+        .mobile-menu-links { list-style: none; margin-bottom: 32px; }
+        .mobile-menu-links li { border-bottom: 1px solid var(--slate-100); }
+        .mobile-menu-links a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 4px; font-size: 15px; font-weight: 500;
+            color: var(--slate-700); text-decoration: none;
+            width: 100%; transition: color 0.2s;
+        }
+        .mobile-menu-links a:hover { color: var(--blue); }
+        .mobile-menu-links i { width: 20px; text-align: center; color: var(--slate-400); font-size: 14px; }
+        .mobile-menu-contact {
+            background: var(--slate-50); border-radius: var(--radius);
+            padding: 20px; text-align: center; margin-bottom: 16px;
+        }
+        .mobile-menu-contact p { font-size: 12px; color: var(--slate-400); margin-bottom: 8px; }
+        .mobile-menu-contact a { font-size: 14px; font-weight: 700; color: var(--blue); text-decoration: none; }
+        .mobile-menu-cta {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px; background: var(--navy); color: white;
+            border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .mobile-menu-cta:hover { background: var(--blue); }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-header {
+            background: var(--navy); padding: 140px 24px 60px; text-align: center;
+        }
+        .page-header h1 {
+            color: white; font-size: clamp(28px, 4vw, 42px); font-weight: 800;
+            margin-bottom: 12px;
+        }
+        .page-header p {
+            color: var(--slate-400); font-size: 16px; max-width: 600px; margin: 0 auto;
+        }
+        .page-breadcrumb {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 24px; font-size: 13px;
+        }
+        .page-breadcrumb a { color: var(--blue-light); text-decoration: none; }
+        .page-breadcrumb a:hover { text-decoration: underline; }
+        .page-breadcrumb span { color: var(--slate-400); }
+
+        .legal-content {
+            max-width: 800px; margin: 0 auto; padding: 60px 24px 80px;
+        }
+        .legal-content h2 {
+            font-size: 24px; color: var(--slate-900); margin-top: 48px; margin-bottom: 16px;
+            padding-bottom: 8px; border-bottom: 2px solid var(--blue-pale);
+        }
+        .legal-content h2:first-child { margin-top: 0; }
+        .legal-content h3 {
+            font-size: 18px; color: var(--slate-800); margin-top: 28px; margin-bottom: 12px;
+            font-family: 'DM Sans', sans-serif; font-weight: 700;
+        }
+        .legal-content p {
+            margin-bottom: 16px; font-size: 15px; line-height: 1.8; color: var(--slate-600);
+        }
+        .legal-content ul, .legal-content ol {
+            margin-bottom: 16px; padding-left: 24px;
+        }
+        .legal-content ul li, .legal-content ol li {
+            font-size: 15px; line-height: 1.8; color: var(--slate-600); margin-bottom: 6px;
+        }
+        .legal-content a { color: var(--blue); text-decoration: none; }
+        .legal-content a:hover { text-decoration: underline; }
+        .legal-content strong { color: var(--slate-800); }
+        .legal-content .info-block {
+            background: var(--slate-50); border-left: 4px solid var(--blue);
+            padding: 20px 24px; border-radius: 0 var(--radius) var(--radius) 0;
+            margin-bottom: 24px;
+        }
+        .legal-content .info-block p { margin-bottom: 4px; }
+        .legal-content .info-block p:last-child { margin-bottom: 0; }
+        .legal-content .last-updated {
+            font-size: 13px; color: var(--slate-400); font-style: italic; margin-bottom: 32px;
+        }
+        .legal-content table {
+            width: 100%; border-collapse: collapse; margin-bottom: 24px;
+            font-size: 14px;
+        }
+        .legal-content table th {
+            background: var(--navy); color: white; padding: 12px 16px;
+            text-align: left; font-weight: 600; font-family: 'DM Sans', sans-serif;
+        }
+        .legal-content table th:first-child { border-radius: var(--radius) 0 0 0; }
+        .legal-content table th:last-child { border-radius: 0 var(--radius) 0 0; }
+        .legal-content table td {
+            padding: 12px 16px; border-bottom: 1px solid var(--slate-200);
+            color: var(--slate-600); vertical-align: top;
+        }
+        .legal-content table tr:last-child td { border-bottom: none; }
+        .legal-content table tr:nth-child(even) td { background: var(--slate-50); }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--navy); color: var(--slate-400);
+            padding: 64px 24px 32px;
+        }
+        .footer-inner { max-width: 1200px; margin: 0 auto; }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr;
+            gap: 48px; margin-bottom: 48px;
+        }
+        .footer-desc { font-size: 14px; max-width: 320px; line-height: 1.7; }
+        .footer h4 {
+            color: white; font-size: 14px; font-weight: 700;
+            margin-bottom: 16px; font-family: 'DM Sans', sans-serif;
+        }
+        .footer ul { list-style: none; }
+        .footer ul li { margin-bottom: 8px; }
+        .footer ul li a, .footer ul li span {
+            color: var(--slate-400); font-size: 13px;
+            text-decoration: none; transition: color 0.2s;
+        }
+        .footer ul li a:hover { color: white; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 24px;
+            display: flex; justify-content: space-between;
+            font-size: 12px; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-bottom a {
+            color: var(--slate-400); text-decoration: none;
+            margin-left: 16px;
+        }
+        .footer-bottom a:hover { color: white; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .nav-links { display: none !important; }
+            .nav-burger { display: flex; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; }
+            .legal-content table { font-size: 13px; }
+            .legal-content table th, .legal-content table td { padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">
+            <img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:56px;width:auto;">
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Accueil</a>
+            <a href="/convoyage/" class="nav-link">Convoyage</a>
+            <a href="/conciergerie/" class="nav-link">Conciergerie</a>
+            <a href="/stockage/" class="nav-link">Stockage</a>
+            <a href="/gestion-flotte/" class="nav-link">Gestion de flotte</a>
+            <div class="nav-sep"></div>
+            <a href="mailto:support@polyvalences.eu" class="nav-email">
+                <i class="fas fa-envelope"></i> support@polyvalences.eu
+            </a>
+            <a href="/devis/" class="nav-cta">
+                <i class="fas fa-calculator"></i> Devis en ligne
+            </a>
+        </div>
+        <button class="nav-burger" onclick="openMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+        <a href="/"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;"></a>
+        <button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <ul class="mobile-menu-links">
+        <li><a href="/" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Accueil</a></li>
+        <li><a href="/convoyage/" onclick="closeMobileMenu()"><i class="fas fa-truck"></i> Convoyage</a></li>
+        <li><a href="/conciergerie/" onclick="closeMobileMenu()"><i class="fas fa-concierge-bell"></i> Conciergerie</a></li>
+        <li><a href="/stockage/" onclick="closeMobileMenu()"><i class="fas fa-warehouse"></i> Stockage</a></li>
+        <li><a href="/gestion-flotte/" onclick="closeMobileMenu()"><i class="fas fa-chart-line"></i> Gestion de flotte</a></li>
+        <li><a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <div class="mobile-menu-contact">
+        <p>Besoin d'aide ?</p>
+        <a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope" style="margin-right:6px"></i>support@polyvalences.eu</a>
+    </div>
+    <a href="/devis/" class="mobile-menu-cta">
+        <i class="fas fa-calculator"></i> Devis en ligne
+    </a>
+</div>
+
+<!-- ===== PAGE HEADER ===== -->
+<header class="page-header">
+    <div class="page-breadcrumb">
+        <a href="/">Accueil</a>
+        <span>/</span>
+        <span>Politique de confidentialité</span>
+    </div>
+    <h1>Politique de confidentialité</h1>
+    <p>Protection de vos données personnelles conformément au RGPD</p>
+</header>
+
+<!-- ===== CONTENT ===== -->
+<main class="legal-content">
+    <p class="last-updated">Dernière mise à jour : février 2026</p>
+
+    <p>PolyValences respecte votre vie privée. Cette page vous explique simplement comment nous utilisons vos données lorsque vous utilisez notre site et nos services.</p>
+
+    <h2>Qui sommes-nous ?</h2>
+    <div class="info-block">
+        <p><strong>PolyValences</strong></p>
+        <p>1 Place Paul Verlaine, 92100 Boulogne-Billancourt, France</p>
+        <p>Email : <a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a></p>
+    </div>
+
+    <h2>Quelles données collectons-nous ?</h2>
+    <p>Lorsque vous créez un compte ou utilisez nos services, nous collectons :</p>
+    <ul>
+        <li>Vos informations de contact (nom, email, adresse)</li>
+        <li>Les informations relatives à vos véhicules (marque, modèle, immatriculation)</li>
+        <li>Les données liées à vos commandes (devis, factures, missions)</li>
+    </ul>
+    <p>Pour les chauffeurs-convoyeurs, nous collectons également les documents nécessaires à l'exercice de l'activité (permis, pièce d'identité).</p>
+
+    <h2>Pourquoi utilisons-nous vos données ?</h2>
+    <p>Vos données servent uniquement à :</p>
+    <ul>
+        <li>Gérer votre compte et vos commandes</li>
+        <li>Organiser les missions de convoyage, conciergerie et stockage</li>
+        <li>Établir les devis et factures</li>
+        <li>Vous envoyer les notifications liées à vos prestations</li>
+    </ul>
+    <p>Vos données ne sont jamais vendues à des tiers.</p>
+
+    <h2>Cookies</h2>
+    <p>Notre site utilise Google Analytics pour mesurer la fréquentation (données anonymes). Vous pouvez désactiver les cookies dans les paramètres de votre navigateur sans impact sur le fonctionnement du site.</p>
+
+    <h2>Vos droits</h2>
+    <p>Conformément au RGPD, vous pouvez à tout moment demander l'accès, la modification ou la suppression de vos données en nous contactant à <a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a>.</p>
+
+    <h2>Hébergement</h2>
+    <p>Le site est hébergé par Cloudflare (États-Unis). Les communications sont chiffrées (HTTPS). Vos mots de passe sont stockés de manière sécurisée et ne sont jamais visibles en clair.</p>
+
+    <p style="margin-top:48px;padding-top:24px;border-top:1px solid var(--slate-200);">
+        Une question ? Écrivez-nous : <a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a>
+    </p>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div>
+                <a href="/"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:48px;width:auto;margin-bottom:12px;"></a>
+                <p class="footer-desc">Spécialiste du convoyage automobile, de la conciergerie et de la gestion de flotte depuis 2009. France & Europe.</p>
+            </div>
+            <div>
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="/convoyage/">Convoyage automobile</a></li>
+                    <li><a href="/conciergerie/">Conciergerie automobile</a></li>
+                    <li><a href="/stockage/">Stockage de véhicules</a></li>
+                    <li><a href="/gestion-flotte/">Gestion de flotte</a></li>
+                    <li><a href="/devis/">Devis en ligne</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a></li>
+                    <li><span style="color:var(--slate-400);font-size:13px">1 Place Paul Verlaine</span></li>
+                    <li><span style="color:var(--slate-400);font-size:13px">92100 Boulogne-Billancourt</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 PolyValences. Tous droits réservés.</span>
+            <div>
+                <a href="/mentions-legales/">Mentions légales</a>
+                <a href="/cgv/">CGV</a>
+                <a href="/confidentialite/">Politique de confidentialité</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+function openMobileMenu() {
+    document.getElementById('mobileOverlay').classList.add('active');
+    document.getElementById('mobileMenu').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+    document.getElementById('mobileOverlay').classList.remove('active');
+    document.getElementById('mobileMenu').classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stockage véhicule temporaire entreprise | PolyValences</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="canonical" href="https://polyvalences.eu/stockage/">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7W30WDQNB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z7W30WDQNB');
+    </script>
+    <meta name="description" content="Stockage de véhicules temporaire en site sécurisé en Île-de-France. Durée flexible, à la journée. Idéal pour entreprises, concessions et flottes.">
+    <meta name="keywords" content="stockage véhicule temporaire, stockage voiture entreprise, parking sécurisé véhicule">
+    <meta property="og:title" content="Stockage véhicule temporaire entreprise | PolyValences">
+    <meta property="og:description" content="Stockage de véhicules temporaire en site sécurisé en Île-de-France. Durée flexible, à la journée. Idéal pour entreprises, concessions et flottes.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://polyvalences.eu/stockage/">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Stockage véhicule temporaire entreprise",
+        "description": "Service de stockage de véhicules temporaire en site sécurisé en Île-de-France. Durée flexible, à la journée. Idéal pour entreprises, concessions et flottes.",
+        "provider": {
+            "@type": "Organization",
+            "name": "PolyValences",
+            "url": "https://polyvalences.eu",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "1 Place Paul Verlaine",
+                "addressLocality": "Boulogne-Billancourt",
+                "postalCode": "92100",
+                "addressCountry": "FR"
+            }
+        },
+        "areaServed": "Île-de-France",
+        "serviceType": "Stockage de véhicules"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Où est stocké mon véhicule ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Votre véhicule est stocké sur un site sécurisé en Île-de-France, avec accès restreint et surveillance. L'emplacement exact vous est communiqué lors de la confirmation de votre demande."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Quelle est la durée minimum de stockage ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Il n'y a pas de durée minimum. Vous pouvez stocker votre véhicule à la journée si besoin. La durée est entièrement flexible et s'adapte à vos contraintes."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Quel est le tarif du stockage ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Le tarif dépend de la durée et du type de véhicule. Faites votre demande en ligne sur notre page devis pour obtenir une proposition personnalisée."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Mon véhicule est-il en sécurité ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Oui. Le site de stockage est surveillé, avec un accès restreint aux seules personnes autorisées. Un état des lieux est réalisé à l'entrée et à la sortie du véhicule."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #0b1a2e;
+            --navy-light: #132743;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --blue-pale: #dbeafe;
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --emerald: #059669;
+            --amber: #d97706;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --radius: 12px;
+            --radius-lg: 20px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--slate-800);
+            background: var(--slate-50);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ===== NAV ===== */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--slate-200);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0 24px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-link {
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            color: var(--slate-600); transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--blue); }
+        .nav-link.active { color: var(--blue); font-weight: 700; }
+        .nav-email {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--navy);
+            text-decoration: none;
+        }
+        .nav-email i { color: var(--blue); font-size: 12px; }
+        .nav-email:hover { color: var(--blue); }
+        .nav-cta {
+            background: var(--navy); color: white;
+            padding: 10px 22px; border-radius: 10px;
+            font-size: 14px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .nav-cta:hover { background: var(--blue); }
+        .nav-sep { width: 1px; height: 24px; background: var(--slate-200); }
+        .nav-burger {
+            display: none; width: 44px; height: 44px;
+            border: 1px solid var(--slate-200); border-radius: 10px;
+            background: white; cursor: pointer;
+            align-items: center; justify-content: center;
+            font-size: 18px; color: var(--slate-700);
+        }
+        .nav-burger:hover { background: var(--slate-50); }
+
+        /* Mobile menu */
+        .mobile-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(11,26,46,0.6); backdrop-filter: blur(4px);
+        }
+        .mobile-overlay.active { display: block; }
+        .mobile-menu {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 300px; max-width: 85vw; z-index: 201;
+            background: white; padding: 24px;
+            box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .mobile-menu-close {
+            width: 40px; height: 40px; border-radius: 10px;
+            border: 1px solid var(--slate-200); background: white;
+            cursor: pointer; font-size: 16px; color: var(--slate-500);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mobile-menu-close:hover { background: var(--slate-50); }
+        .mobile-menu-links { list-style: none; margin-bottom: 32px; }
+        .mobile-menu-links li { border-bottom: 1px solid var(--slate-100); }
+        .mobile-menu-links a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 4px; font-size: 15px; font-weight: 500;
+            color: var(--slate-700); text-decoration: none;
+        }
+        .mobile-menu-links a:hover { color: var(--blue); }
+        .mobile-menu-links i { width: 20px; text-align: center; color: var(--slate-400); font-size: 14px; }
+        .mobile-menu-cta {
+            width: 100%; padding: 14px; margin-top: 16px;
+            background: var(--navy); color: white;
+            border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none;
+        }
+        .mobile-menu-cta:hover { background: var(--blue); }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative; padding: 120px 24px 80px;
+            overflow: hidden; min-height: 80vh;
+            display: flex; align-items: center;
+        }
+        .hero-bg {
+            position: absolute; inset: 0; z-index: 0;
+        }
+        .hero-bg img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(11,26,46,0.95) 0%, rgba(19,39,67,0.9) 50%, rgba(37,99,235,0.65) 100%);
+        }
+        .hero-inner {
+            position: relative; z-index: 1;
+            max-width: 800px; margin: 0 auto; width: 100%;
+            text-align: center;
+        }
+        .hero-content { color: white; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 14px; border-radius: 999px;
+            background: rgba(59,130,246,0.15);
+            border: 1px solid rgba(59,130,246,0.3);
+            color: #93c5fd; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 24px;
+        }
+        .hero-badge-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #60a5fa; animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+        }
+        .hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 800; line-height: 1.1; margin-bottom: 20px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub {
+            font-size: 18px; color: #94a3b8;
+            margin-bottom: 36px; max-width: 600px; margin-inline: auto; line-height: 1.7;
+        }
+        .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+        .btn-primary {
+            background: var(--blue); color: white;
+            padding: 16px 32px; border-radius: var(--radius);
+            font-size: 15px; font-weight: 700; border: none; cursor: pointer;
+            transition: all 0.25s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(37,99,235,0.35); }
+        .btn-outline {
+            background: transparent; color: white;
+            padding: 16px 32px; border-radius: var(--radius);
+            font-size: 15px; font-weight: 600; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.25);
+            transition: all 0.25s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-outline:hover { border-color: white; background: rgba(255,255,255,0.08); }
+
+        /* ===== TRUST BAR ===== */
+        .trust-bar {
+            background: white; border-bottom: 1px solid var(--slate-100);
+            padding: 32px 24px;
+        }
+        .trust-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 32px; text-align: center;
+        }
+        .trust-item { position: relative; }
+        .trust-item + .trust-item::before {
+            content: ''; position: absolute; left: -16px; top: 10%;
+            height: 80%; width: 1px; background: var(--slate-100);
+        }
+        .trust-number {
+            font-size: 36px; font-weight: 800; color: var(--navy);
+            font-family: 'Playfair Display', serif;
+        }
+        .trust-label {
+            font-size: 12px; font-weight: 700;
+            color: var(--slate-400); text-transform: uppercase;
+            letter-spacing: 0.06em; margin-top: 4px;
+        }
+
+        /* ===== SECTION GENERICS ===== */
+        .section { padding: 100px 24px; }
+        .section-inner { max-width: 1000px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 56px; }
+        .section-header h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .section-header p { font-size: 17px; color: var(--slate-500); max-width: 600px; margin-inline: auto; }
+
+        /* ===== INTRO TEXT ===== */
+        .intro { padding: 80px 24px; background: white; }
+        .intro-inner {
+            max-width: 800px; margin: 0 auto;
+        }
+        .intro-inner h2 {
+            font-size: clamp(24px, 3vw, 32px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 20px; text-align: center;
+        }
+        .intro-inner p {
+            font-size: 16px; color: var(--slate-600); line-height: 1.8;
+            margin-bottom: 16px;
+        }
+        .intro-inner p strong { color: var(--slate-800); }
+
+        /* ===== STEPS ===== */
+        .steps { padding: 100px 24px; background: var(--slate-50); }
+        .steps-inner { max-width: 1000px; margin: 0 auto; }
+        .steps-header { text-align: center; margin-bottom: 64px; }
+        .steps-header h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .steps-header p { font-size: 17px; color: var(--slate-500); }
+        .steps-grid { display: flex; gap: 32px; }
+        .step-card {
+            flex: 1; text-align: center; padding: 32px 24px;
+            position: relative;
+        }
+        .step-card + .step-card::before {
+            content: ''; position: absolute; left: -16px; top: 40px;
+            width: 1px; height: 60px; background: var(--slate-200);
+        }
+        .step-number {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: var(--blue-pale); color: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 800; margin: 0 auto 20px;
+            font-family: 'Playfair Display', serif;
+        }
+        .step-card h3 {
+            font-size: 18px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 8px; font-family: 'DM Sans', sans-serif;
+        }
+        .step-card p { font-size: 14px; color: var(--slate-500); line-height: 1.7; }
+
+        /* ===== USE CASES ===== */
+        .usecases { padding: 100px 24px; background: white; }
+        .usecases-inner { max-width: 1200px; margin: 0 auto; }
+        .usecases-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+        }
+        .uc-card {
+            background: var(--slate-50); border-radius: var(--radius-lg);
+            padding: 32px; border: 1px solid var(--slate-100);
+            transition: all 0.3s;
+        }
+        .uc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .uc-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-bottom: 16px;
+        }
+        .uc-icon.blue { background: var(--blue-pale); color: var(--blue); }
+        .uc-icon.green { background: #dcfce7; color: #16a34a; }
+        .uc-icon.amber { background: #fef3c7; color: #d97706; }
+        .uc-card h3 {
+            font-size: 17px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 8px; font-family: 'DM Sans', sans-serif;
+        }
+        .uc-card p { font-size: 14px; color: var(--slate-500); line-height: 1.7; }
+
+        /* ===== AVANTAGES ===== */
+        .avantages { padding: 100px 24px; background: var(--slate-50); }
+        .avantages-inner { max-width: 1200px; margin: 0 auto; }
+        .avantages-header { text-align: center; margin-bottom: 56px; }
+        .avantages-header h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .avantages-header p { font-size: 17px; color: var(--slate-500); }
+        .avantages-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+        }
+        .av-card {
+            background: white; border-radius: var(--radius-lg);
+            padding: 32px; border: 1px solid var(--slate-100);
+        }
+        .av-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-bottom: 16px;
+            background: var(--blue-pale); color: var(--blue);
+        }
+        .av-icon.green { background: #dcfce7; color: #16a34a; }
+        .av-icon.amber { background: #fef3c7; color: #d97706; }
+        .av-card h3 {
+            font-size: 17px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 8px; font-family: 'DM Sans', sans-serif;
+        }
+        .av-card p { font-size: 14px; color: var(--slate-500); line-height: 1.7; }
+
+        /* ===== FAQ ===== */
+        .faq { padding: 100px 24px; background: white; }
+        .faq-inner { max-width: 720px; margin: 0 auto; }
+        .faq-header { text-align: center; margin-bottom: 48px; }
+        .faq-header h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 12px;
+        }
+        .faq-header p { font-size: 17px; color: var(--slate-500); }
+        .faq-item {
+            border: 1px solid var(--slate-200); border-radius: var(--radius);
+            margin-bottom: 12px; overflow: hidden;
+            background: var(--slate-50);
+        }
+        .faq-q {
+            padding: 20px 24px; display: flex; align-items: center;
+            justify-content: space-between; cursor: pointer;
+            font-size: 15px; font-weight: 600; color: var(--slate-800);
+            background: none; border: none; width: 100%;
+            font-family: 'DM Sans', sans-serif; text-align: left;
+            transition: color 0.2s;
+        }
+        .faq-q:hover { color: var(--blue); }
+        .faq-q i { font-size: 12px; color: var(--slate-400); transition: transform 0.3s; }
+        .faq-q.open i { transform: rotate(180deg); }
+        .faq-a {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .faq-a-inner {
+            padding: 0 24px 20px;
+            font-size: 14px; color: var(--slate-500); line-height: 1.8;
+        }
+        .faq-a-inner a { color: var(--blue); font-weight: 600; text-decoration: none; }
+        .faq-a-inner a:hover { text-decoration: underline; }
+
+        /* ===== SERVICES LINKS ===== */
+        .services-links { padding: 80px 24px; background: var(--slate-50); }
+        .services-links-inner { max-width: 1200px; margin: 0 auto; }
+        .services-links-header { text-align: center; margin-bottom: 40px; }
+        .services-links-header h2 {
+            font-size: clamp(24px, 3vw, 32px); font-weight: 800;
+            color: var(--slate-900); margin-bottom: 8px;
+        }
+        .services-links-header p { font-size: 15px; color: var(--slate-500); }
+        .services-links-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+        }
+        .sl-card {
+            background: white; border-radius: var(--radius);
+            padding: 24px; border: 1px solid var(--slate-100);
+            text-decoration: none; transition: all 0.3s;
+            display: block;
+        }
+        .sl-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-color: var(--blue); }
+        .sl-card h3 {
+            font-size: 15px; font-weight: 700; color: var(--slate-900);
+            margin-bottom: 6px; font-family: 'DM Sans', sans-serif;
+        }
+        .sl-card p { font-size: 13px; color: var(--slate-500); line-height: 1.6; margin-bottom: 12px; }
+        .sl-card .sl-link {
+            font-size: 13px; font-weight: 700; color: var(--blue);
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 80px 24px; text-align: center;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: white;
+        }
+        .cta-section h2 {
+            font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+            margin-bottom: 16px;
+        }
+        .cta-section p {
+            font-size: 17px; color: #94a3b8; margin-bottom: 32px;
+            max-width: 500px; margin-inline: auto;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--navy); color: var(--slate-400);
+            padding: 64px 24px 32px;
+        }
+        .footer-inner { max-width: 1200px; margin: 0 auto; }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr;
+            gap: 48px; margin-bottom: 48px;
+        }
+        .footer-brand {
+            font-size: 22px; font-weight: 700; color: white;
+            font-family: 'Playfair Display', serif; margin-bottom: 12px;
+        }
+        .footer-desc { font-size: 14px; max-width: 320px; line-height: 1.7; }
+        .footer h4 {
+            color: white; font-size: 14px; font-weight: 700;
+            margin-bottom: 16px; font-family: 'DM Sans', sans-serif;
+        }
+        .footer ul { list-style: none; }
+        .footer ul li { margin-bottom: 8px; }
+        .footer ul li a {
+            color: var(--slate-400); font-size: 13px;
+            text-decoration: none; transition: color 0.2s;
+        }
+        .footer ul li a:hover { color: white; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 24px;
+            display: flex; justify-content: space-between;
+            font-size: 12px; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-bottom a {
+            color: var(--slate-400); text-decoration: none; margin-left: 16px;
+        }
+        .footer-bottom a:hover { color: white; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .avantages-grid, .usecases-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+            .services-links-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none !important; }
+            .nav-burger { display: flex; }
+            .trust-inner { grid-template-columns: repeat(2, 1fr); }
+            .trust-item + .trust-item::before { display: none; }
+            .steps-grid { flex-direction: column; }
+            .step-card + .step-card::before { display: none; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; }
+            .services-links-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">
+            <img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:56px;width:auto;">
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Accueil</a>
+            <a href="/convoyage/" class="nav-link">Convoyage</a>
+            <a href="/conciergerie/" class="nav-link">Conciergerie</a>
+            <a href="/stockage/" class="nav-link active">Stockage</a>
+            <a href="/gestion-flotte/" class="nav-link">Gestion de flotte</a>
+            <div class="nav-sep"></div>
+            <a href="mailto:support@polyvalences.eu" class="nav-email">
+                <i class="fas fa-envelope"></i> support@polyvalences.eu
+            </a>
+            <a href="/devis/" class="nav-cta">
+                <i class="fas fa-calculator"></i> Devis en ligne
+            </a>
+        </div>
+        <button class="nav-burger" onclick="openMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+        <a href="/"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;"></a>
+        <button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    <ul class="mobile-menu-links">
+        <li><a href="/" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Accueil</a></li>
+        <li><a href="/convoyage/" onclick="closeMobileMenu()"><i class="fas fa-truck"></i> Convoyage</a></li>
+        <li><a href="/conciergerie/" onclick="closeMobileMenu()"><i class="fas fa-concierge-bell"></i> Conciergerie</a></li>
+        <li><a href="/stockage/" onclick="closeMobileMenu()"><i class="fas fa-warehouse"></i> Stockage</a></li>
+        <li><a href="/gestion-flotte/" onclick="closeMobileMenu()"><i class="fas fa-chart-line"></i> Gestion de flotte</a></li>
+        <li><a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <a href="/devis/" class="mobile-menu-cta">
+        <i class="fas fa-calculator"></i> Devis en ligne
+    </a>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-bg">
+        <img src="https://images.unsplash.com/photo-1621929747188-0b4dc28498d6?q=80&w=2070&auto=format&fit=crop" alt="Parking sécurisé stockage véhicules entreprise" loading="eager">
+    </div>
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Île-de-France — Durée flexible
+            </div>
+            <h1>Stockage de véhicules temporaire en <em>site sécurisé</em></h1>
+            <p class="hero-sub">
+                Confiez vos véhicules à un site surveillé en Île-de-France. Durée flexible, à la journée si besoin. Idéal pour les entreprises, concessions et gestionnaires de flotte.
+            </p>
+            <div class="hero-ctas">
+                <a href="/devis/" class="btn-primary">
+                    <i class="fas fa-calculator"></i> Demander un devis
+                </a>
+                <a href="#comment-ca-marche" class="btn-outline">
+                    <i class="fas fa-play-circle"></i> Comment ça marche
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TRUST BAR ===== -->
+<div class="trust-bar">
+    <div class="trust-inner">
+        <div class="trust-item">
+            <div class="trust-number">IdF</div>
+            <div class="trust-label">Île-de-France</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">J+1</div>
+            <div class="trust-label">Durée flexible</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">24/7</div>
+            <div class="trust-label">Accès sécurisé</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-number">2009</div>
+            <div class="trust-label">Depuis 2009</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== INTRO SEO ===== -->
+<section class="intro">
+    <div class="intro-inner">
+        <h2>Le stockage véhicule pour entreprises et professionnels</h2>
+        <p>
+            Le <strong>stockage de véhicules temporaire</strong> est une prestation essentielle pour les professionnels de l'automobile et les entreprises qui gèrent un parc de véhicules. Qu'il s'agisse d'un surplus saisonnier, d'une attente de livraison, d'un véhicule en transit ou d'un besoin ponctuel de libérer de l'espace sur votre site, disposer d'un lieu de stationnement sécurisé et flexible fait toute la différence. Chez <strong>PolyValences</strong>, nous proposons ce service depuis 2009, adossé à notre expertise historique dans le convoyage automobile.
+        </p>
+        <p>
+            Notre site de stockage se situe en <strong>Île-de-France</strong>, au coeur du bassin logistique le plus dense de France. Cette localisation stratégique facilite les entrées et sorties de véhicules, qu'ils arrivent de province ou qu'ils soient redistribués vers des concessions, des centres de préparation ou des clients finaux. Le site est clos, à accès restreint, et bénéficie d'une surveillance régulière. Chaque véhicule confié fait l'objet d'un <strong>état des lieux à l'entrée et à la sortie</strong>, avec photos, relevé kilométrique et constat de l'état général.
+        </p>
+        <p>
+            Contrairement aux solutions de parking longue durée classiques, notre offre de stockage est pensée pour les professionnels. Il n'y a <strong>pas de durée minimum</strong> : vous pouvez stocker un véhicule une seule journée ou plusieurs mois, selon vos besoins. La facturation se fait à la journée, ce qui vous permet de maîtriser vos coûts avec précision. Et si vous avez besoin de faire acheminer un véhicule jusqu'au site ou de le récupérer à distance, notre service de <a href="/convoyage/" style="color:var(--blue);font-weight:600;text-decoration:none">convoyage automobile</a> prend le relais.
+        </p>
+        <p>
+            Ce service s'adresse aussi bien aux <strong>concessions automobiles</strong> qui manquent d'espace sur leur parc, qu'aux <strong>loueurs</strong> qui doivent repositionner leur flotte, ou encore aux <strong>entreprises</strong> qui ont besoin d'un dépôt temporaire lors d'un déménagement de site ou d'une réorganisation logistique. La combinaison stockage + convoyage permet de gérer l'ensemble de la chaîne sans mobiliser vos équipes. Vous nous confiez le véhicule, nous le stockons, et nous vous le restituons où et quand vous le souhaitez.
+        </p>
+    </div>
+</section>
+
+<!-- ===== COMMENT ÇA MARCHE ===== -->
+<section class="steps" id="comment-ca-marche">
+    <div class="steps-inner">
+        <div class="steps-header">
+            <h2>Comment ça marche ?</h2>
+            <p>Un stockage en 3 étapes simples, de la demande à la restitution.</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Faites votre demande</h3>
+                <p>Remplissez notre formulaire en ligne avec les détails du véhicule, les dates souhaitées et vos contraintes. Nous vous recontactons avec une proposition adaptée sous 24 heures.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Dépôt ou récupération</h3>
+                <p>Vous déposez votre véhicule directement sur le site, ou nous venons le récupérer grâce à notre service de convoyage. Un état des lieux complet est réalisé à l'entrée avec photos et signature.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Stockage et restitution</h3>
+                <p>Votre véhicule est stationné en sécurité. À la date convenue, nous réalisons l'état des lieux de sortie et vous restituons le véhicule sur site ou par convoyage à l'adresse de votre choix.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CAS D'USAGE ===== -->
+<section class="usecases">
+    <div class="usecases-inner">
+        <div class="section-header">
+            <h2>Pour qui est le stockage temporaire ?</h2>
+            <p>Concessions, flottes, événements : le stockage s'adapte à chaque situation.</p>
+        </div>
+        <div class="usecases-grid">
+            <div class="uc-card">
+                <div class="uc-icon blue"><i class="fas fa-building"></i></div>
+                <h3>Flottes d'entreprise</h3>
+                <p>Vous réorganisez votre parc, vous déménagez vos locaux, ou vous avez un surplus temporaire de véhicules. Notre site sécurisé en Île-de-France vous offre la flexibilité dont vous avez besoin, le temps de finaliser votre logistique interne.</p>
+            </div>
+            <div class="uc-card">
+                <div class="uc-icon green"><i class="fas fa-car"></i></div>
+                <h3>Concessions automobiles</h3>
+                <p>Votre parc est saturé à l'arrivée d'un lot de véhicules neufs ou d'occasion ? Stockez-les temporairement chez nous en attendant leur préparation, leur immatriculation ou leur livraison au client final. Le convoyage aller-retour est inclus sur demande.</p>
+            </div>
+            <div class="uc-card">
+                <div class="uc-icon amber"><i class="fas fa-calendar-alt"></i></div>
+                <h3>Événements et saisonnier</h3>
+                <p>Salon automobile, événement corporate, flotte saisonnière : stockez vos véhicules avant et après l'événement. Nous gérons la logistique d'acheminement et de restitution pour que vous vous concentriez sur l'essentiel.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== AVANTAGES ===== -->
+<section class="avantages" id="avantages">
+    <div class="avantages-inner">
+        <div class="avantages-header">
+            <h2>Pourquoi choisir PolyValences ?</h2>
+            <p>Un service de stockage professionnel, flexible et intégré à notre écosystème de services automobiles.</p>
+        </div>
+        <div class="avantages-grid">
+            <div class="av-card">
+                <div class="av-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Site sécurisé</h3>
+                <p>Le site de stockage est clos, à accès restreint et bénéficie d'une surveillance régulière. Seules les personnes autorisées peuvent accéder aux véhicules stationnés.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon green"><i class="fas fa-clock"></i></div>
+                <h3>Durée flexible</h3>
+                <p>Pas de durée minimum ni d'engagement. Vous pouvez stocker un véhicule une seule journée ou plusieurs mois. La durée s'adapte à votre besoin, pas l'inverse.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon amber"><i class="fas fa-truck"></i></div>
+                <h3>Convoyage intégré</h3>
+                <p>Besoin de faire acheminer un véhicule jusqu'au site ou de le récupérer à distance ? Notre service de convoyage prend le relais sans que vous ayez à mobiliser vos équipes.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon"><i class="fas fa-clipboard-check"></i></div>
+                <h3>État des lieux</h3>
+                <p>Un état des lieux numérique complet est réalisé à l'entrée et à la sortie : photos, kilométrage, carburant, dommages. Vous disposez d'une preuve documentée de l'état du véhicule.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon green"><i class="fas fa-laptop"></i></div>
+                <h3>Suivi en ligne</h3>
+                <p>Depuis votre espace client PolyValences, consultez l'état de vos véhicules stockés, les états des lieux, et le suivi de vos demandes. Tout est centralisé et accessible 24h/24.</p>
+            </div>
+            <div class="av-card">
+                <div class="av-icon amber"><i class="fas fa-calendar-day"></i></div>
+                <h3>Facturation à la journée</h3>
+                <p>Le coût du stockage dépend de la durée effective et du type de véhicule. La facturation à la journée vous permet de maîtriser précisément votre budget, sans surprise.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq" id="faq">
+    <div class="faq-inner">
+        <div class="faq-header">
+            <h2>Questions fréquentes</h2>
+            <p>Tout ce que vous devez savoir sur le stockage de véhicules.</p>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                Où est stocké mon véhicule ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+                <div class="faq-a-inner">
+                    Votre véhicule est stationné sur un site sécurisé en Île-de-France, avec un accès restreint aux seules personnes autorisées. L'emplacement exact vous est communiqué lors de la confirmation de votre demande. Le site est clos et bénéficie d'une surveillance régulière.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                Y a-t-il une durée minimum de stockage ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+                <div class="faq-a-inner">
+                    Non, il n'y a pas de durée minimum. Vous pouvez stocker votre véhicule à la journée si besoin. La durée est entièrement flexible et s'adapte à vos contraintes opérationnelles. Que ce soit pour une journée, une semaine ou plusieurs mois, le service reste le même.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                Comment connaître le coût du stockage ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+                <div class="faq-a-inner">
+                    Le coût dépend de la durée de stockage et du type de véhicule. Faites votre <a href="/devis/">demande en ligne</a> pour obtenir une proposition personnalisée. Vous pouvez également nous contacter à <a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a> pour toute question spécifique.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                Mon véhicule est-il en sécurité ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+                <div class="faq-a-inner">
+                    Oui. Le site de stockage est clos et surveillé, avec un accès restreint aux personnes autorisées. Un état des lieux numérique complet (photos, kilométrage, dommages) est réalisé à l'entrée et à la sortie du véhicule, ce qui constitue une preuve documentée de son état.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                Puis-je faire livrer ou récupérer mon véhicule à distance ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+                <div class="faq-a-inner">
+                    Oui. Vous pouvez combiner le stockage avec notre service de <a href="/convoyage/">convoyage automobile</a>. Un chauffeur professionnel récupère votre véhicule à l'adresse de votre choix et l'achemine jusqu'au site de stockage. À la sortie, nous pouvons également convoyer le véhicule jusqu'à sa destination finale.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                Quels types de véhicules acceptez-vous ?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+                <div class="faq-a-inner">
+                    Nous prenons en charge tous les véhicules légers : citadines, berlines, SUV, utilitaires légers, véhicules de luxe et véhicules électriques. Pour les véhicules spéciaux ou de gabarit hors norme, contactez-nous à <a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a> afin que nous étudiions la faisabilité.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== AUTRES SERVICES ===== -->
+<section class="services-links">
+    <div class="services-links-inner">
+        <div class="services-links-header">
+            <h2>Nos autres services</h2>
+            <p>PolyValences, c'est bien plus que du stockage.</p>
+        </div>
+        <div class="services-links-grid">
+            <a href="/convoyage/" class="sl-card">
+                <h3>Convoyage automobile</h3>
+                <p>Un chauffeur récupère votre véhicule et le livre à destination, partout en France et en Europe.</p>
+                <span class="sl-link">En savoir plus <i class="fas fa-arrow-right"></i></span>
+            </a>
+            <a href="/conciergerie/" class="sl-card">
+                <h3>Conciergerie automobile</h3>
+                <p>On récupère votre véhicule, on l'emmène chez nos partenaires, on vous le ramène. Zéro déplacement.</p>
+                <span class="sl-link">En savoir plus <i class="fas fa-arrow-right"></i></span>
+            </a>
+            <a href="/conciergerie-particulier/" class="sl-card">
+                <h3>Conciergerie particulier</h3>
+                <p>CT, vidange, réparations : on s'occupe de tout pendant que vous travaillez.</p>
+                <span class="sl-link">En savoir plus <i class="fas fa-arrow-right"></i></span>
+            </a>
+            <a href="/gestion-flotte/" class="sl-card">
+                <h3>Gestion de flotte</h3>
+                <p>Outil en ligne gratuit pour suivre vos véhicules, entretiens et relocalisations.</p>
+                <span class="sl-link">En savoir plus <i class="fas fa-arrow-right"></i></span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA FINAL ===== -->
+<section class="cta-section">
+    <h2>Besoin de stocker un ou plusieurs véhicules ?</h2>
+    <p>Faites votre demande en ligne. Nous vous recontactons sous 24 heures avec une proposition adaptée.</p>
+    <a href="/devis/" class="btn-primary" style="font-size:17px;padding:18px 36px;">
+        <i class="fas fa-calculator"></i> Demander un devis en ligne
+    </a>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div>
+                <a href="/"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:48px;width:auto;margin-bottom:12px;"></a>
+                <p class="footer-desc">Spécialiste du convoyage automobile, de la conciergerie et de la gestion de flotte depuis 2009. France & Europe.</p>
+            </div>
+            <div>
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="/convoyage/">Convoyage automobile</a></li>
+                    <li><a href="/conciergerie/">Conciergerie automobile</a></li>
+                    <li><a href="/conciergerie-particulier/">Conciergerie particulier</a></li>
+                    <li><a href="/stockage/">Stockage de véhicules</a></li>
+                    <li><a href="/gestion-flotte/">Gestion de flotte</a></li>
+                    <li><a href="/devis/">Devis en ligne</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a></li>
+                    <li><span style="color:var(--slate-400);font-size:13px">1 Place Paul Verlaine</span></li>
+                    <li><span style="color:var(--slate-400);font-size:13px">92100 Boulogne-Billancourt</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 PolyValences. Tous droits réservés.</span>
+            <div>
+                <a href="/mentions-legales/">Mentions légales</a>
+                <a href="/cgv/">CGV</a>
+                <a href="/confidentialite/">Politique de confidentialité</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+function openMobileMenu() {
+    document.getElementById('mobileOverlay').classList.add('active');
+    document.getElementById('mobileMenu').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+    document.getElementById('mobileOverlay').classList.remove('active');
+    document.getElementById('mobileMenu').classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
+
+function toggleFaq(btn) {
+    const wasOpen = btn.classList.contains('open');
+    document.querySelectorAll('.faq-q').forEach(q => {
+        q.classList.remove('open');
+        q.nextElementSibling.style.maxHeight = null;
+    });
+    if (!wasOpen) {
+        btn.classList.add('open');
+        btn.nextElementSibling.style.maxHeight = btn.nextElementSibling.scrollHeight + 'px';
+    }
+}
+</script>
+
+</body>
+</html>
