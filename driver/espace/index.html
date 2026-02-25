@@ -1320,14 +1320,14 @@
         const btn = document.getElementById('charterBtn');
         if (allChecked) {
             btn.disabled = false;
-            btn.style.background = 'var(--navy)';
+            btn.style.background = 'var(--emerald)';
             btn.style.cursor = 'pointer';
-            btn.innerHTML = '<i class="fas fa-signature"></i> Je valide et je signe la charte';
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Je valide et je signe la charte';
         } else {
             btn.disabled = true;
             btn.style.background = 'var(--slate-300)';
             btn.style.cursor = 'not-allowed';
-            btn.innerHTML = '<i class="fas fa-signature"></i> Cochez toutes les sections pour valider';
+            btn.innerHTML = '<i class="fas fa-lock"></i> Cochez toutes les sections pour valider';
         }
     }
 
