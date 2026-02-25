@@ -411,6 +411,149 @@
             .admin-tab { padding:10px 4px; font-size:11px; }
             .admin-tab span.tab-text { display:none; }
         }
+    /* ===== ADMIN EDL WIZARD ===== */
+    .edl-overlay {
+        display: none; position: fixed; inset: 0; background: white; z-index: 500;
+        overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
+    .edl-overlay.active { display: flex; flex-direction: column; }
+    .edl-header {
+        background: var(--navy); color: white; padding: 14px 20px;
+        display: flex; justify-content: space-between; align-items: center;
+        position: sticky; top: 0; z-index: 501;
+    }
+    .edl-header h2 { font-size: 16px; font-weight: 700; }
+    .edl-close { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 4px 8px; }
+    .edl-progress { display: flex; gap: 8px; padding: 16px 20px; background: var(--slate-50); }
+    .edl-progress-dot {
+        flex: 1; height: 4px; border-radius: 4px; background: var(--slate-200); transition: 0.3s;
+    }
+    .edl-progress-dot.done { background: var(--emerald); }
+    .edl-progress-dot.current { background: var(--blue); }
+    .edl-step { display: none; flex: 1; padding: 20px; padding-bottom: 100px; }
+    .edl-step.active { display: block; }
+    .edl-step h3 { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .edl-step p.subtitle { font-size: 13px; color: var(--slate-500); margin-bottom: 20px; }
+    .edl-field { margin-bottom: 16px; }
+    .edl-field label { display: block; font-size: 13px; font-weight: 600; color: var(--slate-800); margin-bottom: 6px; }
+    .edl-field input, .edl-field textarea {
+        width: 100%; padding: 12px; border: 1px solid var(--slate-200); border-radius: 10px;
+        font-size: 15px; font-family: 'DM Sans', sans-serif; box-sizing: border-box;
+    }
+    .edl-field textarea { min-height: 80px; resize: vertical; }
+    .fuel-btns { display: flex; gap: 8px; }
+    .fuel-btn {
+        flex: 1; padding: 14px 8px; border: 2px solid var(--slate-200); border-radius: 10px;
+        background: white; font-size: 14px; font-weight: 700; text-align: center;
+        cursor: pointer; transition: 0.2s;
+    }
+    .fuel-btn.selected { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+    .edl-nav {
+        position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 20px;
+        background: white; border-top: 1px solid var(--slate-200);
+        display: flex; gap: 10px; z-index: 502;
+    }
+    .edl-nav button {
+        flex: 1; padding: 14px; border: none; border-radius: 12px;
+        font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    }
+    .edl-btn-prev { background: var(--slate-100); color: var(--slate-800); }
+    .edl-btn-next { background: var(--blue); color: white; }
+    .edl-btn-submit { background: var(--emerald); color: white; }
+    .silhouette-container { position: relative; width: 100%; max-width: 320px; margin: 0 auto 20px; }
+    .silhouette-container svg { width: 100%; height: auto; }
+    .zone-btn {
+        position: absolute; width: 30px; height: 30px; border-radius: 50%;
+        background: rgba(37,99,235,0.15); border: 2px solid var(--blue);
+        color: var(--blue); font-size: 11px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transform: translate(-50%, -50%); transition: 0.2s;
+    }
+    .zone-btn.has-damage { background: #fca5a5; border-color: var(--danger); color: var(--danger); }
+    .zone-btn:active { transform: translate(-50%, -50%) scale(1.2); }
+    .checklist-group { display: flex; flex-direction: column; gap: 10px; }
+    .checklist-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--slate-100); }
+    .checklist-item span { font-size: 13px; font-weight: 500; color: var(--navy); flex-shrink: 0; max-width: 45%; }
+    .checklist-options { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+    .checklist-options button {
+        padding: 5px 10px; border: 1.5px solid var(--slate-200); border-radius: 8px;
+        background: #fff; color: var(--slate-600); font-size: 11px; font-weight: 600;
+        cursor: pointer; font-family: 'DM Sans', sans-serif; transition: 0.15s;
+    }
+    .checklist-options button.selected { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .checklist-options button.selected-warn { background: #f59e0b; color: #fff; border-color: #f59e0b; }
+    .checklist-options button.selected-danger { background: #dc2626; color: #fff; border-color: #dc2626; }
+    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .photo-slot {
+        aspect-ratio: 4/3; border: 2px dashed var(--slate-200); border-radius: 12px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        cursor: pointer; position: relative; overflow: hidden; background: var(--slate-50);
+    }
+    .photo-slot i { font-size: 24px; color: var(--slate-300); margin-bottom: 4px; }
+    .photo-slot span { font-size: 11px; color: var(--slate-400); font-weight: 600; }
+    .photo-slot.has-photo { border-color: var(--emerald); border-style: solid; }
+    .photo-slot img {
+        position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    }
+    .photo-slot .photo-check {
+        position: absolute; top: 6px; right: 6px; background: var(--emerald); color: white;
+        width: 22px; height: 22px; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; font-size: 11px;
+    }
+    .sig-canvas-wrap {
+        border: 2px solid var(--slate-200); border-radius: 12px; margin-bottom: 8px;
+        position: relative; background: white; touch-action: none;
+    }
+    .sig-canvas-wrap canvas { width: 100%; height: 160px; display: block; border-radius: 10px; }
+    .sig-clear {
+        position: absolute; top: 8px; right: 8px; background: var(--slate-100);
+        border: none; border-radius: 6px; padding: 4px 10px; font-size: 12px;
+        cursor: pointer; color: var(--slate-500);
+    }
+    .absent-check {
+        display: flex; align-items: center; gap: 10px; padding: 14px;
+        background: #fef3c7; border-radius: 10px; margin-bottom: 16px; cursor: pointer;
+    }
+    .absent-check input { width: 20px; height: 20px; accent-color: var(--amber); }
+    .absent-check span { font-size: 14px; font-weight: 600; color: #92400e; }
+    .damage-modal-bg {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 510;
+        align-items: flex-end; justify-content: center;
+    }
+    .damage-modal-bg.active { display: flex; }
+    .damage-modal {
+        background: white; border-radius: 20px 20px 0 0; padding: 24px 20px 30px;
+        width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto;
+    }
+    .damage-type-btn {
+        display: inline-block; padding: 10px 16px; border: 2px solid var(--slate-200);
+        border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+        margin: 0 6px 8px 0; transition: 0.2s; background: white;
+    }
+    .damage-type-btn.selected { border-color: var(--danger); background: #fef2f2; color: var(--danger); }
+    .quality-alert {
+        background: #eff6ff; border: 1px solid #93c5fd; border-radius: 10px;
+        padding: 12px 14px; font-size: 12px; color: #1e40af; margin-bottom: 16px;
+    }
+    @media (min-width: 641px) {
+        .edl-overlay .photo-grid { grid-template-columns: repeat(4, 1fr); }
+        .edl-overlay .sig-canvas-wrap canvas { height: 200px; }
+        .edl-overlay .silhouette-container { max-width: 400px; }
+        .edl-overlay .edl-step { padding: 24px 32px; max-width: 700px; margin: 0 auto; }
+        .edl-overlay .edl-field input, .edl-overlay .edl-field textarea { font-size: 16px; }
+        .edl-overlay .damage-modal { border-radius: 20px; }
+        .edl-overlay .damage-modal-bg { align-items: center; padding: 20px; }
+        .edl-overlay .fuel-btns { max-width: 420px; }
+    }
+    @media (max-width: 360px) {
+        .edl-overlay .fuel-btns { gap: 4px; }
+        .edl-overlay .fuel-btn { padding: 10px 4px; font-size: 12px; }
+        .edl-overlay .photo-grid { gap: 6px; }
+        .edl-overlay .zone-btn { width: 32px; height: 32px; font-size: 11px; }
+        .edl-overlay .edl-step { padding: 14px; }
+        .edl-overlay .edl-field input, .edl-overlay .edl-field textarea { padding: 10px; font-size: 14px; }
+        .edl-overlay .edl-nav button { padding: 12px; font-size: 14px; }
+    }
     </style>
 </head>
 <body>
@@ -537,9 +680,12 @@
     <div class="admin-panel" id="panel-edl">
         <div class="section-header">
             <h2><i class="fas fa-clipboard-list" style="color:var(--emerald)"></i> États des lieux <span class="count" id="edlCount" style="background:var(--emerald-pale); color:var(--emerald);">0</span></h2>
-            <div style="display:flex; gap:8px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn-refresh" onclick="openAdminEdlWizard('standalone')" style="background:var(--emerald); color:white; border-color:var(--emerald);">
+                    <i class="fas fa-clipboard-list"></i> Faire un EDL
+                </button>
                 <button class="btn-refresh" onclick="openCreateDraftEdl()" style="background:var(--blue); color:white; border-color:var(--blue);">
-                    <i class="fas fa-plus"></i> Créer un EDL vierge
+                    <i class="fas fa-plus"></i> EDL vierge
                 </button>
                 <button class="btn-refresh" onclick="loadAdminInspections()"><i class="fas fa-sync-alt"></i></button>
             </div>
@@ -623,6 +769,255 @@
                 <button onclick="document.getElementById('createEdlModal').classList.remove('show')" style="background:none; border:1px solid var(--slate-200); color:var(--slate-500); padding:12px 20px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">
                     Annuler
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ ADMIN EDL WIZARD ============ -->
+    <div id="aEdlOverlay" class="edl-overlay">
+        <div class="edl-header">
+            <h2 id="aEdlTitle">État des lieux</h2>
+            <button class="edl-close" onclick="aCloseEDL()">&times;</button>
+        </div>
+        <div class="edl-progress">
+            <div class="edl-progress-dot current" id="aDot1"></div>
+            <div class="edl-progress-dot" id="aDot2"></div>
+            <div class="edl-progress-dot" id="aDot3"></div>
+        </div>
+
+        <!-- ÉTAPE 1/3 — Identification -->
+        <div class="edl-step active" id="aEdlStep1">
+            <h3>1/3 — Identification</h3>
+            <p class="subtitle">Contexte, kilométrage, carburant, checklists</p>
+
+            <!-- Bloc contexte (client/véhicule) -->
+            <div id="aEdlContextBlock" style="background:var(--blue-light);border:1px solid var(--blue);border-radius:12px;padding:16px;margin-bottom:20px">
+                <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:12px"><i class="fas fa-info-circle" style="margin-right:6px"></i>Contexte de l'EDL</div>
+                <div class="edl-field">
+                    <label>Client *</label>
+                    <select id="aEdlWizClient" style="width:100%;padding:12px;border:1px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:white">
+                        <option value="">-- Choisir un client --</option>
+                    </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+                    <div class="edl-field"><label>Plaque *</label><input type="text" id="aEdlWizPlate" placeholder="AB-123-CD" style="text-transform:uppercase"></div>
+                    <div class="edl-field"><label>Marque</label><input type="text" id="aEdlWizBrand" placeholder="Renault"></div>
+                    <div class="edl-field"><label>Modèle</label><input type="text" id="aEdlWizModel" placeholder="Clio"></div>
+                </div>
+                <div class="edl-field" style="margin-bottom:0">
+                    <label>Type d'EDL *</label>
+                    <select id="aEdlWizType" style="width:100%;padding:12px;border:1px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:white">
+                        <option value="standalone">Standalone (libre)</option>
+                        <option value="departure">Départ</option>
+                        <option value="arrival">Arrivée</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="edl-field">
+                <label>Kilométrage compteur</label>
+                <input type="number" id="aEdlMileage" placeholder="Ex : 45230" inputmode="numeric">
+            </div>
+            <div class="edl-field">
+                <label>Photo compteur (optionnel)</label>
+                <div class="photo-grid" style="grid-template-columns:1fr">
+                    <label class="photo-slot" id="aSlotMileagePhoto">
+                        <i class="fas fa-camera"></i><span>Compteur</span>
+                        <input type="file" accept="image/*" capture="environment" style="display:none" onchange="aPreviewSlotPhoto(this,'aSlotMileagePhoto')">
+                    </label>
+                </div>
+            </div>
+            <div class="edl-field">
+                <label>Niveau de carburant</label>
+                <div class="fuel-btns" id="aFuelBtns">
+                    <div class="fuel-btn" onclick="aSelectFuel('1/4')">1/4</div>
+                    <div class="fuel-btn" onclick="aSelectFuel('1/2')">1/2</div>
+                    <div class="fuel-btn" onclick="aSelectFuel('3/4')">3/4</div>
+                    <div class="fuel-btn" onclick="aSelectFuel('full')">Plein</div>
+                </div>
+            </div>
+            <div class="edl-field">
+                <label>Conditions météo</label>
+                <div class="fuel-btns" id="aWeatherBtns">
+                    <div class="fuel-btn" onclick="aSelectWeather('soleil')">Soleil</div>
+                    <div class="fuel-btn" onclick="aSelectWeather('nuageux')">Nuageux</div>
+                    <div class="fuel-btn" onclick="aSelectWeather('pluie')">Pluie</div>
+                    <div class="fuel-btn" onclick="aSelectWeather('neige')">Neige</div>
+                </div>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--slate-200);margin:16px 0">
+            <div class="edl-field">
+                <label>Documents remis</label>
+                <div class="checklist-group">
+                    <div class="checklist-item"><span>Carte grise</span><div class="checklist-options"><button type="button" onclick="aSetDoc('carte_grise','Original',this)">Original</button><button type="button" onclick="aSetDoc('carte_grise','Copie',this)">Copie</button><button type="button" onclick="aSetDoc('carte_grise','Absente',this)">Absente</button></div></div>
+                    <div class="checklist-item"><span>Attestation assurance</span><div class="checklist-options"><button type="button" onclick="aSetDoc('attestation_assurance','Présente',this)">Présente</button><button type="button" onclick="aSetDoc('attestation_assurance','Absente',this)">Absente</button></div></div>
+                    <div class="checklist-item"><span>Badge Crit'Air</span><div class="checklist-options"><button type="button" onclick="aSetDoc('badge_critair','Présent',this)">Présent</button><button type="button" onclick="aSetDoc('badge_critair','Absent',this)">Absent</button></div></div>
+                    <div class="checklist-item"><span>Badge télépéage</span><div class="checklist-options"><button type="button" onclick="aSetDoc('badge_telepeage','Présent',this)">Présent</button><button type="button" onclick="aSetDoc('badge_telepeage','Absent',this)">Absent</button></div></div>
+                    <div class="checklist-item"><span>Carte assurance (verte)</span><div class="checklist-options"><button type="button" onclick="aSetDoc('carte_assurance_verte','Présente',this)">Présente</button><button type="button" onclick="aSetDoc('carte_assurance_verte','Absente',this)">Absente</button></div></div>
+                    <div class="checklist-item"><span>Carte essence</span><div class="checklist-options"><button type="button" onclick="aSetDoc('carte_essence','Présente',this)">Présente</button><button type="button" onclick="aSetDoc('carte_essence','Absente',this)">Absente</button></div></div>
+                </div>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--slate-200);margin:16px 0">
+            <div class="edl-field">
+                <label>Équipements véhicule</label>
+                <div class="checklist-group">
+                    <div class="checklist-item"><span>Enjoliveurs</span><div class="checklist-options"><button type="button" onclick="aSetEquip('enjoliveurs','Complets',this)">Complets</button><button type="button" onclick="aSetEquip('enjoliveurs','Partiels',this)">Partiels</button><button type="button" onclick="aSetEquip('enjoliveurs','Jantes nues',this)">Jantes nues</button></div></div>
+                    <div class="checklist-item"><span>Type de roues</span><div class="checklist-options"><button type="button" onclick="aSetEquip('type_roues','Jantes tôle',this)">Jantes tôle</button><button type="button" onclick="aSetEquip('type_roues','Jantes alu',this)">Jantes alu</button></div></div>
+                    <div class="checklist-item"><span>Roue de secours</span><div class="checklist-options"><button type="button" onclick="aSetEquip('roue_secours','Présente',this)">Présente</button><button type="button" onclick="aSetEquip('roue_secours','Absente',this)">Absente</button></div></div>
+                    <div class="checklist-item"><span>Kit sécurité (gilet + triangle)</span><div class="checklist-options"><button type="button" onclick="aSetEquip('kit_securite','Complet',this)">Complet</button><button type="button" onclick="aSetEquip('kit_securite','Partiel',this)">Partiel</button><button type="button" onclick="aSetEquip('kit_securite','Absent',this)">Absent</button></div></div>
+                    <div class="checklist-item"><span>Kit réparation (bombe)</span><div class="checklist-options"><button type="button" onclick="aSetEquip('kit_reparation','Présent',this)">Présent</button><button type="button" onclick="aSetEquip('kit_reparation','Absent',this)">Absent</button></div></div>
+                </div>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--slate-200);margin:16px 0">
+            <div class="edl-field">
+                <label>État du véhicule — Intérieur</label>
+                <div class="checklist-group">
+                    <div class="checklist-item"><span>Propreté habitacle</span><div class="checklist-options"><button type="button" onclick="aSetCondition('proprete_habitacle','Propre',this)">Propre</button><button type="button" onclick="aSetCondition('proprete_habitacle','Correct',this)">Correct</button><button type="button" onclick="aSetCondition('proprete_habitacle','Sale',this)">Sale</button><button type="button" onclick="aSetCondition('proprete_habitacle','Très sale',this)">Très sale</button></div></div>
+                    <div class="checklist-item"><span>État des banquettes</span><div class="checklist-options"><button type="button" onclick="aSetCondition('etat_banquettes','Bon état',this)">Bon état</button><button type="button" onclick="aSetCondition('etat_banquettes','Usure normale',this)">Usure normale</button><button type="button" onclick="aSetCondition('etat_banquettes','Taches',this)">Taches</button><button type="button" onclick="aSetCondition('etat_banquettes','Déchirures',this)">Déchirures</button></div></div>
+                    <div class="checklist-item"><span>État du coffre</span><div class="checklist-options"><button type="button" onclick="aSetCondition('etat_coffre','Propre',this)">Propre</button><button type="button" onclick="aSetCondition('etat_coffre','Correct',this)">Correct</button><button type="button" onclick="aSetCondition('etat_coffre','Sale',this)">Sale</button></div></div>
+                </div>
+            </div>
+            <div class="edl-field">
+                <label>État du véhicule — Extérieur</label>
+                <div class="checklist-group">
+                    <div class="checklist-item"><span>Propreté extérieure</span><div class="checklist-options"><button type="button" onclick="aSetCondition('proprete_exterieure','Propre',this)">Propre</button><button type="button" onclick="aSetCondition('proprete_exterieure','Correct',this)">Correct</button><button type="button" onclick="aSetCondition('proprete_exterieure','Sale',this)">Sale</button><button type="button" onclick="aSetCondition('proprete_exterieure','Très sale',this)">Très sale</button></div></div>
+                    <div class="checklist-item"><span>État du pare-brise</span><div class="checklist-options"><button type="button" onclick="aSetCondition('etat_pare_brise','Intact',this)">Intact</button><button type="button" onclick="aSetCondition('etat_pare_brise','Impact(s)',this)">Impact(s)</button><button type="button" onclick="aSetCondition('etat_pare_brise','Fissure(s)',this)">Fissure(s)</button></div></div>
+                </div>
+            </div>
+            <div class="edl-field">
+                <label>Moteur / Tableau de bord</label>
+                <div class="checklist-group">
+                    <div class="checklist-item"><span>Voyant(s) allumé(s)</span><div class="checklist-options"><button type="button" onclick="aSetCondition('voyants_moteur','Aucun',this)">Aucun</button><button type="button" onclick="aSetCondition('voyants_moteur','Oui',this)">Oui</button></div></div>
+                </div>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--slate-200);margin:16px 0">
+            <div class="edl-field">
+                <label>Objets personnels laissés dans le véhicule</label>
+                <textarea id="aEdlPersonalItems" rows="3" placeholder="Ex : GPS TomTom dans la boîte à gants, siège bébé..." style="width:100%;padding:12px;border:2px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 2/3 — Inspection visuelle -->
+        <div class="edl-step" id="aEdlStep2">
+            <h3>2/3 — Inspection visuelle</h3>
+            <p class="subtitle">Touchez une zone pour signaler un dommage</p>
+            <div class="silhouette-container">
+                <svg viewBox="0 0 320 480" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="60" y="40" width="200" height="400" rx="40" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+                    <path d="M80 120 Q160 90 240 120 L240 160 Q160 140 80 160 Z" fill="#bfdbfe" stroke="#94a3b8" stroke-width="1.5"/>
+                    <path d="M80 340 Q160 370 240 340 L240 310 Q160 330 80 310 Z" fill="#bfdbfe" stroke="#94a3b8" stroke-width="1.5"/>
+                    <rect x="80" y="50" width="160" height="70" rx="20" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+                    <rect x="90" y="170" width="140" height="130" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+                    <rect x="80" y="350" width="160" height="60" rx="15" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+                    <ellipse cx="50" cy="160" rx="12" ry="8" fill="#94a3b8"/>
+                    <ellipse cx="270" cy="160" rx="12" ry="8" fill="#94a3b8"/>
+                    <rect x="45" y="80" width="20" height="45" rx="8" fill="#475569"/>
+                    <rect x="255" y="80" width="20" height="45" rx="8" fill="#475569"/>
+                    <rect x="45" y="350" width="20" height="45" rx="8" fill="#475569"/>
+                    <rect x="255" y="350" width="20" height="45" rx="8" fill="#475569"/>
+                </svg>
+                <div class="zone-btn" style="top:10%;left:50%" onclick="aOpenDamageModal(1)" id="aZone1">1</div>
+                <div class="zone-btn" style="top:22%;left:18%" onclick="aOpenDamageModal(2)" id="aZone2">2</div>
+                <div class="zone-btn" style="top:40%;left:18%" onclick="aOpenDamageModal(3)" id="aZone3">3</div>
+                <div class="zone-btn" style="top:72%;left:18%" onclick="aOpenDamageModal(4)" id="aZone4">4</div>
+                <div class="zone-btn" style="top:88%;left:50%" onclick="aOpenDamageModal(5)" id="aZone5">5</div>
+                <div class="zone-btn" style="top:72%;left:82%" onclick="aOpenDamageModal(6)" id="aZone6">6</div>
+                <div class="zone-btn" style="top:40%;left:82%" onclick="aOpenDamageModal(7)" id="aZone7">7</div>
+                <div class="zone-btn" style="top:22%;left:82%" onclick="aOpenDamageModal(8)" id="aZone8">8</div>
+                <div class="zone-btn" style="top:18%;left:50%" onclick="aOpenDamageModal(9)" id="aZone9">9</div>
+                <div class="zone-btn" style="top:50%;left:50%" onclick="aOpenDamageModal(10)" id="aZone10">10</div>
+                <div class="zone-btn" style="top:82%;left:50%" onclick="aOpenDamageModal(11)" id="aZone11">11</div>
+                <div class="zone-btn" style="top:28%;left:50%" onclick="aOpenDamageModal(12)" id="aZone12">12</div>
+            </div>
+            <div style="font-size:11px;color:var(--slate-500);text-align:center;margin-bottom:16px">
+                1-Pare-choc AV &bull; 2-Aile AVG &bull; 3-Porte AVG &bull; 4-Aile ARG &bull; 5-Pare-choc AR &bull; 6-Aile ARD<br>
+                7-Porte ARD &bull; 8-Aile AVD &bull; 9-Capot &bull; 10-Toit &bull; 11-Hayon/Coffre &bull; 12-Pare-brise
+            </div>
+            <div id="aDamagesSummary" style="margin-bottom:16px"></div>
+            <div class="quality-alert">Prenez les photos directement depuis l'appareil. Le détail doit être lisible.</div>
+            <div class="edl-field">
+                <label>4 photos globales OBLIGATOIRES</label>
+                <div class="photo-grid">
+                    <label class="photo-slot" id="aSlotFront"><i class="fas fa-camera"></i><span>Avant</span><input type="file" accept="image/*" capture="environment" style="display:none" onchange="aPreviewSlotPhoto(this,'aSlotFront')"></label>
+                    <label class="photo-slot" id="aSlotRear"><i class="fas fa-camera"></i><span>Arrière</span><input type="file" accept="image/*" capture="environment" style="display:none" onchange="aPreviewSlotPhoto(this,'aSlotRear')"></label>
+                    <label class="photo-slot" id="aSlotLeft"><i class="fas fa-camera"></i><span>Profil gauche</span><input type="file" accept="image/*" capture="environment" style="display:none" onchange="aPreviewSlotPhoto(this,'aSlotLeft')"></label>
+                    <label class="photo-slot" id="aSlotRight"><i class="fas fa-camera"></i><span>Profil droit</span><input type="file" accept="image/*" capture="environment" style="display:none" onchange="aPreviewSlotPhoto(this,'aSlotRight')"></label>
+                </div>
+            </div>
+            <div class="edl-field">
+                <label>Observations</label>
+                <textarea id="aEdlObservations" placeholder="Remarques libres..."></textarea>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 3/3 — Identités & Signatures -->
+        <div class="edl-step" id="aEdlStep3">
+            <h3>3/3 — Identités & Signatures</h3>
+            <p class="subtitle">Identifiez les parties et signez</p>
+            <div class="edl-field">
+                <label>Date et heure</label>
+                <input type="datetime-local" id="aEdlDatetime">
+            </div>
+            <div style="background:var(--slate-50);border-radius:12px;padding:16px;margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px"><i class="fas fa-sign-out-alt" style="margin-right:6px"></i>CÉDANT (remet le véhicule)</div>
+                <div class="edl-field" style="margin-bottom:8px"><label>Nom / Prénom</label><input type="text" id="aEdlCedantName" placeholder="Nom et prénom du cédant"></div>
+                <div class="edl-field" style="margin-bottom:0"><label>Entreprise</label><input type="text" id="aEdlCedantCompany" placeholder="Entreprise (optionnel)"></div>
+            </div>
+            <div style="background:var(--slate-50);border-radius:12px;padding:16px;margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px"><i class="fas fa-sign-in-alt" style="margin-right:6px"></i>PRENANT (reçoit le véhicule)</div>
+                <div class="edl-field" style="margin-bottom:8px"><label>Nom / Prénom</label><input type="text" id="aEdlPrenantName" placeholder="Nom et prénom du prenant"></div>
+                <div class="edl-field" style="margin-bottom:0"><label>Entreprise</label><input type="text" id="aEdlPrenantCompany" placeholder="Entreprise (optionnel)"></div>
+            </div>
+            <div class="edl-field">
+                <label>Signature inspecteur</label>
+                <div class="sig-canvas-wrap"><canvas id="aSigDriver"></canvas><button class="sig-clear" onclick="aClearSig('aSigDriver')">Effacer</button></div>
+            </div>
+            <label class="absent-check">
+                <input type="checkbox" id="aEdlClientAbsent" onchange="aToggleAbsent()">
+                <span>Remise de clés sans contact (client absent)</span>
+            </label>
+            <div id="aClientSigSection">
+                <div class="edl-field">
+                    <label>Signature client</label>
+                    <div class="sig-canvas-wrap"><canvas id="aSigClient"></canvas><button class="sig-clear" onclick="aClearSig('aSigClient')">Effacer</button></div>
+                </div>
+            </div>
+            <div id="aAbsentReasonSection" style="display:none">
+                <div class="edl-field">
+                    <label>Motif d'absence</label>
+                    <input type="text" id="aEdlAbsentReason" placeholder="Ex : client non joignable, boîte aux lettres...">
+                </div>
+            </div>
+        </div>
+
+        <div class="edl-nav">
+            <button class="edl-btn-prev" id="aEdlPrevBtn" onclick="aEdlPrev()" style="display:none"><i class="fas fa-arrow-left"></i> Précédent</button>
+            <button class="edl-btn-next" id="aEdlNextBtn" onclick="aEdlNext()">Suivant <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- ADMIN DAMAGE MODAL -->
+    <div class="damage-modal-bg" id="aDamageModalBg">
+        <div class="damage-modal">
+            <h3 style="font-size:16px;font-weight:700;margin-bottom:4px" id="aDamageModalTitle">Zone 1 — Pare-choc AV</h3>
+            <p style="font-size:13px;color:var(--slate-500);margin-bottom:16px">Sélectionnez le type de dommage</p>
+            <div id="aDamageTypes" style="margin-bottom:14px">
+                <div class="damage-type-btn" onclick="aSelectDamageType(this,'rayure')">Rayure</div>
+                <div class="damage-type-btn" onclick="aSelectDamageType(this,'bosse')">Bosse</div>
+                <div class="damage-type-btn" onclick="aSelectDamageType(this,'eclat')">Éclat</div>
+                <div class="damage-type-btn" onclick="aSelectDamageType(this,'casse')">Cassé</div>
+            </div>
+            <div class="edl-field"><label>Description</label><input type="text" id="aDamageDesc" placeholder="Détails du dommage..."></div>
+            <div class="edl-field">
+                <label>Photo du dommage</label>
+                <label class="photo-slot" id="aSlotDamagePhoto" style="aspect-ratio:16/9">
+                    <i class="fas fa-camera"></i><span>Photo dommage</span>
+                    <input type="file" accept="image/*" capture="environment" style="display:none" onchange="aPreviewSlotPhoto(this,'aSlotDamagePhoto')">
+                </label>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+                <button onclick="aCloseDamageModal()" style="flex:1;padding:14px;border:1px solid var(--slate-200);border-radius:12px;background:white;font-size:14px;font-weight:600;cursor:pointer">Annuler</button>
+                <button onclick="aSaveDamage()" style="flex:1;padding:14px;border:none;border-radius:12px;background:var(--danger);color:white;font-size:14px;font-weight:700;cursor:pointer">Enregistrer</button>
             </div>
         </div>
     </div>
@@ -2047,11 +2442,22 @@
         html += '</div>';
 
         // Section 4: EDL
-        if (m.edl_count > 0) {
-            html += `<div class="detail-section">
-                <div class="detail-section-title"><i class="fas fa-clipboard-list"></i> États des lieux (${m.edl_count})</div>
-                <button class="btn-action btn-action-blue" onclick="openMissionEdl(${m.id})"><i class="fas fa-eye"></i> Voir les EDL</button>
-            </div>`;
+        {
+            const edlStatuses = ['in_progress','edl_departure_done','in_transit','edl_arrival_done','completed'];
+            if (edlStatuses.includes(m.status) || m.edl_count > 0) {
+                html += `<div class="detail-section">
+                    <div class="detail-section-title"><i class="fas fa-clipboard-list"></i> États des lieux${m.edl_count > 0 ? ' (' + m.edl_count + ')' : ''}</div>`;
+                if (m.status === 'in_progress') {
+                    html += `<button class="btn-action btn-action-green" style="margin-right:8px" onclick="openAdminEdlWizard('mission_departure',null,${m.id})"><i class="fas fa-clipboard-list"></i> Faire l'EDL départ</button>`;
+                }
+                if (m.status === 'in_transit') {
+                    html += `<button class="btn-action btn-action-green" style="margin-right:8px" onclick="openAdminEdlWizard('mission_arrival',null,${m.id})"><i class="fas fa-clipboard-list"></i> Faire l'EDL arrivée</button>`;
+                }
+                if (m.edl_count > 0) {
+                    html += `<button class="btn-action btn-action-blue" onclick="openMissionEdl(${m.id})"><i class="fas fa-eye"></i> Voir les EDL</button>`;
+                }
+                html += `</div>`;
+            }
         }
 
         // Section 5: Frais
@@ -3105,6 +3511,9 @@
             if (e.status === 'contested') {
                 actionHtml += ' <button class="btn-action btn-action-green" onclick="event.stopPropagation();resolveContest(' + e.id + ',this)"><i class="fas fa-check"></i> Résoudre</button>';
             }
+            if (e.status === 'draft') {
+                actionHtml += ' <button class="btn-action btn-action-blue" onclick="event.stopPropagation();openAdminEdlWizardFromDraft(' + e.id + ')"><i class="fas fa-pen"></i> Compléter</button>';
+            }
 
             return `<tr>
                 <td>${dateStr}</td>
@@ -3671,6 +4080,469 @@
             });
         }
     });
+
+    // ===== ADMIN EDL WIZARD =====
+    const A_ZONE_NAMES = {
+        1:'Pare-choc AV',2:'Aile AVG',3:'Porte AVG',4:'Aile ARG',
+        5:'Pare-choc AR',6:'Aile ARD',7:'Porte ARD',8:'Aile AVD',
+        9:'Capot',10:'Toit',11:'Hayon/Coffre',12:'Pare-brise'
+    };
+    let aEdlMode = null;
+    let aEdlMissionId = null;
+    let aEdlDraftId = null;
+    let aEdlCurrentStep = 1;
+    let aEdlFuelLevel = null;
+    let aEdlWeather = null;
+    let aEdlDocuments = {};
+    let aEdlEquipment = {};
+    let aEdlVehicleCondition = {};
+    let aEdlDamages = [];
+    let aCurrentDamageZone = null;
+    let aSelectedDamageType = null;
+    let aEdlGlobalPhotos = { front:null, rear:null, left:null, right:null };
+    let aEdlGlobalKeys = { front:null, rear:null, left:null, right:null };
+    let aEdlMileagePhotoFile = null;
+    let aSigDriverCanvas = null, aSigClientCanvas = null;
+    let aSigDriverCtx = null, aSigClientCtx = null;
+
+    function aSelectWeather(val) {
+        aEdlWeather = val;
+        document.querySelectorAll('#aWeatherBtns .fuel-btn').forEach(b => b.classList.remove('selected'));
+        event.target.classList.add('selected');
+    }
+    function aSetDoc(key, val, btn) {
+        aEdlDocuments[key] = val;
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('selected','selected-warn','selected-danger'));
+        btn.classList.add((val==='Absente'||val==='Absent')?'selected-danger':(val==='Copie')?'selected-warn':'selected');
+    }
+    function aSetEquip(key, val, btn) {
+        aEdlEquipment[key] = val;
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('selected','selected-warn','selected-danger'));
+        btn.classList.add((val==='Absent'||val==='Absente'||val==='Jantes nues')?'selected-danger':(val==='Partiels'||val==='Partiel')?'selected-warn':'selected');
+    }
+    function aSetCondition(key, val, btn) {
+        aEdlVehicleCondition[key] = val;
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('selected','selected-warn','selected-danger'));
+        const danger = ['Sale','Très sale','Déchirures','Fissure(s)','Oui'];
+        const warn = ['Correct','Usure normale','Taches','Impact(s)'];
+        btn.classList.add(danger.includes(val)?'selected-danger':warn.includes(val)?'selected-warn':'selected');
+    }
+    function aSelectFuel(level) {
+        aEdlFuelLevel = level;
+        document.querySelectorAll('#aFuelBtns .fuel-btn').forEach(b => {
+            b.classList.toggle('selected', b.textContent.trim()===(level==='full'?'Plein':level));
+        });
+    }
+
+    function aPreviewSlotPhoto(input, slotId) {
+        const slot = document.getElementById(slotId);
+        const file = input.files[0];
+        if (!file) return;
+        if (slotId==='aSlotFront') aEdlGlobalPhotos.front = file;
+        if (slotId==='aSlotRear') aEdlGlobalPhotos.rear = file;
+        if (slotId==='aSlotLeft') aEdlGlobalPhotos.left = file;
+        if (slotId==='aSlotRight') aEdlGlobalPhotos.right = file;
+        if (slotId==='aSlotMileagePhoto') aEdlMileagePhotoFile = file;
+        const reader = new FileReader();
+        reader.onload = e => {
+            let img = slot.querySelector('img');
+            if (!img) { img = document.createElement('img'); slot.appendChild(img); }
+            img.src = e.target.result;
+            slot.classList.add('has-photo');
+            if (!slot.querySelector('.photo-check')) {
+                const ck = document.createElement('div');
+                ck.className = 'photo-check';
+                ck.innerHTML = '<i class="fas fa-check"></i>';
+                slot.appendChild(ck);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function aOpenDamageModal(zoneId) {
+        aCurrentDamageZone = zoneId;
+        aSelectedDamageType = null;
+        document.getElementById('aDamageModalTitle').textContent = 'Zone ' + zoneId + ' — ' + A_ZONE_NAMES[zoneId];
+        document.querySelectorAll('#aDamageTypes .damage-type-btn').forEach(b => b.classList.remove('selected'));
+        document.getElementById('aDamageDesc').value = '';
+        const slot = document.getElementById('aSlotDamagePhoto');
+        const img = slot.querySelector('img'); const check = slot.querySelector('.photo-check');
+        if (img) img.remove(); if (check) check.remove();
+        slot.classList.remove('has-photo');
+        const inp = slot.querySelector('input[type=file]'); if (inp) inp.value = '';
+        document.getElementById('aDamageModalBg').classList.add('active');
+    }
+    function aCloseDamageModal() { document.getElementById('aDamageModalBg').classList.remove('active'); aCurrentDamageZone = null; }
+    function aSelectDamageType(btn, type) {
+        aSelectedDamageType = type;
+        document.querySelectorAll('#aDamageTypes .damage-type-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+    function aSaveDamage() {
+        if (!aSelectedDamageType) { showToast('Sélectionnez un type de dommage.','error'); return; }
+        const desc = document.getElementById('aDamageDesc').value;
+        const photoInput = document.querySelector('#aSlotDamagePhoto input[type=file]');
+        const photoFile = photoInput && photoInput.files[0] ? photoInput.files[0] : null;
+        aEdlDamages.push({ zone:aCurrentDamageZone, zoneLabel:A_ZONE_NAMES[aCurrentDamageZone], type:aSelectedDamageType, description:desc, photoFile:photoFile, photoKey:null });
+        document.getElementById('aZone'+aCurrentDamageZone).classList.add('has-damage');
+        aRenderDamagesSummary();
+        aCloseDamageModal();
+        showToast('Dommage enregistré — zone '+aCurrentDamageZone);
+    }
+    function aRenderDamagesSummary() {
+        const div = document.getElementById('aDamagesSummary');
+        if (aEdlDamages.length===0) { div.innerHTML=''; return; }
+        let html = '<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--danger)"><i class="fas fa-exclamation-triangle"></i> '+aEdlDamages.length+' dommage(s) signalé(s)</div>';
+        aEdlDamages.forEach((d,i) => {
+            html += '<div style="padding:8px 12px;background:#fef2f2;border-radius:8px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between;align-items:center">';
+            html += '<span><strong>Zone '+d.zone+'</strong> '+d.zoneLabel+' — '+d.type+(d.description?' : '+d.description:'')+'</span>';
+            html += '<button onclick="aRemoveDamage('+i+')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:4px"><i class="fas fa-trash"></i></button>';
+            html += '</div>';
+        });
+        div.innerHTML = html;
+    }
+    function aRemoveDamage(index) {
+        const zone = aEdlDamages[index].zone;
+        aEdlDamages.splice(index,1);
+        if (!aEdlDamages.some(d => d.zone===zone)) document.getElementById('aZone'+zone).classList.remove('has-damage');
+        aRenderDamagesSummary();
+    }
+
+    function aInitSigCanvas(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const wrap = canvas.parentElement;
+        canvas.width = wrap.clientWidth - 4;
+        canvas.height = Math.max(120, wrap.clientHeight || 160);
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.strokeStyle = '#0b1a2e';
+        if (canvasId==='aSigDriver') { aSigDriverCanvas=canvas; aSigDriverCtx=ctx; }
+        else { aSigClientCanvas=canvas; aSigClientCtx=ctx; }
+        let drawing = false, lastX, lastY;
+        function getPos(e) { const rect=canvas.getBoundingClientRect(); const t=e.touches?e.touches[0]:e; return {x:t.clientX-rect.left,y:t.clientY-rect.top}; }
+        canvas.addEventListener('mousedown',e=>{drawing=true;const p=getPos(e);lastX=p.x;lastY=p.y;});
+        canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const p=getPos(e);lastX=p.x;lastY=p.y;},{passive:false});
+        canvas.addEventListener('mousemove',e=>{if(!drawing)return;const p=getPos(e);ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.stroke();lastX=p.x;lastY=p.y;});
+        canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=getPos(e);ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.stroke();lastX=p.x;lastY=p.y;},{passive:false});
+        canvas.addEventListener('mouseup',()=>{drawing=false;});
+        canvas.addEventListener('touchend',()=>{drawing=false;});
+        canvas.addEventListener('mouseleave',()=>{drawing=false;});
+    }
+    function aClearSig(canvasId) { const c=document.getElementById(canvasId); if(c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
+    function aIsCanvasBlank(canvas) { const d=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data; for(let i=3;i<d.length;i+=4){if(d[i]>0)return false;} return true; }
+    function aToggleAbsent() {
+        const absent = document.getElementById('aEdlClientAbsent').checked;
+        document.getElementById('aClientSigSection').style.display = absent ? 'none' : '';
+        document.getElementById('aAbsentReasonSection').style.display = absent ? '' : 'none';
+    }
+
+    function aCloseEDL() {
+        if (!confirm('Quitter l\'état des lieux ? Les données non soumises seront perdues.')) return;
+        document.getElementById('aEdlOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function aShowEdlStep(step) {
+        aEdlCurrentStep = step;
+        for (let i=1;i<=3;i++) {
+            document.getElementById('aEdlStep'+i).classList.toggle('active',i===step);
+            const dot = document.getElementById('aDot'+i);
+            dot.classList.remove('done','current');
+            if (i<step) dot.classList.add('done');
+            if (i===step) dot.classList.add('current');
+        }
+        document.getElementById('aEdlPrevBtn').style.display = step===1?'none':'';
+        const nextBtn = document.getElementById('aEdlNextBtn');
+        if (step===3) {
+            nextBtn.className = 'edl-btn-submit';
+            nextBtn.innerHTML = '<i class="fas fa-check-circle"></i> Valider et Signer';
+            nextBtn.onclick = aSubmitEDL;
+        } else {
+            nextBtn.className = 'edl-btn-next';
+            nextBtn.innerHTML = 'Suivant <i class="fas fa-arrow-right"></i>';
+            nextBtn.onclick = aEdlNext;
+        }
+        window.scrollTo(0,0);
+    }
+
+    function aEdlNext() {
+        if (aEdlCurrentStep===1) {
+            if (aEdlMode==='standalone') {
+                if (!document.getElementById('aEdlWizClient').value) { showToast('Sélectionnez un client.','error'); return; }
+                if (!document.getElementById('aEdlWizPlate').value.trim()) { showToast('Saisissez la plaque.','error'); return; }
+            }
+            const mv = parseInt(document.getElementById('aEdlMileage').value);
+            if (!document.getElementById('aEdlMileage').value||isNaN(mv)) { showToast('Veuillez saisir le kilométrage.','error'); return; }
+            if (mv<0||mv>999999) { showToast('Kilométrage entre 0 et 999 999.','error'); return; }
+            if (!aEdlFuelLevel) { showToast('Sélectionnez le niveau de carburant.','error'); return; }
+        }
+        if (aEdlCurrentStep===2) {
+            const hasAll = aEdlGlobalPhotos.front && aEdlGlobalPhotos.rear && aEdlGlobalPhotos.left && aEdlGlobalPhotos.right;
+            if (!hasAll) { showToast('Les 4 photos globales sont obligatoires.','error'); return; }
+        }
+        if (aEdlCurrentStep<3) aShowEdlStep(aEdlCurrentStep+1);
+    }
+    function aEdlPrev() { if (aEdlCurrentStep>1) aShowEdlStep(aEdlCurrentStep-1); }
+
+    async function aLoadEdlClients() {
+        try {
+            const res = await fetch(API+'/api/admin/clients',{headers:{'Authorization':'Bearer '+authToken}});
+            if (!res.ok) return;
+            const data = await res.json();
+            const sel = document.getElementById('aEdlWizClient');
+            sel.innerHTML = '<option value="">-- Choisir un client --</option>';
+            (data.clients||[]).forEach(c => {
+                sel.innerHTML += '<option value="'+c.id+'">'+c.first_name+' '+c.last_name+(c.company?' ('+c.company+')':'')+'</option>';
+            });
+        } catch(e) {}
+    }
+
+    function aSetContextReadOnly(readOnly) {
+        ['aEdlWizClient','aEdlWizPlate','aEdlWizBrand','aEdlWizModel','aEdlWizType'].forEach(id => {
+            document.getElementById(id).disabled = readOnly;
+        });
+    }
+
+    async function openAdminEdlWizard(mode, draftData, missionId) {
+        aEdlMode = mode;
+        aEdlMissionId = missionId || null;
+        aEdlDraftId = draftData ? draftData.id : null;
+        aEdlCurrentStep = 1;
+        aEdlFuelLevel = null;
+        aEdlWeather = null;
+        aEdlDocuments = {};
+        aEdlEquipment = {};
+        aEdlVehicleCondition = {};
+        aEdlDamages = [];
+        aEdlGlobalPhotos = {front:null,rear:null,left:null,right:null};
+        aEdlGlobalKeys = {front:null,rear:null,left:null,right:null};
+        aEdlMileagePhotoFile = null;
+
+        // Title
+        const titles = {'standalone':'EDL libre — Admin','mission_departure':'EDL de départ','mission_arrival':'EDL d\'arrivée','draft':'Compléter EDL brouillon'};
+        document.getElementById('aEdlTitle').textContent = titles[mode]||'État des lieux';
+
+        // Reset form fields
+        document.getElementById('aEdlMileage').value = '';
+        document.getElementById('aEdlObservations').value = '';
+        document.getElementById('aEdlPersonalItems').value = '';
+        document.getElementById('aEdlClientAbsent').checked = false;
+        document.getElementById('aEdlAbsentReason').value = '';
+        aToggleAbsent();
+
+        // Date/heure = maintenant
+        const now = new Date();
+        const pad = n => String(n).padStart(2,'0');
+        document.getElementById('aEdlDatetime').value = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'T'+pad(now.getHours())+':'+pad(now.getMinutes());
+
+        // Reset checklist buttons
+        document.querySelectorAll('#aEdlOverlay .checklist-options button').forEach(b => b.classList.remove('selected','selected-warn','selected-danger'));
+        document.querySelectorAll('#aWeatherBtns .fuel-btn').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('#aFuelBtns .fuel-btn').forEach(b => b.classList.remove('selected'));
+
+        // Reset photos
+        ['aSlotFront','aSlotRear','aSlotLeft','aSlotRight','aSlotMileagePhoto'].forEach(id => {
+            const slot = document.getElementById(id);
+            const img = slot.querySelector('img'); const check = slot.querySelector('.photo-check');
+            if(img) img.remove(); if(check) check.remove();
+            slot.classList.remove('has-photo');
+            const inp = slot.querySelector('input[type=file]'); if(inp) inp.value='';
+        });
+
+        // Reset zones
+        for(let i=1;i<=12;i++) document.getElementById('aZone'+i).classList.remove('has-damage');
+        document.getElementById('aDamagesSummary').innerHTML = '';
+
+        // Context block
+        const ctx = document.getElementById('aEdlContextBlock');
+        const adminName = currentUser ? (currentUser.first_name+' '+currentUser.last_name) : '';
+
+        if (mode==='standalone') {
+            ctx.style.display = '';
+            await aLoadEdlClients();
+            document.getElementById('aEdlWizClient').value = '';
+            document.getElementById('aEdlWizPlate').value = '';
+            document.getElementById('aEdlWizBrand').value = '';
+            document.getElementById('aEdlWizModel').value = '';
+            document.getElementById('aEdlWizType').value = 'standalone';
+            aSetContextReadOnly(false);
+        } else if (mode==='mission_departure'||mode==='mission_arrival') {
+            ctx.style.display = '';
+            const m = adminMissionsData.find(x => x.id===missionId);
+            await aLoadEdlClients();
+            if (m) {
+                document.getElementById('aEdlWizClient').value = m.user_id||'';
+                document.getElementById('aEdlWizPlate').value = m.vehicle_plate||'';
+                document.getElementById('aEdlWizBrand').value = m.vehicle_brand||'';
+                document.getElementById('aEdlWizModel').value = m.vehicle_model||'';
+            }
+            document.getElementById('aEdlWizType').value = mode==='mission_departure'?'departure':'arrival';
+            aSetContextReadOnly(true);
+        } else if (mode==='draft' && draftData) {
+            ctx.style.display = '';
+            await aLoadEdlClients();
+            document.getElementById('aEdlWizClient').value = draftData.client_id||'';
+            document.getElementById('aEdlWizPlate').value = draftData.plate||'';
+            document.getElementById('aEdlWizBrand').value = draftData.brand||'';
+            document.getElementById('aEdlWizModel').value = draftData.model||'';
+            document.getElementById('aEdlWizType').value = draftData.type||'standalone';
+            aSetContextReadOnly(true);
+        }
+
+        // Pre-fill cedant/prenant
+        document.getElementById('aEdlCedantName').value = '';
+        document.getElementById('aEdlCedantCompany').value = '';
+        document.getElementById('aEdlPrenantName').value = '';
+        document.getElementById('aEdlPrenantCompany').value = '';
+        if (mode==='mission_departure'||mode==='standalone') {
+            document.getElementById('aEdlPrenantName').value = adminName;
+            document.getElementById('aEdlPrenantCompany').value = 'PolyValences';
+        } else if (mode==='mission_arrival') {
+            document.getElementById('aEdlCedantName').value = adminName;
+            document.getElementById('aEdlCedantCompany').value = 'PolyValences';
+        }
+
+        aShowEdlStep(1);
+        document.getElementById('aEdlOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ aInitSigCanvas('aSigDriver'); aInitSigCanvas('aSigClient'); }); });
+    }
+
+    function openAdminEdlWizardFromDraft(edlId) {
+        const draft = adminEdlData.find(e => e.id===edlId);
+        if (!draft) { showToast('EDL introuvable','error'); return; }
+        if (draft.status!=='draft') { showToast('Cet EDL n\'est pas un brouillon','error'); return; }
+        openAdminEdlWizard('draft', draft);
+    }
+
+    async function aSubmitEDL() {
+        if (aEdlDamages.length===0) {
+            if (!confirm('Aucun dommage signalé. Confirmer que le véhicule est en parfait état ?')) return;
+        }
+        const absent = document.getElementById('aEdlClientAbsent').checked;
+        if (aIsCanvasBlank(aSigDriverCanvas)) { showToast('Veuillez signer (inspecteur).','error'); return; }
+        if (!absent && aIsCanvasBlank(aSigClientCanvas)) { showToast('Faites signer le client ou cochez "client absent".','error'); return; }
+        if (absent && !document.getElementById('aEdlAbsentReason').value.trim()) { showToast('Indiquez le motif d\'absence.','error'); return; }
+
+        const submitBtn = document.getElementById('aEdlNextBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+        try {
+            // 1. Upload global photos
+            let uploadFailed = false;
+            const slots = {front:'aSlotFront',rear:'aSlotRear',left:'aSlotLeft',right:'aSlotRight'};
+            const edlType = document.getElementById('aEdlWizType').value;
+            for (const [key] of Object.entries(slots)) {
+                const file = aEdlGlobalPhotos[key];
+                if (file) {
+                    const fd = new FormData();
+                    if (aEdlDraftId) fd.append('inspection_id', aEdlDraftId);
+                    else if (aEdlMissionId) fd.append('mission_id', aEdlMissionId);
+                    else fd.append('mission_id', 'admin_'+Date.now());
+                    fd.append('type', edlType);
+                    fd.append('category','global');
+                    fd.append('file', file);
+                    try {
+                        const res = await fetch(API+'/api/inspections/upload',{method:'POST',headers:{'Authorization':'Bearer '+authToken},body:fd});
+                        if (res.ok) { const d=await res.json(); aEdlGlobalKeys[key]=d.key; }
+                        else { showToast('Erreur upload photo '+key+'.','error'); uploadFailed=true; break; }
+                    } catch(e) { showToast('Erreur réseau upload.','error'); uploadFailed=true; break; }
+                }
+            }
+            if (uploadFailed) { submitBtn.disabled=false; submitBtn.innerHTML='<i class="fas fa-check-circle"></i> Valider et Signer'; return; }
+
+            // 2. Upload damage photos
+            for (const dmg of aEdlDamages) {
+                if (dmg.photoFile) {
+                    const fd = new FormData();
+                    if (aEdlDraftId) fd.append('inspection_id', aEdlDraftId);
+                    else if (aEdlMissionId) fd.append('mission_id', aEdlMissionId);
+                    else fd.append('mission_id', 'admin_'+Date.now());
+                    fd.append('type', edlType);
+                    fd.append('category','damage');
+                    fd.append('file', dmg.photoFile);
+                    try {
+                        const res = await fetch(API+'/api/inspections/upload',{method:'POST',headers:{'Authorization':'Bearer '+authToken},body:fd});
+                        if (res.ok) { const d=await res.json(); dmg.photoKey=d.key; }
+                        else { showToast('Erreur upload photo dommage.','error'); uploadFailed=true; break; }
+                    } catch(e) { showToast('Erreur réseau upload dommage.','error'); uploadFailed=true; break; }
+                }
+            }
+            if (uploadFailed) { submitBtn.disabled=false; submitBtn.innerHTML='<i class="fas fa-check-circle"></i> Valider et Signer'; return; }
+
+            // 3. Signatures
+            const sigDriverData = aSigDriverCanvas.toDataURL('image/png');
+            const sigClientData = absent ? null : aSigClientCanvas.toDataURL('image/png');
+
+            // 4. Géolocalisation
+            let lat=null, lng=null, locationStr=null;
+            try {
+                const pos = await new Promise((resolve,reject)=>{navigator.geolocation.getCurrentPosition(resolve,reject,{timeout:5000,enableHighAccuracy:true});});
+                lat=pos.coords.latitude; lng=pos.coords.longitude; locationStr=lat.toFixed(6)+','+lng.toFixed(6);
+            } catch(e) {}
+
+            // 5. Payload
+            const payload = {
+                type: edlType,
+                mileage: parseInt(document.getElementById('aEdlMileage').value)||null,
+                fuel_level: aEdlFuelLevel,
+                weather: aEdlWeather,
+                vehicle_condition: Object.keys(aEdlVehicleCondition).length>0?aEdlVehicleCondition:null,
+                location: locationStr, location_lat: lat, location_lng: lng,
+                documents_checklist: Object.keys(aEdlDocuments).length>0?aEdlDocuments:null,
+                equipment_checklist: Object.keys(aEdlEquipment).length>0?aEdlEquipment:null,
+                personal_items: document.getElementById('aEdlPersonalItems').value.trim()||null,
+                damages: aEdlDamages.map(d=>({zone:d.zone,zoneLabel:d.zoneLabel,type:d.type,description:d.description,photo:d.photoKey})),
+                observations: document.getElementById('aEdlObservations').value||null,
+                photos: [],
+                global_photos: Object.values(aEdlGlobalKeys).filter(Boolean),
+                client_absent: absent,
+                absent_reason: absent?document.getElementById('aEdlAbsentReason').value.trim():null,
+                signature_driver: sigDriverData,
+                signature_client: sigClientData,
+                cedant_name: document.getElementById('aEdlCedantName').value.trim()||null,
+                cedant_company: document.getElementById('aEdlCedantCompany').value.trim()||null,
+                prenant_name: document.getElementById('aEdlPrenantName').value.trim()||null,
+                prenant_company: document.getElementById('aEdlPrenantCompany').value.trim()||null,
+                edl_datetime: document.getElementById('aEdlDatetime').value||null,
+                plate: document.getElementById('aEdlWizPlate').value.trim().toUpperCase()||null,
+                brand: document.getElementById('aEdlWizBrand').value.trim()||null,
+                model: document.getElementById('aEdlWizModel').value.trim()||null
+            };
+
+            if (aEdlMode==='mission_departure'||aEdlMode==='mission_arrival') {
+                payload.mission_id = aEdlMissionId;
+            } else if (aEdlMode==='draft' && aEdlDraftId) {
+                payload.inspection_id = aEdlDraftId;
+            } else {
+                payload.client_id = parseInt(document.getElementById('aEdlWizClient').value);
+            }
+
+            // 6. POST
+            const res = await fetch(API+'/api/inspections',{
+                method:'POST',
+                headers:{'Authorization':'Bearer '+authToken,'Content-Type':'application/json'},
+                body:JSON.stringify(payload)
+            });
+            const result = await res.json();
+            if (res.ok) {
+                document.getElementById('aEdlOverlay').classList.remove('active');
+                document.body.style.overflow = '';
+                showToast('État des lieux enregistré !');
+                loadAdminInspections();
+                if (aEdlMissionId) loadAdminMissions();
+            } else {
+                showToast(result.error||'Erreur lors de l\'envoi.','error');
+            }
+        } catch(e) {
+            console.error('Admin EDL submit error:',e);
+            showToast('Erreur réseau. Réessayez.','error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Valider et Signer';
+        }
+    }
 
     // ===== INIT =====
     checkAdmin();
