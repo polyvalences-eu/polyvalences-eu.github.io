@@ -164,6 +164,26 @@
             50% { opacity: 0.6; }
         }
 
+        /* ===== COMBO MISSIONS ===== */
+        .combo-block {
+            margin-top: 10px; padding: 10px 12px;
+            background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px;
+        }
+        .combo-block-title {
+            font-size: 12px; font-weight: 700; color: #047857; margin-bottom: 6px;
+        }
+        .combo-item {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+            font-size: 12px; color: #065f46; padding: 6px 0;
+            border-bottom: 1px solid #d1fae5;
+        }
+        .combo-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .combo-link {
+            color: #2563eb; font-weight: 700; cursor: pointer;
+            text-decoration: underline; font-size: 12px;
+        }
+        .combo-link:hover { color: #1d4ed8; }
+
         /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
@@ -1517,7 +1537,7 @@
             const expireDate = m.expires_at ? new Date(m.expires_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
 
             html += `
-                <div class="card" style="border-left:4px solid var(--blue)">
+                <div class="card" id="avail-mission-${m.id}" style="border-left:4px solid var(--blue)">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
                         <div>
                             <div style="font-size:12px;color:var(--slate-500);margin-bottom:2px">${m.quote_number || 'Mission'}</div>
@@ -1539,6 +1559,12 @@
                         ? '<div style="margin-top:12px;padding:10px;background:#d1fae5;color:#047857;border-radius:8px;font-size:13px;font-weight:700;text-align:center"><i class="fas fa-check-circle" style="margin-right:4px"></i>Candidature envoyée</div>'
                         : '<button class="btn-start-mission" onclick="event.stopPropagation();applyMission(' + m.id + ', this)" style="background:var(--navy)"><i class="fas fa-hand-paper"></i> Je suis disponible</button>'
                     }
+                    ${m.combo_missions && m.combo_missions.length > 0 ? '<div class="combo-block"><div class="combo-block-title"><i class="fas fa-cubes" style="margin-right:4px"></i> Combo possible — Enchainez avec :</div>' + m.combo_missions.map(c => {
+                        const cOrigin = (c.origin_address || '').split(',')[0];
+                        const cDest = (c.destination_address || '').split(',')[0];
+                        const cDate = c.mission_date ? c.mission_date.split('-').reverse().join('/') : '';
+                        return '<div class="combo-item"><span><strong>' + cOrigin + ' &rarr; ' + cDest + '</strong></span><span><i class="fas fa-calendar-day" style="margin-right:2px"></i>' + cDate + '</span>' + (c.driver_fee ? '<span style="color:#059669;font-weight:700">' + c.driver_fee + ' &euro;</span>' : '') + '<span style="color:#7c3aed;font-weight:600">a ' + c.distance_from_previous_destination_km + ' km de votre arrivee</span><span class="combo-link" onclick="scrollToMission(' + c.mission_id + ')">Voir cette mission</span></div>';
+                    }).join('') + '</div>' : ''}
                 </div>`;
         });
 
@@ -1570,6 +1596,16 @@
             showToast('Erreur réseau.', 'error');
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-hand-paper"></i> Je suis disponible';
+        }
+    }
+
+    function scrollToMission(missionId) {
+        const el = document.getElementById('avail-mission-' + missionId);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.style.transition = 'box-shadow 0.3s';
+            el.style.boxShadow = '0 0 0 3px #059669';
+            setTimeout(() => { el.style.boxShadow = ''; }, 2000);
         }
     }
 
