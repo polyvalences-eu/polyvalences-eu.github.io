@@ -3859,11 +3859,11 @@
                             <div style="display:flex;gap:16px;flex-wrap:wrap;">
                                 <div style="flex:1;min-width:150px;text-align:center;">
                                     <p style="font-size:11px;font-weight:700;color:var(--slate-500);margin-bottom:6px;">Signature PolyValences.eu</p>
-                                    <img src="${API}/api/r2/${contract.admin_signature}?token=${authToken}" style="max-height:80px;border-radius:6px;" onerror="this.parentElement.innerHTML+='<p style=font-size:11px;color:var(--slate-400)>Cachet non disponible</p>';this.style.display='none'">
+                                    <img src="${API}/api/r2/${contract.admin_signature}?token=${authToken}" style="max-height:80px;border-radius:6px;" onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','<p style=\\'font-size:11px;color:var(--slate-400)\\'>Cachet non disponible</p>')">
                                 </div>
                                 <div style="flex:1;min-width:150px;text-align:center;">
                                     <p style="font-size:11px;font-weight:700;color:var(--slate-500);margin-bottom:6px;">Signature Chauffeur</p>
-                                    <img src="${API}/api/r2/${contract.driver_signature}?token=${authToken}" style="max-height:80px;border-radius:6px;" onerror="this.parentElement.innerHTML+='<p style=font-size:11px;color:var(--slate-400)>Signature non disponible</p>';this.style.display='none'">
+                                    <img src="${API}/api/r2/${contract.driver_signature}?token=${authToken}" style="max-height:80px;border-radius:6px;" onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','<p style=\\'font-size:11px;color:var(--slate-400)\\'>Signature non disponible</p>')">
                                 </div>
                             </div>
                             ${contract.company_address ? '<p style="font-size:11px;color:var(--slate-400);margin-top:8px;">Adresse entreprise : ' + contract.company_address + '</p>' : ''}
