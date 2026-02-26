@@ -127,9 +127,26 @@
         .profile-status.rejected { background: #fecaca; color: #991b1b; }
 
         /* Banner variants */
+        .status-banner.contract { background: #dbeafe; color: #1e40af; }
         .status-banner.charter { background: #dbeafe; color: #1e40af; }
         .status-banner.suspended { background: #fee2e2; color: #b91c1c; }
         .status-banner.rejected { background: #fecaca; color: #991b1b; }
+        .profile-status.contract_signed { background: #dbeafe; color: #1e40af; }
+
+        /* Contract section */
+        .contract-scroll { max-height: 400px; overflow-y: auto; border: 1px solid var(--slate-200); border-radius: 10px; padding: 20px; margin-bottom: 20px; background: #f8fafc; }
+        .contract-scroll h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin: 18px 0 8px; }
+        .contract-scroll h3:first-child { margin-top: 0; }
+        .contract-scroll p, .contract-scroll li { font-size: 13px; color: var(--slate-600); line-height: 1.7; }
+        .contract-scroll ul { padding-left: 18px; margin: 6px 0; }
+        .contract-sig-wrap { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+        .contract-sig-box { flex: 1; min-width: 200px; border: 1px solid var(--slate-200); border-radius: 10px; padding: 12px; background: white; text-align: center; }
+        .contract-sig-box canvas { border: 2px dashed var(--slate-200); border-radius: 8px; cursor: crosshair; width: 100%; touch-action: none; }
+        .contract-sig-box img { max-height: 100px; border-radius: 8px; }
+        .siret-info-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; margin: 12px 0; }
+        .siret-info-box .info-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+        .siret-info-box .info-row .label { color: var(--slate-500); font-weight: 600; }
+        .siret-info-box .info-row .value { color: var(--navy); font-weight: 700; }
 
         /* Mission start button */
         .btn-start-mission {
@@ -426,7 +443,11 @@
 </div>
 <div id="bannerReview" class="status-banner review" style="display:none">
     <i class="fas fa-clock"></i>
-    <span>Dossier en cours de vérification par notre équipe (48h max).</span>
+    <span>Contrat signé — en attente de validation par notre équipe (48h max).</span>
+</div>
+<div id="bannerContract" class="status-banner contract" style="display:none">
+    <i class="fas fa-file-contract"></i>
+    <span>Documents validés ! Signez votre contrat de partenariat pour continuer.</span>
 </div>
 <div id="bannerCharter" class="status-banner charter" style="display:none">
     <i class="fas fa-file-signature"></i>
@@ -516,6 +537,136 @@
         <div style="text-align:center;padding:20px">
             <i class="fas fa-spinner fa-spin" style="font-size:24px;color:var(--slate-200)"></i>
         </div>
+    </div>
+</main>
+
+<main id="view-contrat" class="view">
+    <h1 class="view-title">Contrat de Partenariat</h1>
+    <div class="card" style="padding:24px">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;color:var(--navy)">
+            <i class="fas fa-file-contract" style="color:var(--blue);margin-right:8px"></i>Contrat de Partenariat — Chauffeur-Convoyeur Indépendant
+        </h3>
+        <p style="font-size:12px;color:var(--slate-400);margin-bottom:16px">Version 2026-02-v1 — PolyValences.eu</p>
+
+        <!-- SIRET + Lookup -->
+        <div style="margin-bottom:20px">
+            <label style="font-size:13px;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
+                <i class="fas fa-building" style="margin-right:4px;color:var(--blue)"></i> Votre numéro SIRET
+            </label>
+            <div style="display:flex;gap:8px;align-items:center">
+                <input type="text" id="contractSiret" maxlength="18" placeholder="XXX XXX XXX XXXXX" oninput="formatSiretInput(this)" style="flex:1;padding:12px;border:2px solid var(--slate-200);border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;letter-spacing:1px;font-weight:700">
+                <span id="siretStatus" style="font-size:20px"></span>
+            </div>
+            <p id="siretError" style="display:none;font-size:12px;color:#dc2626;margin-top:4px"></p>
+        </div>
+
+        <!-- Company info (auto-filled) -->
+        <div id="siretInfoBox" class="siret-info-box" style="display:none">
+            <div style="font-size:12px;font-weight:700;color:#059669;margin-bottom:8px"><i class="fas fa-check-circle" style="margin-right:4px"></i> Entreprise identifiée</div>
+            <div class="info-row"><span class="label">Dénomination</span><span class="value" id="siretCompanyName">—</span></div>
+            <div class="info-row"><span class="label">Adresse</span><span class="value" id="siretCompanyAddress">—</span></div>
+            <div class="info-row"><span class="label">Code APE</span><span class="value" id="siretNafCode">—</span></div>
+            <div class="info-row"><span class="label">Forme juridique</span><span class="value" id="siretLegalForm">—</span></div>
+            <div class="info-row"><span class="label">Date de création</span><span class="value" id="siretCreationDate">—</span></div>
+        </div>
+
+        <!-- Contract text -->
+        <div class="contract-scroll">
+            <p style="text-align:center;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:16px">CONTRAT DE PARTENARIAT<br>Entre PolyValences.eu et le Chauffeur-Convoyeur Indépendant</p>
+
+            <p style="font-size:12px;color:var(--slate-500);margin-bottom:16px"><strong>ENTRE :</strong> PolyValences.eu, plateforme de convoyage automobile, ci-après « la Plateforme »<br>
+            <strong>ET :</strong> Le prestataire indépendant identifié par le SIRET ci-dessus, ci-après « le Chauffeur »</p>
+
+            <h3>Article 1 — Objet</h3>
+            <p>Le présent contrat définit les conditions dans lesquelles le Chauffeur, en qualité de prestataire indépendant, réalise des missions de convoyage automobile proposées par PolyValences.eu. Le Chauffeur est libre d'accepter ou de refuser toute mission.</p>
+
+            <h3>Article 2 — Statut du prestataire</h3>
+            <ul>
+                <li>Le Chauffeur exerce en qualité de <strong>travailleur indépendant</strong> immatriculé au registre du commerce ou des métiers.</li>
+                <li>Il n'existe aucun lien de subordination entre le Chauffeur et PolyValences.eu.</li>
+                <li>Le Chauffeur n'est soumis à aucune exclusivité et peut exercer pour d'autres plateformes ou donneurs d'ordre.</li>
+                <li>Le Chauffeur est seul responsable de ses obligations sociales, fiscales et comptables.</li>
+            </ul>
+
+            <h3>Article 3 — Obligations du Chauffeur</h3>
+            <ul>
+                <li>Être immatriculé et disposer d'un numéro SIRET valide.</li>
+                <li>Disposer d'une assurance Responsabilité Civile Professionnelle (RC Pro) en cours de validité.</li>
+                <li>Disposer d'un permis de conduire valide (catégorie B minimum).</li>
+                <li>Réaliser un état des lieux (EDL) complet au départ et à l'arrivée de chaque mission.</li>
+                <li>Respecter les délais convenus pour chaque mission acceptée.</li>
+                <li>Signaler immédiatement tout incident ou sinistre à PolyValences.eu.</li>
+            </ul>
+
+            <h3>Article 4 — Obligations de PolyValences.eu</h3>
+            <ul>
+                <li>Proposer des missions de convoyage au Chauffeur via la plateforme.</li>
+                <li>Communiquer les informations nécessaires à la réalisation de chaque mission (adresses, contacts, véhicule).</li>
+                <li>Procéder au paiement de la rémunération dans un délai de <strong>7 jours</strong> après validation de la mission.</li>
+            </ul>
+
+            <h3>Article 5 — Rémunération</h3>
+            <p>Le montant de la rémunération est communiqué au Chauffeur avant l'acceptation de chaque mission. Il varie selon la distance, la complexité et les conditions de la mission. Le Chauffeur est libre d'accepter ou de refuser le montant proposé.</p>
+
+            <h3>Article 6 — Remboursement de frais</h3>
+            <ul>
+                <li>Les frais d'essence, de péages et de transport (train, covoiturage) engagés dans le cadre d'une mission sont remboursés <strong>sur présentation de justificatifs</strong>.</li>
+                <li>Les justificatifs doivent être lisibles (pas de photos WhatsApp) et soumis via la plateforme.</li>
+            </ul>
+
+            <h3>Article 7 — Interdictions</h3>
+            <ul>
+                <li>Il est <strong>strictement interdit</strong> d'utiliser le badge télépéage du client pour les trajets personnels ou retour.</li>
+                <li>Il est <strong>strictement interdit</strong> d'utiliser la carte carburant du client.</li>
+                <li>Toute infraction entraînera la refacturation intégrale au Chauffeur et pourra donner lieu à suspension.</li>
+            </ul>
+
+            <h3>Article 8 — Mandat de facturation</h3>
+            <p>Conformément à l'article 289-I-2 du Code Général des Impôts, le Chauffeur donne mandat à PolyValences.eu pour établir les factures en son nom et pour son compte. Le Chauffeur dispose d'un délai de <strong>7 jours</strong> pour contester une facture. Le Chauffeur reste seul responsable de ses obligations fiscales (déclaration, TVA le cas échéant).</p>
+
+            <h3>Article 9 — Confidentialité et RGPD</h3>
+            <ul>
+                <li>Le Chauffeur s'engage à ne pas conserver les données personnelles des clients au-delà de la mission.</li>
+                <li>Il est <strong>interdit</strong> de contacter directement les clients en dehors du cadre de la mission.</li>
+                <li>Les données personnelles du Chauffeur sont traitées conformément au RGPD et à la politique de confidentialité de PolyValences.eu.</li>
+            </ul>
+
+            <h3>Article 10 — Résiliation et non-requalification</h3>
+            <ul>
+                <li>Chaque partie peut résilier le présent contrat à tout moment, sans préavis ni indemnité.</li>
+                <li>La résiliation n'affecte pas les missions en cours, qui doivent être menées à terme.</li>
+                <li>Le Chauffeur reconnaît que la relation contractuelle ne constitue pas un contrat de travail et ne peut être requalifiée en tant que tel.</li>
+            </ul>
+        </div>
+
+        <!-- Signatures -->
+        <p style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px"><i class="fas fa-signature" style="margin-right:6px;color:var(--blue)"></i> Signatures</p>
+        <div class="contract-sig-wrap">
+            <div class="contract-sig-box">
+                <p style="font-size:12px;font-weight:700;color:var(--slate-500);margin-bottom:8px">PolyValences.eu</p>
+                <img id="adminSignatureImg" src="" alt="Signature PolyValences" style="max-height:100px;display:none">
+                <p id="adminSignaturePlaceholder" style="font-size:11px;color:var(--slate-400);padding:20px 0">Chargement...</p>
+            </div>
+            <div class="contract-sig-box">
+                <p style="font-size:12px;font-weight:700;color:var(--slate-500);margin-bottom:8px">Votre signature</p>
+                <div style="position:relative">
+                    <canvas id="contractSigCanvas" height="160"></canvas>
+                </div>
+                <button type="button" onclick="clearContractSig()" style="margin-top:6px;background:none;border:1px solid var(--slate-200);padding:4px 12px;border-radius:6px;font-size:11px;color:var(--slate-500);cursor:pointer;font-family:'DM Sans',sans-serif">
+                    <i class="fas fa-eraser"></i> Effacer
+                </button>
+            </div>
+        </div>
+
+        <!-- Timestamp info -->
+        <p style="font-size:11px;color:var(--slate-400);margin-bottom:16px">
+            <i class="fas fa-info-circle" style="margin-right:4px"></i> En signant, vous acceptez les termes du contrat. La signature est horodatée et votre adresse IP est enregistrée.
+        </p>
+
+        <!-- Sign button -->
+        <button type="button" id="contractBtn" onclick="signContract()" disabled style="width:100%;padding:14px;background:var(--slate-200);color:var(--slate-400);border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:not-allowed;font-family:'DM Sans',sans-serif;transition:all 0.2s">
+            <i class="fas fa-file-signature"></i> Signer le contrat de partenariat
+        </button>
     </div>
 </main>
 
@@ -1249,6 +1400,9 @@
             }
             blockAppToDocs();
         } else if (status === 'documents_review') {
+            document.getElementById('bannerContract').style.display = 'flex';
+            blockAppToContract();
+        } else if (status === 'contract_signed') {
             document.getElementById('bannerReview').style.display = 'flex';
             blockAppToDocs();
         } else if (status === 'approved') {
@@ -1274,8 +1428,9 @@
     function statusLabel(s) {
         const map = {
             'pending_documents': 'Documents en attente',
-            'documents_review': 'En cours de vérification',
+            'documents_review': 'Contrat à signer',
             'documents_incomplete': 'Documents incomplets',
+            'contract_signed': 'Contrat signé — en validation',
             'approved': 'Validé',
             'suspended': 'Suspendu',
             'rejected': 'Refusé'
@@ -1465,6 +1620,217 @@
             btn.disabled = false;
             updateCharterBtn();
         }
+    }
+
+    // ===== CONTRACT SIGNATURE =====
+    let contractSigCanvas = null, contractSigCtx = null;
+    let siretCompanyData = null;
+    let siretLookupTimer = null;
+
+    function formatSiretInput(input) {
+        const cursor = input.selectionStart;
+        const rawBefore = input.value;
+        const digits = input.value.replace(/\D/g, '').slice(0, 14);
+        // Format: XXX XXX XXX XXXXX
+        let formatted = '';
+        for (let i = 0; i < digits.length; i++) {
+            if (i === 3 || i === 6 || i === 9) formatted += ' ';
+            formatted += digits[i];
+        }
+        input.value = formatted;
+        // Adjust cursor position
+        const diff = formatted.length - rawBefore.length;
+        input.setSelectionRange(cursor + diff, cursor + diff);
+        lookupSiret(digits);
+        updateContractBtn();
+    }
+
+    function getRawSiret() {
+        return (document.getElementById('contractSiret').value || '').replace(/\D/g, '');
+    }
+
+    function lookupSiret(digits) {
+        if (siretLookupTimer) clearTimeout(siretLookupTimer);
+        const statusEl = document.getElementById('siretStatus');
+        const errorEl = document.getElementById('siretError');
+        const infoBox = document.getElementById('siretInfoBox');
+
+        if (digits.length < 14) {
+            statusEl.textContent = '';
+            errorEl.style.display = 'none';
+            infoBox.style.display = 'none';
+            siretCompanyData = null;
+            return;
+        }
+
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="color:var(--blue)"></i>';
+        siretLookupTimer = setTimeout(async () => {
+            try {
+                const res = await fetch('https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/' + digits);
+                if (!res.ok) throw new Error('not found');
+                const data = await res.json();
+                const etab = data.etablissement;
+                const ul = etab.unite_legale || {};
+                const adr = etab.adresse || {};
+
+                const companyName = ul.denomination || ((ul.prenom_1 || '') + ' ' + (ul.nom || '')).trim() || '—';
+                const street = [adr.numero_voie, adr.type_voie, adr.libelle_voie].filter(Boolean).join(' ');
+                const companyAddress = [street, adr.code_postal, adr.libelle_commune].filter(Boolean).join(', ') || '—';
+                const nafCode = ul.activite_principale || '—';
+                const legalForm = ul.categorie_juridique || '—';
+                const creationDate = ul.date_creation || '—';
+
+                siretCompanyData = { company_name: companyName, company_address: companyAddress, naf_code: nafCode, legal_form: legalForm, creation_date: creationDate };
+
+                document.getElementById('siretCompanyName').textContent = companyName;
+                document.getElementById('siretCompanyAddress').textContent = companyAddress;
+                document.getElementById('siretNafCode').textContent = nafCode;
+                document.getElementById('siretLegalForm').textContent = legalForm;
+                document.getElementById('siretCreationDate').textContent = creationDate;
+
+                statusEl.innerHTML = '<i class="fas fa-check-circle" style="color:#059669"></i>';
+                errorEl.style.display = 'none';
+                infoBox.style.display = '';
+            } catch (e) {
+                statusEl.innerHTML = '<i class="fas fa-times-circle" style="color:#dc2626"></i>';
+                errorEl.textContent = 'SIRET non trouvé dans la base SIRENE.';
+                errorEl.style.display = '';
+                infoBox.style.display = 'none';
+                siretCompanyData = null;
+            }
+            updateContractBtn();
+        }, 400);
+    }
+
+    function initContractSigCanvas() {
+        const canvas = document.getElementById('contractSigCanvas');
+        if (!canvas) return;
+        const wrap = canvas.parentElement;
+        canvas.width = wrap.clientWidth - 4;
+        canvas.height = Math.max(120, 160);
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#0b1a2e';
+        contractSigCanvas = canvas;
+        contractSigCtx = ctx;
+
+        let drawing = false, lastX, lastY;
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches ? e.touches[0] : e;
+            return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+        }
+        canvas.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; });
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; }, { passive: false });
+        canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = getPos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; });
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; }, { passive: false });
+        canvas.addEventListener('mouseup', () => { drawing = false; updateContractBtn(); });
+        canvas.addEventListener('touchend', () => { drawing = false; updateContractBtn(); });
+        canvas.addEventListener('mouseleave', () => { drawing = false; });
+    }
+
+    function clearContractSig() {
+        if (contractSigCanvas && contractSigCtx) {
+            contractSigCtx.clearRect(0, 0, contractSigCanvas.width, contractSigCanvas.height);
+            updateContractBtn();
+        }
+    }
+
+    function isContractCanvasBlank() {
+        if (!contractSigCanvas) return true;
+        const data = contractSigCtx.getImageData(0, 0, contractSigCanvas.width, contractSigCanvas.height).data;
+        for (let i = 3; i < data.length; i += 4) { if (data[i] > 0) return false; }
+        return true;
+    }
+
+    function updateContractBtn() {
+        const btn = document.getElementById('contractBtn');
+        if (!btn) return;
+        const siretOk = getRawSiret().length === 14 && siretCompanyData;
+        const sigOk = !isContractCanvasBlank();
+        if (siretOk && sigOk) {
+            btn.disabled = false;
+            btn.style.background = 'var(--emerald)';
+            btn.style.color = 'white';
+            btn.style.cursor = 'pointer';
+        } else {
+            btn.disabled = true;
+            btn.style.background = 'var(--slate-200)';
+            btn.style.color = 'var(--slate-400)';
+            btn.style.cursor = 'not-allowed';
+        }
+    }
+
+    async function loadAdminSignature() {
+        const img = document.getElementById('adminSignatureImg');
+        const placeholder = document.getElementById('adminSignaturePlaceholder');
+        try {
+            const token = localStorage.getItem('pv_token');
+            img.src = API + '/api/r2/contracts/admin_signature.png?token=' + token;
+            img.onload = () => { img.style.display = ''; placeholder.style.display = 'none'; };
+            img.onerror = () => {
+                placeholder.textContent = 'PolyValences.eu — Convoyage automobile depuis 2009';
+                placeholder.style.fontSize = '12px';
+                placeholder.style.fontWeight = '700';
+                placeholder.style.color = '#0b1a2e';
+                placeholder.style.fontStyle = 'italic';
+            };
+        } catch (e) {
+            placeholder.textContent = 'PolyValences.eu';
+        }
+    }
+
+    async function signContract() {
+        const siret = getRawSiret();
+        if (siret.length !== 14) { showToast('SIRET invalide (14 chiffres).', 'error'); return; }
+        if (isContractCanvasBlank()) { showToast('Veuillez signer le contrat.', 'error'); return; }
+        if (!siretCompanyData) { showToast('SIRET non vérifié. Attendez la vérification.', 'error'); return; }
+
+        const token = localStorage.getItem('pv_token');
+        const btn = document.getElementById('contractBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signature en cours...';
+
+        try {
+            const driverSig = contractSigCanvas.toDataURL('image/png');
+            const res = await fetch(API + '/api/driver/contract', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({
+                    siret: siret,
+                    driver_signature: driverSig,
+                    company_name: siretCompanyData.company_name,
+                    company_address: siretCompanyData.company_address,
+                    naf_code: siretCompanyData.naf_code,
+                    legal_form: siretCompanyData.legal_form,
+                    creation_date: siretCompanyData.creation_date
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showToast('Contrat signé ! En attente de validation.');
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (e) {
+            showToast('Erreur réseau.', 'error');
+        } finally {
+            btn.disabled = false;
+            updateContractBtn();
+        }
+    }
+
+    function blockAppToContract() {
+        // Disable all nav items, force contract tab
+        document.querySelectorAll('.nav-item').forEach(el => {
+            if (el.id !== 'nav-docs') {
+                el.style.opacity = '0.3';
+                el.style.pointerEvents = 'none';
+            }
+        });
+        switchTab('contrat');
     }
 
     // ===== AVAILABLE MISSIONS =====
@@ -2024,6 +2390,9 @@
         if (tabId === 'missions' && currentUser && currentUser.driver_status === 'approved') loadAvailableMissions();
         if (tabId === 'alertes') loadAlerts();
         if (tabId === 'frais') loadExpenses();
+        if (tabId === 'contrat') {
+            setTimeout(() => { initContractSigCanvas(); loadAdminSignature(); }, 100);
+        }
     }
 
     // ===== TOAST =====

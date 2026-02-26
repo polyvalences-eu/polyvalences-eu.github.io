@@ -3654,6 +3654,7 @@
                 'pending_documents': { label: 'Documents attendus', color: '#d97706', bg: '#d9770615' },
                 'documents_review': { label: 'En vérification', color: '#2563eb', bg: '#2563eb15' },
                 'documents_incomplete': { label: 'Incomplet', color: '#dc2626', bg: '#dc262615' },
+                'contract_signed': { label: 'Contrat signé', color: '#1e40af', bg: '#dbeafe' },
                 'approved': { label: 'Validé', color: '#059669', bg: '#05966915' },
                 'suspended': { label: 'Suspendu', color: '#dc2626', bg: '#dc262615' },
                 'rejected': { label: 'Refusé', color: '#94a3b8', bg: '#94a3b815' }
@@ -3672,6 +3673,7 @@
                             <span style="color:var(--slate-400); font-size:12px; font-weight:500;">#${d.id}</span>
                             ${d.first_name} ${d.last_name}
                             <span class="type-badge" style="background:${st.bg}; color:${st.color};">${st.label}</span>
+                            ${d.contract_signed ? '<i class="fas fa-file-contract" style="color:#059669;font-size:13px;margin-left:4px;" title="Contrat signé"></i>' : '<i class="fas fa-file-contract" style="color:#d1d5db;font-size:13px;margin-left:4px;" title="Contrat non signé"></i>'}
                         </div>
                         <div class="user-email">${d.email}</div>
                         <div class="user-details">
@@ -3705,6 +3707,7 @@
             const data = await res.json();
             const d = data.driver;
             const docs = data.documents || [];
+            const contract = data.contract || null;
 
             const score = d.reliability_score || 3;
 
@@ -3731,7 +3734,9 @@
                         </div>
                         <div>
                             <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase;">Statut</div>
-                            <div style="font-size:14px; font-weight:700; color:${d.driver_status === 'approved' ? '#059669' : '#d97706'};">${d.driver_status}</div>
+                            <div style="font-size:14px; font-weight:700; color:${d.driver_status === 'approved' ? '#059669' : d.driver_status === 'contract_signed' ? '#1e40af' : '#d97706'};">
+                                ${d.driver_status === 'contract_signed' ? 'Contrat signé' : d.driver_status}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3830,15 +3835,59 @@
                     }).join('')}
                 </div>
 
+                <!-- CONTRAT DE PARTENARIAT -->
+                <div style="padding:16px 18px; background:${contract ? '#dbeafe' : '#fef3c7'}; border:1px solid ${contract ? '#93c5fd' : '#fde68a'}; border-radius:10px; margin-bottom:20px;">
+                    <div style="font-size:13px; font-weight:700; color:${contract ? '#1e40af' : '#b45309'}; margin-bottom:8px;">
+                        <i class="fas fa-file-contract" style="margin-right:4px;"></i> Contrat de partenariat
+                    </div>
+                    ${contract ? `
+                        <div style="font-size:13px; color:#1e40af;">
+                            <i class="fas fa-check-circle" style="margin-right:4px;color:#059669"></i>
+                            Signé le <strong>${new Date(contract.signed_at).toLocaleDateString('fr-FR')}</strong>
+                            — SIRET : <strong>${contract.siret}</strong>
+                            ${contract.company_name ? ' — ' + contract.company_name : ''}
+                        </div>
+                        <div style="margin-top:6px;font-size:11px;color:var(--slate-400);">
+                            Version : ${contract.contract_version} · IP : ${contract.ip_address || '—'}
+                            ${contract.naf_code ? ' · APE : ' + contract.naf_code : ''}
+                            ${contract.legal_form ? ' · Forme : ' + contract.legal_form : ''}
+                        </div>
+                        <button onclick="toggleContractDetail(${driverId})" style="margin-top:8px;background:none;border:1px solid #1e40af;color:#1e40af;padding:6px 14px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">
+                            <i class="fas fa-eye"></i> Voir les signatures
+                        </button>
+                        <div id="contractDetailView_${driverId}" style="display:none;margin-top:12px;padding:12px;background:white;border-radius:8px;border:1px solid var(--slate-200);">
+                            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                                <div style="flex:1;min-width:150px;text-align:center;">
+                                    <p style="font-size:11px;font-weight:700;color:var(--slate-500);margin-bottom:6px;">Signature PolyValences.eu</p>
+                                    <img src="${API}/api/r2/${contract.admin_signature}?token=${authToken}" style="max-height:80px;border-radius:6px;" onerror="this.parentElement.innerHTML+='<p style=font-size:11px;color:var(--slate-400)>Cachet non disponible</p>';this.style.display='none'">
+                                </div>
+                                <div style="flex:1;min-width:150px;text-align:center;">
+                                    <p style="font-size:11px;font-weight:700;color:var(--slate-500);margin-bottom:6px;">Signature Chauffeur</p>
+                                    <img src="${API}/api/r2/${contract.driver_signature}?token=${authToken}" style="max-height:80px;border-radius:6px;" onerror="this.parentElement.innerHTML+='<p style=font-size:11px;color:var(--slate-400)>Signature non disponible</p>';this.style.display='none'">
+                                </div>
+                            </div>
+                            ${contract.company_address ? '<p style="font-size:11px;color:var(--slate-400);margin-top:8px;">Adresse entreprise : ' + contract.company_address + '</p>' : ''}
+                        </div>
+                    ` : `
+                        <div style="font-size:13px; color:#b45309;">
+                            <i class="fas fa-exclamation-triangle" style="margin-right:4px;"></i>
+                            Contrat non signé
+                        </div>
+                    `}
+                </div>
+
                 <!-- ACTIONS REVIEW -->
                 ${d.driver_status !== 'approved' ? `
                 <div style="padding:16px 18px; background:var(--blue-pale); border:1px solid #93c5fd; border-radius:10px; margin-bottom:20px;">
                     <div style="font-size:13px; font-weight:700; color:#1e40af; margin-bottom:12px;">
                         <i class="fas fa-gavel" style="margin-right:4px;"></i> Actions
                     </div>
+                    ${d.driver_status === 'documents_review' && !contract ? `
+                        <div style="font-size:12px;color:#b45309;margin-bottom:10px;"><i class="fas fa-exclamation-triangle" style="margin-right:4px;"></i> Le chauffeur n'a pas encore signé son contrat — approbation impossible.</div>
+                    ` : ''}
                     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <button onclick="reviewDriver(${driverId},'approve')" style="background:var(--emerald); color:white; border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
-                            <i class="fas fa-check"></i> Approuver
+                        <button onclick="reviewDriver(${driverId},'approve')" ${!contract ? 'disabled' : ''} style="background:${!contract ? 'var(--slate-200)' : 'var(--emerald)'}; color:${!contract ? 'var(--slate-400)' : 'white'}; border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:${!contract ? 'not-allowed' : 'pointer'}; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
+                            <i class="fas fa-check"></i> Approuver ${!contract ? '(contrat requis)' : ''}
                         </button>
                         <button onclick="reviewDriver(${driverId},'request_documents')" style="background:var(--amber); color:white; border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
                             <i class="fas fa-file-upload"></i> Demander docs
@@ -3871,6 +3920,11 @@
             console.error('Driver detail failed:', err);
             container.innerHTML = '<p style="color:var(--red);">Erreur de connexion.</p>';
         }
+    }
+
+    function toggleContractDetail(driverId) {
+        const el = document.getElementById('contractDetailView_' + driverId);
+        if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
     }
 
     async function updateReliability(driverId, score) {
