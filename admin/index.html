@@ -730,10 +730,27 @@
                 <i class="fas fa-plus-circle" style="color:var(--blue); margin-right:6px;"></i>Créer un EDL vierge
             </h3>
             <div style="margin-bottom:14px;">
-                <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Client *</label>
-                <select id="edlClientId" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
-                    <option value="">Chargement...</option>
+                <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Client</label>
+                <select id="edlClientId" onchange="toggleDraftManualClient()" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                    <option value="">-- Pas de client inscrit --</option>
                 </select>
+            </div>
+            <div id="draftManualBlock" style="background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:12px;margin-bottom:14px;">
+                <div style="font-size:11px;color:#92400e;margin-bottom:8px"><i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Pas de client inscrit — renseignez les infos manuellement</div>
+                <div style="margin-bottom:8px">
+                    <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Entreprise / Nom</label>
+                    <input type="text" id="draftManualCompany" placeholder="Nom de l'entreprise ou du client" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <div>
+                        <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Email (optionnel)</label>
+                        <input type="email" id="draftContactEmail" placeholder="email@exemple.fr" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                    </div>
+                    <div>
+                        <label style="font-size:12px; font-weight:600; color:var(--slate-600); display:block; margin-bottom:4px;">Téléphone (optionnel)</label>
+                        <input type="tel" id="draftContactPhone" placeholder="06 12 34 56 78" style="width:100%; padding:10px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif;">
+                    </div>
+                </div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
                 <div>
@@ -3857,27 +3874,40 @@
         } catch (err) { console.error('Load modal data:', err); }
     }
 
+    function toggleDraftManualClient() {
+        const hasClient = !!document.getElementById('edlClientId').value;
+        document.getElementById('draftManualBlock').style.display = hasClient ? 'none' : '';
+    }
+
     async function submitCreateDraftEdl() {
         const btn = document.getElementById('btnCreateEdl');
         const clientId = document.getElementById('edlClientId').value;
         const plate = document.getElementById('edlPlate').value.trim();
-        if (!clientId || !plate) { showToast('Client et plaque obligatoires', 'error'); return; }
+        if (!plate) { showToast('La plaque est obligatoire', 'error'); return; }
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création...';
+
+        const payload = {
+            plate,
+            brand: document.getElementById('edlBrand').value.trim() || null,
+            model: document.getElementById('edlModel').value.trim() || null,
+            type: document.getElementById('edlType').value,
+            driver_id: document.getElementById('edlDriverId').value ? parseInt(document.getElementById('edlDriverId').value) : null
+        };
+        if (clientId) {
+            payload.client_id = parseInt(clientId);
+        } else {
+            payload.company_name = document.getElementById('draftManualCompany').value.trim() || null;
+            payload.contact_email = document.getElementById('draftContactEmail').value.trim() || null;
+            payload.contact_phone = document.getElementById('draftContactPhone').value.trim() || null;
+        }
 
         try {
             const res = await fetch(API + '/api/admin/inspections', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                body: JSON.stringify({
-                    client_id: parseInt(clientId),
-                    plate,
-                    brand: document.getElementById('edlBrand').value.trim() || null,
-                    model: document.getElementById('edlModel').value.trim() || null,
-                    type: document.getElementById('edlType').value,
-                    driver_id: document.getElementById('edlDriverId').value ? parseInt(document.getElementById('edlDriverId').value) : null
-                })
+                body: JSON.stringify(payload)
             });
             const data = await res.json();
             if (res.ok && data.success) {
@@ -4896,7 +4926,9 @@
     function aEdlNext() {
         if (aEdlCurrentStep===1) {
             if (aEdlMode==='standalone') {
-                if (!document.getElementById('aEdlWizClient').value) { showToast('Sélectionnez un client.','error'); return; }
+                if (!document.getElementById('aEdlWizClient').value && !document.getElementById('aEdlManualCompany').value.trim()) {
+                    showToast('Sélectionnez un client ou renseignez une entreprise.','error'); return;
+                }
                 if (!document.getElementById('aEdlWizPlate').value.trim()) { showToast('Saisissez la plaque.','error'); return; }
             }
             const mv = parseInt(document.getElementById('aEdlMileage').value);
