@@ -4937,8 +4937,7 @@
             if (!aEdlFuelLevel) { showToast('Sélectionnez le niveau de carburant.','error'); return; }
         }
         if (aEdlCurrentStep===2) {
-            const hasAll = aEdlGlobalPhotos.front && aEdlGlobalPhotos.rear && aEdlGlobalPhotos.left && aEdlGlobalPhotos.right;
-            if (!hasAll) { showToast('Les 4 photos globales sont obligatoires.','error'); return; }
+            // Photos globales optionnelles
         }
         if (aEdlCurrentStep<3) aShowEdlStep(aEdlCurrentStep+1);
     }
