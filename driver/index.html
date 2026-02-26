@@ -595,6 +595,17 @@
                         <input type="date" id="applyBirthDate">
                     </div>
                     <div class="apply-input-group">
+                        <label>Statut juridique</label>
+                        <select id="applyLegalForm" style="width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:#334155;background:white;cursor:pointer">
+                            <option value="">-- Sélectionner --</option>
+                            <option value="Auto-Entrepreneur">Auto-Entrepreneur</option>
+                            <option value="SASU">SASU</option>
+                            <option value="SAS">SAS</option>
+                            <option value="SARL">SARL</option>
+                            <option value="EURL">EURL</option>
+                        </select>
+                    </div>
+                    <div class="apply-input-group">
                         <label>Mot de passe</label>
                         <div class="password-wrap">
                             <input type="password" id="applyPassword" placeholder="8 caractères minimum" required>
@@ -842,6 +853,7 @@
         const phone = document.getElementById('applyPhone').value.trim();
         const address = document.getElementById('applyAddress').value.trim();
         const birthDate = document.getElementById('applyBirthDate').value;
+        const legalForm = document.getElementById('applyLegalForm').value;
         const password = document.getElementById('applyPassword').value;
 
         if (!firstName || !lastName || !email || !phone || !password) {
@@ -863,7 +875,8 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email, password, first_name: firstName, last_name: lastName,
-                    phone, address: address || null, birth_date: birthDate || null
+                    phone, address: address || null, birth_date: birthDate || null,
+                    legal_form: legalForm || null
                 })
             });
             const data = await res.json();

@@ -461,6 +461,19 @@
     <i class="fas fa-times-circle"></i>
     <span>Votre candidature n'a pas été retenue.</span>
 </div>
+<div id="bannerUrssafWarning" class="status-banner" style="display:none;background:#fef3c7;border:1px solid #fde68a;color:#92400e">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>Votre cumul annuel approche 5 000 €. Pensez à préparer votre attestation de vigilance URSSAF.</span>
+</div>
+<div id="bannerUrssafAlert" class="status-banner" style="display:none;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b">
+    <i class="fas fa-exclamation-circle"></i>
+    <span>Cumul annuel &ge; 5 000 €. Déposez votre attestation de vigilance.</span>
+    <button onclick="switchTab('profil');document.getElementById('vigilanceSection').scrollIntoView({behavior:'smooth'})" style="margin-left:8px;padding:6px 14px;background:#dc2626;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Déposer</button>
+</div>
+<div id="bannerUrssafOk" class="status-banner" style="display:none;background:#d1fae5;border:1px solid #6ee7b7;color:#065f46">
+    <i class="fas fa-check-circle"></i>
+    <span>Attestation de vigilance validée.</span>
+</div>
 
 <main id="view-missions" class="view">
     <h1 class="view-title">Missions</h1>
@@ -851,6 +864,44 @@
         </div>
         <div id="profileAddressStatus" style="display:none;margin-top:8px;padding:8px 12px;border-radius:8px;font-size:13px"></div>
     </div>
+
+    <!-- TVA Section -->
+    <div class="card" style="margin-top:12px" id="vatSection">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:12px"><i class="fas fa-percentage" style="color:var(--blue);margin-right:6px"></i>TVA</h3>
+        <label style="display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;margin-bottom:12px">
+            <input type="checkbox" id="vatCheckbox" onchange="toggleVatInput()" style="width:18px;height:18px;accent-color:#2563eb">
+            <span>Je suis assujetti à la TVA</span>
+        </label>
+        <div id="vatInputWrap" style="display:none">
+            <input type="text" id="vatNumberInput" placeholder="FR12345678901" maxlength="13" style="width:100%;padding:12px 14px;border:1px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;box-sizing:border-box;margin-bottom:8px">
+            <p id="vatAeWarning" style="display:none;font-size:12px;color:#b45309;background:#fef3c7;padding:8px 12px;border-radius:8px;margin-bottom:8px">
+                <i class="fas fa-info-circle" style="margin-right:4px"></i> La plupart des auto-entrepreneurs bénéficient de la franchise en base de TVA (art. 293B CGI).
+            </p>
+        </div>
+        <button onclick="saveVatSettings()" style="width:100%;padding:12px;background:var(--blue);color:white;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif" id="vatSaveBtn">
+            Enregistrer
+        </button>
+        <div id="vatSaveStatus" style="display:none;margin-top:8px;padding:8px 12px;border-radius:8px;font-size:13px"></div>
+    </div>
+
+    <!-- Vigilance URSSAF Section -->
+    <div class="card" style="margin-top:12px;display:none" id="vigilanceSection">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:12px"><i class="fas fa-shield-alt" style="color:#d97706;margin-right:6px"></i>Attestation de vigilance URSSAF</h3>
+        <div id="vigilanceStatusDisplay" style="margin-bottom:12px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600"></div>
+        <div style="margin-bottom:10px">
+            <label style="font-size:13px;color:var(--slate-500);display:block;margin-bottom:4px">Date d'expiration</label>
+            <input type="date" id="vigilanceExpiresAt" style="width:100%;padding:10px 14px;border:1px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:10px">
+            <label style="font-size:13px;color:var(--slate-500);display:block;margin-bottom:4px">Fichier (PDF, JPG, PNG)</label>
+            <input type="file" id="vigilanceFile" accept=".pdf,.jpg,.jpeg,.png" style="width:100%;font-size:13px;font-family:'DM Sans',sans-serif;box-sizing:border-box">
+        </div>
+        <button onclick="uploadVigilance()" style="width:100%;padding:12px;background:#d97706;color:white;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif" id="vigilanceUploadBtn">
+            <i class="fas fa-upload" style="margin-right:6px"></i> Envoyer l'attestation
+        </button>
+        <div id="vigilanceUploadStatus" style="display:none;margin-top:8px;padding:8px 12px;border-radius:8px;font-size:13px"></div>
+    </div>
+
     <button onclick="logout()" style="width:100%;padding:14px;background:#fee2e2;color:#b91c1c;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px">
         <i class="fas fa-sign-out-alt" style="margin-right:6px"></i> Se déconnecter
     </button>
@@ -1434,6 +1485,13 @@
         if (currentUser.driver_address) {
             document.getElementById('profileAddressInput').value = currentUser.driver_address;
         }
+        // Pre-fill TVA
+        if (currentUser.vat_applicable) {
+            document.getElementById('vatCheckbox').checked = true;
+            document.getElementById('vatInputWrap').style.display = '';
+            if (currentUser.vat_number) document.getElementById('vatNumberInput').value = currentUser.vat_number;
+            if (currentUser.legal_form === 'Auto-Entrepreneur') document.getElementById('vatAeWarning').style.display = '';
+        }
 
         const status = currentUser.driver_status;
 
@@ -1463,6 +1521,7 @@
                 switchTab('missions');
                 loadAvailableMissions();
                 loadAlerts();
+                checkUrssafThreshold();
             }
         } else if (status === 'suspended') {
             document.getElementById('bannerSuspended').style.display = 'flex';
@@ -1470,6 +1529,170 @@
         } else if (status === 'rejected') {
             document.getElementById('bannerRejected').style.display = 'flex';
             blockAll();
+        }
+    }
+
+    // --- URSSAF / TVA / Vigilance ---
+    async function checkUrssafThreshold() {
+        try {
+            const res = await fetch(API + '/api/driver/income-status', {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('pv_token') }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            // Banners
+            document.getElementById('bannerUrssafWarning').style.display = 'none';
+            document.getElementById('bannerUrssafAlert').style.display = 'none';
+            document.getElementById('bannerUrssafOk').style.display = 'none';
+
+            if (data.vigilance_status === 'approved') {
+                document.getElementById('bannerUrssafOk').style.display = 'flex';
+            } else if (data.threshold_exceeded) {
+                document.getElementById('bannerUrssafAlert').style.display = 'flex';
+            } else if (data.threshold_warning) {
+                document.getElementById('bannerUrssafWarning').style.display = 'flex';
+            }
+
+            // Show vigilance section in profile if threshold warning or requested
+            if (data.threshold_warning || data.vigilance_status === 'requested' || data.vigilance_status === 'pending') {
+                const section = document.getElementById('vigilanceSection');
+                section.style.display = '';
+                const statusDisplay = document.getElementById('vigilanceStatusDisplay');
+                if (data.vigilance_status === 'requested') {
+                    statusDisplay.style.background = '#fef3c7';
+                    statusDisplay.style.color = '#92400e';
+                    statusDisplay.innerHTML = '<i class="fas fa-exclamation-triangle" style="margin-right:6px"></i>Attestation demandée par l\'administration';
+                } else if (data.vigilance_status === 'pending') {
+                    statusDisplay.style.background = '#dbeafe';
+                    statusDisplay.style.color = '#1e40af';
+                    statusDisplay.innerHTML = '<i class="fas fa-clock" style="margin-right:6px"></i>Attestation en cours de vérification';
+                } else if (data.vigilance_status === 'approved') {
+                    statusDisplay.style.background = '#d1fae5';
+                    statusDisplay.style.color = '#065f46';
+                    statusDisplay.innerHTML = '<i class="fas fa-check-circle" style="margin-right:6px"></i>Attestation validée' + (data.vigilance_expires_at ? ' (expire le ' + data.vigilance_expires_at.substring(0,10).split('-').reverse().join('/') + ')' : '');
+                } else {
+                    statusDisplay.style.background = '#fef3c7';
+                    statusDisplay.style.color = '#92400e';
+                    statusDisplay.innerHTML = '<i class="fas fa-info-circle" style="margin-right:6px"></i>Cumul annuel : ' + data.annual_total.toFixed(2) + ' € — attestation à déposer';
+                }
+            }
+            if (data.vigilance_status === 'approved') {
+                document.getElementById('vigilanceSection').style.display = '';
+                const statusDisplay = document.getElementById('vigilanceStatusDisplay');
+                statusDisplay.style.background = '#d1fae5';
+                statusDisplay.style.color = '#065f46';
+                statusDisplay.innerHTML = '<i class="fas fa-check-circle" style="margin-right:6px"></i>Attestation validée' + (data.vigilance_expires_at ? ' (expire le ' + data.vigilance_expires_at.substring(0,10).split('-').reverse().join('/') + ')' : '');
+            }
+        } catch (e) { /* silencieux */ }
+    }
+
+    function toggleVatInput() {
+        const checked = document.getElementById('vatCheckbox').checked;
+        document.getElementById('vatInputWrap').style.display = checked ? '' : 'none';
+        if (checked && currentUser.legal_form === 'Auto-Entrepreneur') {
+            document.getElementById('vatAeWarning').style.display = '';
+        } else {
+            document.getElementById('vatAeWarning').style.display = 'none';
+        }
+    }
+
+    async function saveVatSettings() {
+        const btn = document.getElementById('vatSaveBtn');
+        const statusEl = document.getElementById('vatSaveStatus');
+        const vatApplicable = document.getElementById('vatCheckbox').checked ? 1 : 0;
+        const vatNumber = document.getElementById('vatNumberInput').value.trim();
+
+        if (vatApplicable && vatNumber && !/^FR\d{11}$/.test(vatNumber)) {
+            statusEl.style.display = '';
+            statusEl.style.background = '#fee2e2';
+            statusEl.style.color = '#b91c1c';
+            statusEl.textContent = 'Format invalide : FR + 11 chiffres (ex: FR12345678901)';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+        statusEl.style.display = 'none';
+
+        try {
+            const res = await fetch(API + '/api/driver/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('pv_token') },
+                body: JSON.stringify({ vat_applicable: vatApplicable, vat_number: vatApplicable ? vatNumber : null })
+            });
+            const data = await res.json();
+            statusEl.style.display = '';
+            if (data.success) {
+                statusEl.style.background = '#dcfce7';
+                statusEl.style.color = '#166534';
+                statusEl.textContent = 'Paramètres TVA enregistrés.';
+                currentUser.vat_applicable = vatApplicable;
+                currentUser.vat_number = vatApplicable ? vatNumber : null;
+            } else {
+                statusEl.style.background = '#fee2e2';
+                statusEl.style.color = '#b91c1c';
+                statusEl.textContent = data.error || 'Erreur';
+            }
+        } catch (e) {
+            statusEl.style.display = '';
+            statusEl.style.background = '#fee2e2';
+            statusEl.style.color = '#b91c1c';
+            statusEl.textContent = 'Erreur réseau';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Enregistrer';
+        }
+    }
+
+    async function uploadVigilance() {
+        const btn = document.getElementById('vigilanceUploadBtn');
+        const statusEl = document.getElementById('vigilanceUploadStatus');
+        const fileInput = document.getElementById('vigilanceFile');
+        const expiresAt = document.getElementById('vigilanceExpiresAt').value;
+
+        if (!fileInput.files || !fileInput.files[0]) {
+            statusEl.style.display = '';
+            statusEl.style.background = '#fee2e2';
+            statusEl.style.color = '#b91c1c';
+            statusEl.textContent = 'Veuillez sélectionner un fichier.';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+        statusEl.style.display = 'none';
+
+        try {
+            const fd = new FormData();
+            fd.append('file', fileInput.files[0]);
+            if (expiresAt) fd.append('expires_at', expiresAt);
+
+            const res = await fetch(API + '/api/driver/vigilance-upload', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('pv_token') },
+                body: fd
+            });
+            const data = await res.json();
+            statusEl.style.display = '';
+            if (data.success) {
+                statusEl.style.background = '#dcfce7';
+                statusEl.style.color = '#166534';
+                statusEl.textContent = 'Attestation envoyée. Elle sera vérifiée par l\'administration.';
+                checkUrssafThreshold();
+            } else {
+                statusEl.style.background = '#fee2e2';
+                statusEl.style.color = '#b91c1c';
+                statusEl.textContent = data.error || 'Erreur';
+            }
+        } catch (e) {
+            statusEl.style.display = '';
+            statusEl.style.background = '#fee2e2';
+            statusEl.style.color = '#b91c1c';
+            statusEl.textContent = 'Erreur réseau';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-upload" style="margin-right:6px"></i> Envoyer l\'attestation';
         }
     }
 

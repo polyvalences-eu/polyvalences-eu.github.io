@@ -1141,6 +1141,53 @@
                 <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
             </div>
         </div>
+
+        <!-- Seuil URSSAF -->
+        <div style="margin-top:32px;">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-shield-alt" style="color:#d97706"></i>
+                    Seuil URSSAF (vigilance)
+                    <span class="count" id="vigilanceCount" style="background:#fef3c7; color:#92400e;">0</span>
+                </h2>
+                <div style="display:flex; gap:8px;">
+                    <select id="vigilanceYear" onchange="loadVigilanceDashboard()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                        <option value="2026" selected>2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <button class="btn-refresh" onclick="loadVigilanceDashboard()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="table-card" id="vigilanceDashboardList">
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
+            </div>
+        </div>
+
+        <!-- Export DGFiP -->
+        <div style="margin-top:32px;">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-file-csv" style="color:var(--navy)"></i>
+                    Export DGFiP
+                </h2>
+            </div>
+            <div class="table-card" style="padding:20px;">
+                <p style="font-size:13px; color:var(--slate-500); margin-bottom:12px;">
+                    Téléchargez le récapitulatif annuel des revenus chauffeurs au format CSV (compatible Excel/DGFiP).
+                </p>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <select id="dgfipYear" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                        <option value="2026" selected>2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <button onclick="downloadDgfipExport()" style="padding:10px 20px; background:var(--navy); color:white; border:none; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;">
+                        <i class="fas fa-download" style="margin-right:6px"></i> Télécharger CSV
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ============ TAB: MISSIONS (Sprint I refonte) ============ -->
@@ -1405,7 +1452,7 @@
         if (tabId === 'clients') loadAdminClients();
         if (tabId === 'edl') loadAdminInspections();
         if (tabId === 'quotes') loadAdminQuotes();
-        if (tabId === 'invoices') { loadAdminInvoices(); loadAdminDriverInvoices(); }
+        if (tabId === 'invoices') { loadAdminInvoices(); loadAdminDriverInvoices(); loadVigilanceDashboard(); }
         if (tabId === 'drivers') loadAdminDrivers();
         if (tabId === 'expenses') loadAdminExpenses();
     }
@@ -3883,6 +3930,7 @@
                             ${d.first_name} ${d.last_name}
                             <span class="type-badge" style="background:${st.bg}; color:${st.color};">${st.label}</span>
                             ${d.contract_signed ? '<i class="fas fa-file-contract" style="color:#059669;font-size:13px;margin-left:4px;" title="Contrat signé"></i>' : '<i class="fas fa-file-contract" style="color:#d1d5db;font-size:13px;margin-left:4px;" title="Contrat non signé"></i>'}
+                            ${d.legal_form ? '<span style="background:#dbeafe;color:#1e40af;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:700;margin-left:4px">' + d.legal_form + '</span>' : ''}
                         </div>
                         <div class="user-email">${d.email}</div>
                         <div class="user-details">
@@ -3899,6 +3947,128 @@
             console.error('Load drivers failed:', err);
             container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de connexion.</p></div>';
         }
+    }
+
+    // --- VIGILANCE / DGFiP helpers ---
+    function buildVigilanceSection(d, driverId) {
+        const bg = d.vigilance_status === 'approved' ? '#d1fae5' : d.vigilance_status ? '#fef3c7' : 'var(--slate-50)';
+        const border = d.vigilance_status === 'approved' ? '#6ee7b7' : d.vigilance_status ? '#fde68a' : 'var(--slate-200)';
+        const color = d.vigilance_status === 'approved' ? '#065f46' : '#92400e';
+        const statusText = d.vigilance_status === 'approved' ? 'Validée' : d.vigilance_status === 'pending' ? 'En attente de vérification' : d.vigilance_status === 'requested' ? 'Demandée' : 'Non soumise';
+        const expires = d.vigilance_expires_at ? ' — Expire le ' + d.vigilance_expires_at.substring(0,10).split('-').reverse().join('/') : '';
+
+        let viewBtn = '';
+        if (d.vigilance_url) {
+            viewBtn = '<a href="' + API + '/api/r2/' + d.vigilance_url + '?token=' + authToken + '" target="_blank" style="padding:8px 14px;background:#2563eb;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;cursor:pointer"><i class="fas fa-eye" style="margin-right:4px"></i>Voir</a>';
+        }
+        let reviewBtns = '';
+        if (d.vigilance_status === 'pending') {
+            reviewBtns = '<button onclick="adminReviewVigilance(' + driverId + ',\'approve\')" style="padding:8px 14px;background:#059669;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer"><i class="fas fa-check" style="margin-right:4px"></i>Approuver</button>'
+                + '<button onclick="adminReviewVigilance(' + driverId + ',\'reject\')" style="padding:8px 14px;background:#dc2626;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer"><i class="fas fa-times" style="margin-right:4px"></i>Rejeter</button>';
+        }
+
+        return '<div style="padding:16px 18px;background:' + bg + ';border:1px solid ' + border + ';border-radius:10px;margin-bottom:20px;">'
+            + '<div style="font-size:13px;font-weight:700;color:' + color + ';margin-bottom:8px;"><i class="fas fa-shield-alt" style="margin-right:4px;"></i> Attestation de vigilance URSSAF</div>'
+            + '<div style="font-size:13px;margin-bottom:10px;">Statut : <strong>' + statusText + '</strong>' + expires + '</div>'
+            + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+            + viewBtn
+            + '<button onclick="adminRequestVigilance(' + driverId + ')" style="padding:8px 14px;background:#d97706;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer"><i class="fas fa-paper-plane" style="margin-right:4px"></i>Demander</button>'
+            + reviewBtns
+            + '</div></div>';
+    }
+
+    async function adminRequestVigilance(driverId) {
+        if (!confirm('Envoyer une demande d\'attestation de vigilance au chauffeur ?')) return;
+        try {
+            const res = await fetch(API + '/api/admin/drivers/' + driverId + '/request-vigilance', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Demande envoyée au chauffeur.');
+                openDriverDetail(driverId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (e) { showToast('Erreur réseau', 'error'); }
+    }
+
+    async function adminReviewVigilance(driverId, action) {
+        const label = action === 'approve' ? 'approuver' : 'rejeter';
+        if (!confirm('Voulez-vous ' + label + ' cette attestation ?')) return;
+        try {
+            const res = await fetch(API + '/api/admin/drivers/' + driverId + '/vigilance-review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ action })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Attestation ' + (action === 'approve' ? 'approuvée' : 'rejetée') + '.');
+                openDriverDetail(driverId);
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+            }
+        } catch (e) { showToast('Erreur réseau', 'error'); }
+    }
+
+    async function loadVigilanceDashboard() {
+        const container = document.getElementById('vigilanceDashboardList');
+        if (!container) return;
+        const year = document.getElementById('vigilanceYear') ? document.getElementById('vigilanceYear').value : new Date().getFullYear();
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+        try {
+            const res = await fetch(API + '/api/admin/vigilance-dashboard?year=' + year, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            const drivers = data.drivers || [];
+            document.getElementById('vigilanceCount').textContent = drivers.length;
+            if (drivers.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><p>Aucun chauffeur au-dessus de 4 000 €.</p></div>';
+                return;
+            }
+            container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:var(--slate-50)">'
+                + '<th style="padding:10px 12px;text-align:left;font-weight:700;color:var(--slate-500)">Chauffeur</th>'
+                + '<th style="padding:10px 12px;text-align:right;font-weight:700;color:var(--slate-500)">Cumul annuel</th>'
+                + '<th style="padding:10px 12px;text-align:center;font-weight:700;color:var(--slate-500)">Vigilance</th>'
+                + '<th style="padding:10px 12px;text-align:center;font-weight:700;color:var(--slate-500)">Actions</th>'
+                + '</tr></thead><tbody>'
+                + drivers.map(d => {
+                    const statusBg = d.vigilance_status === 'approved' ? '#d1fae5' : d.vigilance_status === 'pending' ? '#dbeafe' : d.vigilance_status === 'requested' ? '#fef3c7' : '#fee2e2';
+                    const statusColor = d.vigilance_status === 'approved' ? '#065f46' : d.vigilance_status === 'pending' ? '#1e40af' : d.vigilance_status === 'requested' ? '#92400e' : '#991b1b';
+                    const statusLabel = d.vigilance_status === 'approved' ? 'Validée' : d.vigilance_status === 'pending' ? 'En attente' : d.vigilance_status === 'requested' ? 'Demandée' : 'Manquante';
+                    return '<tr style="border-bottom:1px solid var(--slate-100)">'
+                        + '<td style="padding:10px 12px"><strong>' + d.first_name + ' ' + d.last_name + '</strong>' + (d.legal_form ? ' <span style="font-size:10px;background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px">' + d.legal_form + '</span>' : '') + '</td>'
+                        + '<td style="padding:10px 12px;text-align:right;font-weight:700;color:' + (d.annual_total >= 5000 ? '#dc2626' : '#d97706') + '">' + d.annual_total.toFixed(2) + ' €</td>'
+                        + '<td style="padding:10px 12px;text-align:center"><span style="background:' + statusBg + ';color:' + statusColor + ';padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700">' + statusLabel + '</span></td>'
+                        + '<td style="padding:10px 12px;text-align:center"><button onclick="openDriverDetail(' + d.id + ')" style="padding:5px 12px;background:var(--blue);color:white;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Détail</button></td>'
+                        + '</tr>';
+                }).join('')
+                + '</tbody></table>';
+        } catch (e) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de connexion.</p></div>';
+        }
+    }
+
+    function downloadDgfipExport() {
+        const year = document.getElementById('dgfipYear') ? document.getElementById('dgfipYear').value : new Date().getFullYear();
+        fetch(API + '/api/admin/dgfip-export?year=' + year, {
+            headers: { 'Authorization': 'Bearer ' + authToken }
+        }).then(res => {
+            if (!res.ok) throw new Error('Erreur');
+            return res.blob();
+        }).then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dgfip-export-' + year + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }).catch(e => showToast('Erreur lors du téléchargement', 'error'));
     }
 
     async function openDriverDetail(driverId) {
@@ -3947,8 +4117,19 @@
                                 ${d.driver_status === 'contract_signed' ? 'Contrat signé' : d.driver_status}
                             </div>
                         </div>
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase;">Forme juridique</div>
+                            <div style="font-size:14px; font-weight:600;">${d.legal_form || '—'}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase;">TVA</div>
+                            <div style="font-size:14px; font-weight:600;">${d.vat_applicable ? 'Oui — ' + (d.vat_number || '—') : 'Non'}</div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- VIGILANCE URSSAF -->
+                ${buildVigilanceSection(d, driverId)}
 
                 <!-- FIABILITÉ -->
                 <div style="padding:16px 18px; background:#fffbeb; border:1px solid #fde68a; border-radius:10px; margin-bottom:20px;">
