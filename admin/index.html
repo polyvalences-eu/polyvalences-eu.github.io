@@ -795,10 +795,18 @@
             <div id="aEdlContextBlock" style="background:#eff6ff;border:1px solid var(--blue);border-radius:12px;padding:16px;margin-bottom:20px">
                 <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:12px"><i class="fas fa-info-circle" style="margin-right:6px"></i>Contexte de l'EDL</div>
                 <div class="edl-field">
-                    <label>Client *</label>
-                    <select id="aEdlWizClient" style="width:100%;padding:12px;border:1px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:white">
-                        <option value="">-- Choisir un client --</option>
+                    <label>Client</label>
+                    <select id="aEdlWizClient" onchange="aToggleManualClient()" style="width:100%;padding:12px;border:1px solid var(--slate-200);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:white">
+                        <option value="">-- Pas de client inscrit --</option>
                     </select>
+                </div>
+                <div id="aEdlManualBlock" style="background:#fffbeb;border:1px solid #f59e0b;border-radius:10px;padding:14px;margin-bottom:12px">
+                    <div style="font-size:12px;color:#92400e;margin-bottom:10px"><i class="fas fa-exclamation-triangle" style="margin-right:6px"></i>Pas de client inscrit — renseignez les infos manuellement</div>
+                    <div class="edl-field" style="margin-bottom:8px"><label>Entreprise / Nom</label><input type="text" id="aEdlManualCompany" placeholder="Nom de l'entreprise ou du client"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                        <div class="edl-field" style="margin-bottom:0"><label>Email (optionnel)</label><input type="email" id="aEdlContactEmail" placeholder="email@exemple.fr"></div>
+                        <div class="edl-field" style="margin-bottom:0"><label>Téléphone (optionnel)</label><input type="tel" id="aEdlContactPhone" placeholder="06 12 34 56 78"></div>
+                    </div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
                     <div class="edl-field"><label>Plaque *</label><input type="text" id="aEdlWizPlate" placeholder="AB-123-CD" style="text-transform:uppercase"></div>
@@ -4851,6 +4859,11 @@
         document.getElementById('aAbsentReasonSection').style.display = absent ? '' : 'none';
     }
 
+    function aToggleManualClient() {
+        const hasClient = !!document.getElementById('aEdlWizClient').value;
+        document.getElementById('aEdlManualBlock').style.display = hasClient ? 'none' : '';
+    }
+
     function aCloseEDL() {
         if (!confirm('Quitter l\'état des lieux ? Les données non soumises seront perdues.')) return;
         document.getElementById('aEdlOverlay').classList.remove('active');
@@ -4972,6 +4985,11 @@
         const ctx = document.getElementById('aEdlContextBlock');
         const adminName = currentUser ? (currentUser.first_name+' '+currentUser.last_name) : '';
 
+        // Reset manual client fields
+        document.getElementById('aEdlManualCompany').value = '';
+        document.getElementById('aEdlContactEmail').value = '';
+        document.getElementById('aEdlContactPhone').value = '';
+
         if (mode==='standalone') {
             ctx.style.display = '';
             await aLoadEdlClients();
@@ -4981,6 +4999,7 @@
             document.getElementById('aEdlWizModel').value = '';
             document.getElementById('aEdlWizType').value = 'standalone';
             aSetContextReadOnly(false);
+            aToggleManualClient();
         } else if (mode==='mission_departure'||mode==='mission_arrival') {
             ctx.style.display = '';
             const m = adminMissionsData.find(x => x.id===missionId);
@@ -4993,6 +5012,7 @@
             }
             document.getElementById('aEdlWizType').value = mode==='mission_departure'?'departure':'arrival';
             aSetContextReadOnly(true);
+            document.getElementById('aEdlManualBlock').style.display = 'none';
         } else if (mode==='draft' && draftData) {
             ctx.style.display = '';
             await aLoadEdlClients();
@@ -5002,6 +5022,7 @@
             document.getElementById('aEdlWizModel').value = draftData.model||'';
             document.getElementById('aEdlWizType').value = draftData.type||'standalone';
             aSetContextReadOnly(true);
+            aToggleManualClient();
         }
 
         // Pre-fill cedant/prenant
@@ -5033,6 +5054,14 @@
     async function aSubmitEDL() {
         if (aEdlDamages.length===0) {
             if (!confirm('Aucun dommage signalé. Confirmer que le véhicule est en parfait état ?')) return;
+        }
+        // Validation cédant/prenant selon type
+        const edlType = document.getElementById('aEdlWizType').value;
+        if (edlType==='departure' && !document.getElementById('aEdlCedantName').value.trim()) {
+            showToast('Le cédant est obligatoire pour un EDL de départ.','error'); return;
+        }
+        if (edlType==='arrival' && !document.getElementById('aEdlPrenantName').value.trim()) {
+            showToast('Le prenant est obligatoire pour un EDL d\'arrivée.','error'); return;
         }
         const absent = document.getElementById('aEdlClientAbsent').checked;
         if (aIsCanvasBlank(aSigDriverCanvas)) { showToast('Veuillez signer (inspecteur).','error'); return; }
@@ -5123,7 +5152,10 @@
                 edl_datetime: document.getElementById('aEdlDatetime').value||null,
                 plate: document.getElementById('aEdlWizPlate').value.trim().toUpperCase()||null,
                 brand: document.getElementById('aEdlWizBrand').value.trim()||null,
-                model: document.getElementById('aEdlWizModel').value.trim()||null
+                model: document.getElementById('aEdlWizModel').value.trim()||null,
+                company_name: document.getElementById('aEdlManualCompany').value.trim()||null,
+                contact_email: document.getElementById('aEdlContactEmail').value.trim()||null,
+                contact_phone: document.getElementById('aEdlContactPhone').value.trim()||null
             };
 
             if (aEdlMode==='mission_departure'||aEdlMode==='mission_arrival') {
@@ -5131,7 +5163,8 @@
             } else if (aEdlMode==='draft' && aEdlDraftId) {
                 payload.inspection_id = aEdlDraftId;
             } else {
-                payload.client_id = parseInt(document.getElementById('aEdlWizClient').value);
+                const clientVal = document.getElementById('aEdlWizClient').value;
+                if (clientVal) payload.client_id = parseInt(clientVal);
             }
 
             // 6. POST
