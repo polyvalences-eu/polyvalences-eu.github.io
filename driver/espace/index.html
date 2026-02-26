@@ -1640,10 +1640,30 @@
         input.value = formatted;
         // Adjust cursor position
         const diff = formatted.length - rawBefore.length;
-        input.setSelectionRange(cursor + diff, cursor + diff);
+        input.setSelectionRange(Math.max(0, cursor + diff), Math.max(0, cursor + diff));
         lookupSiret(digits);
         updateContractBtn();
     }
+
+    // Handle paste: strip spaces/dots/dashes, reformat, trigger lookup
+    document.addEventListener('DOMContentLoaded', () => {
+        const siretInput = document.getElementById('contractSiret');
+        if (siretInput) {
+            siretInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasted = (e.clipboardData || window.clipboardData).getData('text');
+                const digits = pasted.replace(/\D/g, '').slice(0, 14);
+                let formatted = '';
+                for (let i = 0; i < digits.length; i++) {
+                    if (i === 3 || i === 6 || i === 9) formatted += ' ';
+                    formatted += digits[i];
+                }
+                siretInput.value = formatted;
+                lookupSiret(digits);
+                updateContractBtn();
+            });
+        }
+    });
 
     function getRawSiret() {
         return (document.getElementById('contractSiret').value || '').replace(/\D/g, '');
@@ -1666,19 +1686,35 @@
         statusEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="color:var(--blue)"></i>';
         siretLookupTimer = setTimeout(async () => {
             try {
-                const res = await fetch('https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/' + digits);
-                if (!res.ok) throw new Error('not found');
+                const res = await fetch('https://recherche-entreprises.api.gouv.fr/search?q=' + digits);
+                if (!res.ok) throw new Error('API error');
                 const data = await res.json();
-                const etab = data.etablissement;
-                const ul = etab.unite_legale || {};
-                const adr = etab.adresse || {};
+                if (!data.results || data.results.length === 0) throw new Error('not found');
 
-                const companyName = ul.denomination || ((ul.prenom_1 || '') + ' ' + (ul.nom || '')).trim() || '—';
-                const street = [adr.numero_voie, adr.type_voie, adr.libelle_voie].filter(Boolean).join(' ');
-                const companyAddress = [street, adr.code_postal, adr.libelle_commune].filter(Boolean).join(', ') || '—';
-                const nafCode = ul.activite_principale || '—';
-                const legalForm = ul.categorie_juridique || '—';
-                const creationDate = ul.date_creation || '—';
+                // Find matching etablissement by SIRET
+                let found = null;
+                for (const r of data.results) {
+                    if (r.siege && (r.siren + '' + (r.siege.siret || '').slice(9)) === digits) { found = { result: r, etab: r.siege }; break; }
+                    if (r.matching_etablissements) {
+                        for (const e of r.matching_etablissements) {
+                            if (e.siret === digits) { found = { result: r, etab: e }; break; }
+                        }
+                    }
+                    if (found) break;
+                }
+                // Fallback: use first result if SIREN matches
+                if (!found && data.results[0] && data.results[0].siren === digits.slice(0, 9)) {
+                    found = { result: data.results[0], etab: data.results[0].siege };
+                }
+                if (!found) throw new Error('not found');
+
+                const r = found.result;
+                const etab = found.etab;
+                const companyName = r.nom_raison_sociale || r.nom_complet || '—';
+                const companyAddress = etab.adresse || '—';
+                const nafCode = etab.activite_principale || r.activite_principale || '—';
+                const legalForm = r.nature_juridique || r.categorie_juridique || '—';
+                const creationDate = etab.date_creation || r.date_creation || '—';
 
                 siretCompanyData = { company_name: companyName, company_address: companyAddress, naf_code: nafCode, legal_form: legalForm, creation_date: creationDate };
 
