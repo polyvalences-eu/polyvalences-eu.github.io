@@ -528,6 +528,50 @@
     </div>
 </main>
 
+<main id="view-factures" class="view">
+    <h1 class="view-title">Mes Factures</h1>
+
+    <!-- Récap en haut -->
+    <div class="card" style="padding:16px;margin-bottom:16px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+            <select id="invoiceSummaryMonth" onchange="loadInvoiceSummary()" style="padding:8px 12px;border:1px solid var(--slate-200);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif">
+                <option value="">Toute l'année</option>
+                <option value="1">Janvier</option><option value="2">Février</option><option value="3">Mars</option>
+                <option value="4">Avril</option><option value="5">Mai</option><option value="6">Juin</option>
+                <option value="7">Juillet</option><option value="8">Août</option><option value="9">Septembre</option>
+                <option value="10">Octobre</option><option value="11">Novembre</option><option value="12">Décembre</option>
+            </select>
+            <select id="invoiceSummaryYear" onchange="loadInvoiceSummary()" style="padding:8px 12px;border:1px solid var(--slate-200);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif">
+            </select>
+            <button onclick="printInvoiceSummary()" style="margin-left:auto;padding:8px 14px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">
+                <i class="fas fa-download"></i> Récap
+            </button>
+        </div>
+        <div id="invoiceSummaryCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+            <div style="background:#f0fdf4;border-radius:10px;padding:12px;text-align:center">
+                <div style="font-size:11px;color:var(--slate-500);margin-bottom:4px">Commissions</div>
+                <div id="summaryCommission" style="font-size:18px;font-weight:700;color:var(--emerald)">0 €</div>
+            </div>
+            <div style="background:#eff6ff;border-radius:10px;padding:12px;text-align:center">
+                <div style="font-size:11px;color:var(--slate-500);margin-bottom:4px">Frais</div>
+                <div id="summaryExpenses" style="font-size:18px;font-weight:700;color:var(--blue)">0 €</div>
+            </div>
+            <div style="background:#fef3c7;border-radius:10px;padding:12px;text-align:center">
+                <div style="font-size:11px;color:var(--slate-500);margin-bottom:4px">Total net</div>
+                <div id="summaryNet" style="font-size:18px;font-weight:700;color:#92400e">0 €</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des factures -->
+    <div id="driverInvoicesContainer">
+        <div class="card" style="text-align:center;padding:30px 20px">
+            <i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--slate-200);margin-bottom:16px"></i>
+            <p style="font-size:14px;color:var(--slate-500)">Chargement...</p>
+        </div>
+    </div>
+</main>
+
 <main id="view-docs" class="view">
     <h1 class="view-title">Mon Dossier</h1>
     <p style="font-size:14px;color:var(--slate-500);margin-bottom:16px">
@@ -828,6 +872,10 @@
     <a href="#" class="nav-item" id="nav-frais" onclick="event.preventDefault();switchTab('frais')">
         <i class="fas fa-receipt"></i>
         <span>Frais</span>
+    </a>
+    <a href="#" class="nav-item" id="nav-factures" onclick="event.preventDefault();switchTab('factures')">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Factures</span>
     </a>
     <a href="#" class="nav-item" id="nav-docs" onclick="event.preventDefault();switchTab('docs')">
         <i class="fas fa-folder-open"></i>
@@ -1442,6 +1490,7 @@
         document.getElementById('nav-missions').classList.add('disabled');
         document.getElementById('nav-alertes').classList.add('disabled');
         document.getElementById('nav-frais').classList.add('disabled');
+        document.getElementById('nav-factures').classList.add('disabled');
         switchTab('docs');
     }
 
@@ -1449,6 +1498,7 @@
         document.getElementById('nav-missions').classList.add('disabled');
         document.getElementById('nav-alertes').classList.add('disabled');
         document.getElementById('nav-frais').classList.add('disabled');
+        document.getElementById('nav-factures').classList.add('disabled');
         switchTab('charte');
     }
 
@@ -1456,6 +1506,7 @@
         document.getElementById('nav-missions').classList.add('disabled');
         document.getElementById('nav-alertes').classList.add('disabled');
         document.getElementById('nav-frais').classList.add('disabled');
+        document.getElementById('nav-factures').classList.add('disabled');
         document.getElementById('nav-docs').classList.add('disabled');
         switchTab('profil');
     }
@@ -2323,7 +2374,7 @@
             <select id="expType${id}" onchange="updateExpenseHint(${id})" style="width:100%;padding:10px;border:1px solid var(--slate-200);border-radius:8px;font-size:14px;margin-bottom:8px;font-family:'DM Sans',sans-serif">
                 <option value="fuel">Carburant</option>
                 <option value="toll">Péage</option>
-                <option value="train_return">Train retour (max 50 €)</option>
+                <option value="train">Train (max 50 €)</option>
                 <option value="taxi">Taxi (max 20 €)</option>
                 <option value="other">Autre</option>
             </select>
@@ -2391,10 +2442,10 @@
         const type = document.getElementById('expType' + lineId).value;
         const hint = document.getElementById('expHint' + lineId);
         if (type === 'taxi') {
-            hint.textContent = 'Participation PolyValences : 20 € maximum sur justificatif.';
+            hint.textContent = 'Remboursement sur justificatif, plafonné à 20 €.';
             hint.style.display = 'block';
-        } else if (type === 'train_return') {
-            hint.textContent = 'Remboursement plafonné à 50 €. Les cartes de réduction (Grand Voyageur, etc.) sont à votre charge.';
+        } else if (type === 'train' || type === 'train_return') {
+            hint.textContent = 'Remboursement sur justificatif, plafonné à 50 €. Pensez à souscrire une carte Grand Voyageur ou carte de réduction SNCF !';
             hint.style.display = 'block';
         } else {
             hint.style.display = 'none';
@@ -2414,6 +2465,125 @@
         switchTab('frais');
     }
 
+    // ===== DRIVER INVOICES (auto-facturation) =====
+    async function loadDriverInvoices() {
+        const token = localStorage.getItem('pv_token');
+        try {
+            const res = await fetch(API + '/api/driver/invoices', { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+            renderDriverInvoices(data.invoices || []);
+        } catch (e) {
+            document.getElementById('driverInvoicesContainer').innerHTML = '<div class="card" style="text-align:center;padding:20px"><p style="color:var(--danger)">Erreur de chargement</p></div>';
+        }
+    }
+
+    function renderDriverInvoices(invoices) {
+        const c = document.getElementById('driverInvoicesContainer');
+        if (!invoices.length) {
+            c.innerHTML = '<div class="card" style="text-align:center;padding:30px 20px"><i class="fas fa-file-invoice" style="font-size:32px;color:var(--slate-200);margin-bottom:12px"></i><p style="font-size:14px;color:var(--slate-500)">Aucune facture pour le moment</p></div>';
+            return;
+        }
+        const typeLabels = { fuel: 'Carburant', toll: 'Péage', train: 'Train', taxi: 'Taxi', other: 'Autre' };
+        c.innerHTML = invoices.map(inv => {
+            const statusBadge = inv.status === 'paid'
+                ? '<span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600">Payée</span>'
+                : '<span style="background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600">En attente</span>';
+            const totalExpenses = (inv.expense_fuel || 0) + (inv.expense_tolls || 0) + (inv.expense_train || 0) + (inv.expense_taxi || 0) + (inv.expense_other || 0);
+            const originShort = (inv.origin_address || '?').split(',')[0];
+            const destShort = (inv.destination_address || '?').split(',')[0];
+            const route = originShort + ' → ' + destShort;
+            const date = inv.mission_date ? new Date(inv.mission_date).toLocaleDateString('fr-FR') : '';
+            return `<div class="card" style="padding:14px;margin-bottom:10px;cursor:pointer" onclick="toggleInvoiceDetail(${inv.id})">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <span style="font-size:14px;font-weight:700;color:var(--navy)">${inv.invoice_number}</span>
+                    ${statusBadge}
+                </div>
+                <div style="font-size:13px;color:var(--slate-500);margin-bottom:4px">${route} — ${date}</div>
+                <div style="font-size:15px;font-weight:700;color:var(--emerald)">${inv.total_amount.toFixed(2)} € HT${inv.vat_amount > 0 ? ' <span style="font-size:12px;color:var(--slate-400)">(+ ' + inv.vat_amount.toFixed(2) + ' € TVA)</span>' : ''}</div>
+                <div id="invoiceDetail${inv.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--slate-200);font-size:12px;color:var(--slate-600)">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Commission :</span><strong>${inv.commission_amount.toFixed(2)} €</strong></div>
+                    ${inv.expense_fuel > 0 ? '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Carburant :</span><strong>' + inv.expense_fuel.toFixed(2) + ' €</strong></div>' : ''}
+                    ${inv.expense_tolls > 0 ? '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Péage :</span><strong>' + inv.expense_tolls.toFixed(2) + ' €</strong></div>' : ''}
+                    ${inv.expense_train > 0 ? '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Train :</span><strong>' + inv.expense_train.toFixed(2) + ' €</strong></div>' : ''}
+                    ${inv.expense_taxi > 0 ? '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Taxi :</span><strong>' + inv.expense_taxi.toFixed(2) + ' €</strong></div>' : ''}
+                    ${inv.expense_other > 0 ? '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Autre :</span><strong>' + inv.expense_other.toFixed(2) + ' €</strong></div>' : ''}
+                    ${totalExpenses > 0 ? '<div style="display:flex;justify-content:space-between;margin-bottom:4px;padding-top:4px;border-top:1px dashed var(--slate-200)"><span>Total frais :</span><strong>' + totalExpenses.toFixed(2) + ' €</strong></div>' : ''}
+                    ${inv.vat_applicable ? '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>TVA (' + (inv.vat_rate * 100).toFixed(0) + '%) :</span><strong>' + inv.vat_amount.toFixed(2) + ' €</strong></div>' : ''}
+                    ${inv.paid_at ? '<div style="margin-top:6px;font-size:11px;color:var(--emerald)">Payée le ' + new Date(inv.paid_at).toLocaleDateString('fr-FR') + '</div>' : ''}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function toggleInvoiceDetail(id) {
+        const el = document.getElementById('invoiceDetail' + id);
+        if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function loadInvoiceSummary() {
+        const token = localStorage.getItem('pv_token');
+        const yearSel = document.getElementById('invoiceSummaryYear');
+        const monthSel = document.getElementById('invoiceSummaryMonth');
+
+        // Populate year selector if empty
+        if (yearSel.options.length === 0) {
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear; y >= currentYear - 2; y--) {
+                const opt = document.createElement('option');
+                opt.value = y; opt.textContent = y;
+                yearSel.appendChild(opt);
+            }
+        }
+
+        const year = yearSel.value;
+        const month = monthSel.value;
+        let url = API + '/api/driver/invoices/summary?year=' + year;
+        if (month) url += '&month=' + month;
+
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+
+            if (data.type === 'monthly' && data.summary) {
+                const s = data.summary;
+                const totalExp = s.total_fuel + s.total_tolls + s.total_train + s.total_taxi + s.total_other;
+                document.getElementById('summaryCommission').textContent = s.total_commission.toFixed(2) + ' €';
+                document.getElementById('summaryExpenses').textContent = totalExp.toFixed(2) + ' €';
+                document.getElementById('summaryNet').textContent = s.total_net.toFixed(2) + ' €';
+            } else if (data.type === 'annual' && data.totals) {
+                const t = data.totals;
+                document.getElementById('summaryCommission').textContent = t.total_commission.toFixed(2) + ' €';
+                document.getElementById('summaryExpenses').textContent = t.total_expenses.toFixed(2) + ' €';
+                document.getElementById('summaryNet').textContent = t.total_net.toFixed(2) + ' €';
+            }
+        } catch (e) {
+            console.error('Summary error:', e);
+        }
+    }
+
+    function printInvoiceSummary() {
+        const yearSel = document.getElementById('invoiceSummaryYear');
+        const monthSel = document.getElementById('invoiceSummaryMonth');
+        const monthNames = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        const period = monthSel.value ? monthNames[parseInt(monthSel.value)] + ' ' + yearSel.value : 'Année ' + yearSel.value;
+
+        const commission = document.getElementById('summaryCommission').textContent;
+        const expenses = document.getElementById('summaryExpenses').textContent;
+        const net = document.getElementById('summaryNet').textContent;
+
+        const w = window.open('', '_blank');
+        w.document.write('<html><head><title>Récapitulatif ' + period + '</title><style>body{font-family:Arial,sans-serif;padding:40px}h1{font-size:20px}table{width:100%;border-collapse:collapse;margin-top:20px}td,th{padding:10px;border:1px solid #ddd;text-align:left}th{background:#f5f5f5}.total{font-weight:bold;font-size:16px}</style></head><body>');
+        w.document.write('<h1>Récapitulatif chauffeur — ' + period + '</h1>');
+        w.document.write('<p>Chauffeur : ' + (currentUser ? currentUser.first_name + ' ' + currentUser.last_name : '') + '</p>');
+        w.document.write('<table><tr><th>Poste</th><th>Montant</th></tr>');
+        w.document.write('<tr><td>Commissions</td><td>' + commission + '</td></tr>');
+        w.document.write('<tr><td>Frais remboursés</td><td>' + expenses + '</td></tr>');
+        w.document.write('<tr class="total"><td>Total net</td><td>' + net + '</td></tr>');
+        w.document.write('</table><p style="margin-top:30px;font-size:12px;color:#999">Document généré le ' + new Date().toLocaleDateString('fr-FR') + ' depuis polyvalences.eu</p></body></html>');
+        w.document.close();
+        w.print();
+    }
+
     // ===== NAVIGATION =====
     function switchTab(tabId) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
@@ -2426,6 +2596,7 @@
         if (tabId === 'missions' && currentUser && currentUser.driver_status === 'approved') loadAvailableMissions();
         if (tabId === 'alertes') loadAlerts();
         if (tabId === 'frais') loadExpenses();
+        if (tabId === 'factures') { loadDriverInvoices(); loadInvoiceSummary(); }
         if (tabId === 'contrat') {
             setTimeout(() => { initContractSigCanvas(); loadAdminSignature(); }, 100);
         }

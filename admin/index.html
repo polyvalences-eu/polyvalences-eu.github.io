@@ -1117,6 +1117,30 @@
         <div id="invoiceDetailWrap" style="display:none; margin-top:24px;">
             <div class="table-card" style="padding:28px;" id="invoiceDetailContent"></div>
         </div>
+
+        <!-- Auto-factures chauffeurs -->
+        <div style="margin-top:32px;">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-user-tie" style="color:var(--navy)"></i>
+                    Auto-factures chauffeurs
+                    <span class="count" id="driverInvoicesCount" style="background:var(--blue-pale); color:var(--blue);">0</span>
+                </h2>
+                <div style="display:flex; gap:8px;">
+                    <select id="driverInvoicesFilter" onchange="loadAdminDriverInvoices()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                        <option value="all">Toutes</option>
+                        <option value="pending">En attente</option>
+                        <option value="paid">Payées</option>
+                    </select>
+                    <button class="btn-refresh" onclick="loadAdminDriverInvoices()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="table-card" id="adminDriverInvoicesList">
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
+            </div>
+        </div>
     </div>
 
     <!-- ============ TAB: MISSIONS (Sprint I refonte) ============ -->
@@ -1381,7 +1405,7 @@
         if (tabId === 'clients') loadAdminClients();
         if (tabId === 'edl') loadAdminInspections();
         if (tabId === 'quotes') loadAdminQuotes();
-        if (tabId === 'invoices') loadAdminInvoices();
+        if (tabId === 'invoices') { loadAdminInvoices(); loadAdminDriverInvoices(); }
         if (tabId === 'drivers') loadAdminDrivers();
         if (tabId === 'expenses') loadAdminExpenses();
     }
@@ -2035,6 +2059,7 @@
                         <div style="font-size:20px; font-weight:800; color:var(--slate-900);">
                             ${inv.total_ht ? inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
                         </div>
+                        ${inv.discount_type ? '<div style="font-size:11px; color:var(--emerald);"><i class="fas fa-tag"></i> Remise ' + (inv.discount_type === 'percent' ? inv.discount_value + '%' : inv.discount_value.toFixed(2) + ' €') + '</div>' : ''}
                     </div>
                     <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:12px; flex-shrink:0;"></i>
                 </div>`;
@@ -2128,11 +2153,19 @@
                 </table>
 
                 <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
-                    <div style="min-width:220px; padding:12px 16px; background:var(--slate-50); border-radius:10px;">
+                    <div style="min-width:260px; padding:12px 16px; background:var(--slate-50); border-radius:10px;">
                         <div style="display:flex; justify-content:space-between; padding:6px 0;">
                             <span style="font-size:15px; font-weight:800;">Total HT</span>
                             <span style="font-size:15px; font-weight:800; color:var(--navy);">${inv.total_ht ? inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
                         </div>
+                        ${inv.discount_type ? (() => {
+                            const discountLabel = inv.discount_type === 'percent' ? '-' + inv.discount_value + '%' : '-' + inv.discount_value.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+                            const discountAmount = inv.discount_type === 'percent' ? inv.total_ht * inv.discount_value / 100 : inv.discount_value;
+                            const netAfterDiscount = inv.total_ht - discountAmount;
+                            return '<div style="display:flex; justify-content:space-between; padding:6px 0; color:var(--emerald); font-size:13px;"><span>Remise commerciale (' + discountLabel + ')</span><span>-' + discountAmount.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €</span></div>' +
+                                (inv.discount_reason ? '<div style="font-size:11px; color:var(--slate-400); padding:0 0 4px 0;">' + inv.discount_reason + '</div>' : '') +
+                                '<div style="display:flex; justify-content:space-between; padding:6px 0; border-top:1px dashed var(--slate-200);"><span style="font-size:15px; font-weight:800;">Net après remise</span><span style="font-size:15px; font-weight:800; color:var(--emerald);">' + netAfterDiscount.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €</span></div>';
+                        })() : ''}
                     </div>
                 </div>
 
@@ -2151,6 +2184,22 @@
                     <button onclick="cancelInvoiceAdmin(${inv.id})" style="background:none; border:1px solid var(--slate-200); color:var(--slate-500); padding:12px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:8px;">
                         <i class="fas fa-ban"></i> Annuler
                     </button>
+                </div>
+
+                <div style="margin-top:20px; padding:16px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px;">
+                    <div style="font-size:13px; font-weight:700; color:var(--emerald); margin-bottom:10px;"><i class="fas fa-tag" style="margin-right:6px;"></i>Remise commerciale</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:end;">
+                        <select id="discountType_${inv.id}" onchange="toggleDiscountValue(${inv.id})" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif;">
+                            <option value="" ${!inv.discount_type ? 'selected' : ''}>Aucune</option>
+                            <option value="percent" ${inv.discount_type === 'percent' ? 'selected' : ''}>Pourcentage (%)</option>
+                            <option value="fixed" ${inv.discount_type === 'fixed' ? 'selected' : ''}>Montant fixe (€)</option>
+                        </select>
+                        <input type="number" id="discountValue_${inv.id}" placeholder="Valeur" step="0.01" min="0" value="${inv.discount_value || ''}" style="width:80px; padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; ${!inv.discount_type ? 'display:none' : ''}">
+                        <input type="text" id="discountReason_${inv.id}" placeholder="Motif (optionnel)" value="${inv.discount_reason || ''}" style="flex:1; min-width:120px; padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; ${!inv.discount_type ? 'display:none' : ''}">
+                        <button onclick="saveInvoiceDiscount(${inv.id})" id="btnDiscount_${inv.id}" style="padding:8px 16px; background:var(--emerald); color:white; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">
+                            <i class="fas fa-save"></i> Sauvegarder
+                        </button>
+                    </div>
                 </div>`;
             }
 
@@ -2232,6 +2281,155 @@
                 showToast(data.error || 'Erreur', 'error');
             }
         } catch (err) { showToast('Erreur de connexion', 'error'); }
+    }
+
+    function toggleDiscountValue(invoiceId) {
+        const type = document.getElementById('discountType_' + invoiceId).value;
+        document.getElementById('discountValue_' + invoiceId).style.display = type ? '' : 'none';
+        document.getElementById('discountReason_' + invoiceId).style.display = type ? '' : 'none';
+    }
+
+    async function saveInvoiceDiscount(invoiceId) {
+        const type = document.getElementById('discountType_' + invoiceId).value;
+        const value = parseFloat(document.getElementById('discountValue_' + invoiceId).value) || null;
+        const reason = document.getElementById('discountReason_' + invoiceId).value || null;
+        const btn = document.getElementById('btnDiscount_' + invoiceId);
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch(API + '/api/admin/invoices/' + invoiceId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ discount_type: type || null, discount_value: value, discount_reason: reason })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Remise enregistrée.');
+                openAdminInvoiceDetail(invoiceId);
+                loadAdminInvoices();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Sauvegarder';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Sauvegarder';
+        }
+    }
+
+    // ===== ADMIN DRIVER INVOICES (auto-facturation) =====
+    async function loadAdminDriverInvoices() {
+        const container = document.getElementById('adminDriverInvoicesList');
+        const filter = document.getElementById('driverInvoicesFilter').value;
+
+        try {
+            let url = API + '/api/admin/driver-invoices';
+            if (filter && filter !== 'all') url += '?status=' + filter;
+
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + authToken } });
+            if (!res.ok) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur.</p></div>'; return; }
+            const data = await res.json();
+            const invoices = data.invoices || [];
+
+            document.getElementById('driverInvoicesCount').textContent = invoices.length;
+
+            if (invoices.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--emerald)"></i><p>Aucune auto-facture dans cette catégorie.</p></div>';
+                return;
+            }
+
+            container.innerHTML = invoices.map(inv => {
+                const isPaid = inv.status === 'paid';
+                const stColor = isPaid ? '#059669' : '#d97706';
+                const stBg = isPaid ? '#05966915' : '#d9770615';
+                const stLabel = isPaid ? 'Payée' : 'En attente';
+                const stIcon = isPaid ? 'check-circle' : 'clock';
+                const route = ((inv.origin_address || '?').split(',')[0]) + ' → ' + ((inv.destination_address || '?').split(',')[0]);
+                const date = inv.mission_date ? inv.mission_date.split('-').reverse().join('/') : '';
+
+                return `
+                <div class="user-card">
+                    <div class="user-avatar" style="background:${stBg}; color:${stColor};">
+                        <i class="fas fa-${stIcon}"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">
+                            ${inv.invoice_number}
+                            <span class="type-badge" style="background:${stBg}; color:${stColor};">${stLabel}</span>
+                        </div>
+                        <div class="user-email">${inv.first_name || ''} ${inv.last_name || ''} · ${inv.email || ''}</div>
+                        <div class="user-details">
+                            <span><i class="fas fa-route"></i> ${route}</span>
+                            <span><i class="fas fa-calendar"></i> ${date}</span>
+                            <span><i class="fas fa-coins"></i> Commission : ${inv.commission_amount.toFixed(2)} €</span>
+                        </div>
+                    </div>
+                    <div style="text-align:right; flex-shrink:0;">
+                        <div style="font-size:18px; font-weight:800; color:var(--slate-900);">${inv.total_amount.toFixed(2)} €</div>
+                        ${inv.vat_amount > 0 ? '<div style="font-size:11px; color:var(--slate-400);">+ ' + inv.vat_amount.toFixed(2) + ' € TVA</div>' : ''}
+                        ${!isPaid ? '<button onclick="markDriverInvoicePaid(' + inv.id + ', this)" style="margin-top:6px; padding:6px 12px; background:var(--emerald); color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; font-family:\'DM Sans\',sans-serif;"><i class="fas fa-check"></i> Payée</button>' : '<div style="font-size:11px; color:var(--emerald);">Payée le ' + (inv.paid_at || '') + '</div>'}
+                    </div>
+                </div>`;
+            }).join('');
+
+        } catch (err) {
+            console.error('Load driver invoices failed:', err);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erreur de connexion.</p></div>';
+        }
+    }
+
+    async function markDriverInvoicePaid(invoiceId, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch(API + '/api/admin/driver-invoices/' + invoiceId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ status: 'paid' })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Facture chauffeur marquée payée.');
+                loadAdminDriverInvoices();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Payée';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Payée';
+        }
+    }
+
+    async function generateDriverInvoice(missionId, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération...';
+        try {
+            const res = await fetch(API + '/api/admin/driver-invoices/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ mission_id: missionId })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Auto-facture générée.');
+                btn.innerHTML = '<i class="fas fa-check"></i> ' + data.invoice_number;
+                btn.style.background = 'var(--emerald)';
+                loadAdminDriverInvoices();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-file-invoice-dollar"></i> Générer facture';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-file-invoice-dollar"></i> Générer facture';
+        }
     }
 
     // ===== ADMIN MISSIONS (Sprint I — refonte table) =====
@@ -2480,6 +2678,17 @@
             html += `<div class="detail-section">
                 <div class="detail-section-title"><i class="fas fa-receipt"></i> Frais chauffeur (${m.expense_count})</div>
                 <div style="font-size:13px;color:var(--slate-500);">${m.expense_count} frais déclaré(s)</div>
+            </div>`;
+        }
+
+        // Section 6: Auto-facture chauffeur (completed only)
+        if (m.status === 'completed' && m.driver_fee) {
+            html += `<div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-file-invoice-dollar"></i> Facture chauffeur</div>
+                <div style="font-size:13px;color:var(--slate-500);margin-bottom:8px;">Forfait chauffeur : ${m.driver_fee} €</div>
+                <button id="btnGenDriverInv_${m.id}" onclick="generateDriverInvoice(${m.id}, this)" style="padding:10px 18px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">
+                    <i class="fas fa-file-invoice-dollar"></i> Générer auto-facture
+                </button>
             </div>`;
         }
 
