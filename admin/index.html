@@ -994,24 +994,36 @@
                 <div class="edl-field" style="margin-bottom:8px"><label>Nom / Prénom</label><input type="text" id="aEdlPrenantName" placeholder="Nom et prénom du prenant"></div>
                 <div class="edl-field" style="margin-bottom:0"><label>Entreprise</label><input type="text" id="aEdlPrenantCompany" placeholder="Entreprise (optionnel)"></div>
             </div>
-            <div class="edl-field">
-                <label>Signature cédant</label>
-                <div class="sig-canvas-wrap"><canvas id="aSigDriver"></canvas><button class="sig-clear" onclick="aClearSig('aSigDriver')">Effacer</button></div>
+            <div id="aCedantSigSection">
+                <div class="edl-field">
+                    <label>Signature cédant</label>
+                    <div class="sig-canvas-wrap"><canvas id="aSigDriver"></canvas><button class="sig-clear" onclick="aClearSig('aSigDriver')">Effacer</button></div>
+                </div>
             </div>
             <label class="absent-check">
-                <input type="checkbox" id="aEdlClientAbsent" onchange="aToggleAbsent()">
-                <span>Remise de clés sans contact (prenant absent)</span>
+                <input type="checkbox" id="aEdlCedantAbsent" onchange="aToggleCedantAbsent()">
+                <span>Cédant absent (remise sans contact)</span>
             </label>
+            <div id="aCedantAbsentReasonSection" style="display:none">
+                <div class="edl-field">
+                    <label>Motif d'absence cédant</label>
+                    <input type="text" id="aEdlCedantAbsentReason" placeholder="Ex : clés dans boîte aux lettres...">
+                </div>
+            </div>
             <div id="aClientSigSection">
                 <div class="edl-field">
                     <label>Signature prenant</label>
                     <div class="sig-canvas-wrap"><canvas id="aSigClient"></canvas><button class="sig-clear" onclick="aClearSig('aSigClient')">Effacer</button></div>
                 </div>
             </div>
+            <label class="absent-check">
+                <input type="checkbox" id="aEdlClientAbsent" onchange="aToggleAbsent()">
+                <span>Prenant absent (remise sans contact)</span>
+            </label>
             <div id="aAbsentReasonSection" style="display:none">
                 <div class="edl-field">
-                    <label>Motif d'absence</label>
-                    <input type="text" id="aEdlAbsentReason" placeholder="Ex : client non joignable, boîte aux lettres...">
+                    <label>Motif d'absence prenant</label>
+                    <input type="text" id="aEdlAbsentReason" placeholder="Ex : personne non joignable, boîte aux lettres...">
                 </div>
             </div>
         </div>
@@ -4889,6 +4901,12 @@
         document.getElementById('aAbsentReasonSection').style.display = absent ? '' : 'none';
     }
 
+    function aToggleCedantAbsent() {
+        const absent = document.getElementById('aEdlCedantAbsent').checked;
+        document.getElementById('aCedantSigSection').style.display = absent ? 'none' : '';
+        document.getElementById('aCedantAbsentReasonSection').style.display = absent ? '' : 'none';
+    }
+
     function aToggleManualClient() {
         const hasClient = !!document.getElementById('aEdlWizClient').value;
         document.getElementById('aEdlManualBlock').style.display = hasClient ? 'none' : '';
@@ -4987,7 +5005,10 @@
         document.getElementById('aEdlPersonalItems').value = '';
         document.getElementById('aEdlClientAbsent').checked = false;
         document.getElementById('aEdlAbsentReason').value = '';
+        document.getElementById('aEdlCedantAbsent').checked = false;
+        document.getElementById('aEdlCedantAbsentReason').value = '';
         aToggleAbsent();
+        aToggleCedantAbsent();
 
         // Date/heure = maintenant
         const now = new Date();
@@ -5094,10 +5115,13 @@
         if (edlType==='arrival' && !document.getElementById('aEdlPrenantName').value.trim()) {
             showToast('Le prenant est obligatoire pour un EDL d\'arrivée.','error'); return;
         }
-        const absent = document.getElementById('aEdlClientAbsent').checked;
-        if (aIsCanvasBlank(aSigDriverCanvas)) { showToast('Veuillez signer (inspecteur).','error'); return; }
-        if (!absent && aIsCanvasBlank(aSigClientCanvas)) { showToast('Faites signer le client ou cochez "client absent".','error'); return; }
-        if (absent && !document.getElementById('aEdlAbsentReason').value.trim()) { showToast('Indiquez le motif d\'absence.','error'); return; }
+        const cedantAbsent = document.getElementById('aEdlCedantAbsent').checked;
+        const prenantAbsent = document.getElementById('aEdlClientAbsent').checked;
+        if (!cedantAbsent && aIsCanvasBlank(aSigDriverCanvas)) { showToast('Faites signer le cédant ou cochez "cédant absent".','error'); return; }
+        if (!prenantAbsent && aIsCanvasBlank(aSigClientCanvas)) { showToast('Faites signer le prenant ou cochez "prenant absent".','error'); return; }
+        if (cedantAbsent && !document.getElementById('aEdlCedantAbsentReason').value.trim()) { showToast('Indiquez le motif d\'absence du cédant.','error'); return; }
+        if (prenantAbsent && !document.getElementById('aEdlAbsentReason').value.trim()) { showToast('Indiquez le motif d\'absence du prenant.','error'); return; }
+        const absent = cedantAbsent || prenantAbsent;
 
         const submitBtn = document.getElementById('aEdlNextBtn');
         submitBtn.disabled = true;
@@ -5173,9 +5197,12 @@
                 photos: [],
                 global_photos: Object.values(aEdlGlobalKeys).filter(Boolean),
                 client_absent: absent,
-                absent_reason: absent?document.getElementById('aEdlAbsentReason').value.trim():null,
-                signature_driver: sigDriverData,
-                signature_client: sigClientData,
+                absent_reason: [
+                    cedantAbsent ? 'Cédant absent : ' + (document.getElementById('aEdlCedantAbsentReason').value.trim() || 'non précisé') : '',
+                    prenantAbsent ? 'Prenant absent : ' + (document.getElementById('aEdlAbsentReason').value.trim() || 'non précisé') : ''
+                ].filter(Boolean).join(' | ') || null,
+                signature_driver: cedantAbsent ? null : sigDriverData,
+                signature_client: prenantAbsent ? null : sigClientData,
                 cedant_name: document.getElementById('aEdlCedantName').value.trim()||null,
                 cedant_company: document.getElementById('aEdlCedantCompany').value.trim()||null,
                 prenant_name: document.getElementById('aEdlPrenantName').value.trim()||null,
