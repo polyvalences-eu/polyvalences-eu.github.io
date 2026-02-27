@@ -3808,6 +3808,7 @@
             filtered = filtered.filter(e =>
                 (e.plate || '').toLowerCase().includes(search) ||
                 (e.client_first_name + ' ' + e.client_last_name).toLowerCase().includes(search) ||
+                (e.company_name || '').toLowerCase().includes(search) ||
                 (e.quote_number || '').toLowerCase().includes(search)
             );
         }
@@ -3823,7 +3824,7 @@
         tbody.innerHTML = filtered.map(e => {
             const dateStr = e.created_at ? formatDate(e.created_at.substring(0,10)) : '—';
             const vehicle = (e.plate || '—') + ' ' + [e.brand, e.model].filter(Boolean).join(' ');
-            const client = e.client_first_name ? e.client_first_name + ' ' + e.client_last_name : '—';
+            const client = e.client_first_name ? e.client_first_name + ' ' + e.client_last_name : (e.company_name || '—');
             const typeLabel = e.type === 'departure' ? 'Départ' : e.type === 'arrival' ? 'Arrivée' : 'Libre';
             const missionRef = e.quote_number || (e.mission_id ? '#' + e.mission_id : '—');
 
