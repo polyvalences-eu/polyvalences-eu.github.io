@@ -1782,8 +1782,9 @@
                     </div>
                     <div style="text-align:right; flex-shrink:0;">
                         <div style="font-size:20px; font-weight:800; color:var(--slate-900);">
-                            ${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
+                            ${(q.admin_total_ht || q.total_ht) ? (q.admin_total_ht || q.total_ht).toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
                         </div>
+                        ${q.admin_total_ht && q.total_ht && q.admin_total_ht !== q.total_ht ? '<div style="font-size:12px; color:var(--slate-400); text-decoration:line-through;">' + q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €</div>' : ''}
                     </div>
                     <i class="fas fa-chevron-right" style="color:var(--slate-300); font-size:12px; flex-shrink:0;"></i>
                 </div>`;
@@ -1850,8 +1851,9 @@
                     </div>
                     <div style="text-align:right;">
                         <div style="font-size:28px; font-weight:800; color:var(--navy);">
-                            ${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
+                            ${(q.admin_total_ht || q.total_ht) ? (q.admin_total_ht || q.total_ht).toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
                         </div>
+                        ${q.admin_total_ht && q.total_ht && q.admin_total_ht !== q.total_ht ? '<div style="font-size:13px; color:var(--slate-400);"><span style="text-decoration:line-through;">' + q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €</span> <i class="fas fa-arrow-right" style="font-size:10px; margin:0 4px;"></i> modifié</div>' : ''}
                         <div style="font-size:12px; color:var(--slate-400);">Montant Net</div>
                     </div>
                 </div>
@@ -1915,9 +1917,14 @@
                 <!-- TOTAL -->
                 <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
                     <div style="min-width:220px; padding:12px 16px; background:var(--slate-50); border-radius:10px;">
+                        ${q.admin_total_ht && q.total_ht && q.admin_total_ht !== q.total_ht ? `
+                        <div style="display:flex; justify-content:space-between; padding:4px 0; margin-bottom:2px;">
+                            <span style="font-size:13px; color:var(--slate-400);">Prix initial</span>
+                            <span style="font-size:13px; color:var(--slate-400); text-decoration:line-through;">${q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2})} €</span>
+                        </div>` : ''}
                         <div style="display:flex; justify-content:space-between; padding:6px 0;">
                             <span style="font-size:15px; font-weight:800; color:var(--slate-900);">Total Net</span>
-                            <span style="font-size:15px; font-weight:800; color:var(--navy);">${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
+                            <span style="font-size:15px; font-weight:800; color:var(--navy);">${(q.admin_total_ht || q.total_ht) ? (q.admin_total_ht || q.total_ht).toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
                         </div>
                         <div style="font-size:11px; color:var(--slate-400); text-align:right; margin-top:4px; font-style:italic;">TVA non applicable — art. 293 B du CGI</div>
                     </div>
@@ -1945,9 +1952,6 @@
             if (!['accepted', 'cancelled', 'invoiced'].includes(q.status)) {
                 html += `
                 <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-                    ${q.admin_total_ht ? `<div style="padding:10px 14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; font-size:13px; color:#1d4ed8; font-weight:600;">
-                        <i class="fas fa-pen" style="margin-right:4px;"></i> Montant admin : ${Number(q.admin_total_ht).toLocaleString('fr-FR', {minimumFractionDigits: 2})} € Net
-                    </div>` : ''}
                     <button onclick="document.getElementById('editAmountWrap').style.display = document.getElementById('editAmountWrap').style.display === 'none' ? 'block' : 'none'" style="background:var(--blue); color:white; border:none; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
                         <i class="fas fa-edit"></i> Modifier le montant
                     </button>
@@ -3789,7 +3793,8 @@
                 html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>N°</th><th>Trajet</th><th>Montant</th><th>Statut</th></tr></thead><tbody>';
                 html += quotes.map(q => {
                     const route = q.origin_address ? q.origin_address.split(',')[0] + ' → ' + (q.destination_address||'').split(',')[0] : '—';
-                    return '<tr><td>' + q.quote_number + '</td><td>' + route + '</td><td>' + (q.total_ht ? q.total_ht.toLocaleString('fr-FR',{minimumFractionDigits:2})+'€' : '—') + '</td><td><span class="badge badge-gray">' + q.status + '</span></td></tr>';
+                    const displayAmount = q.admin_total_ht || q.total_ht;
+                    return '<tr><td>' + q.quote_number + '</td><td>' + route + '</td><td>' + (displayAmount ? displayAmount.toLocaleString('fr-FR',{minimumFractionDigits:2})+'€' : '—') + '</td><td><span class="badge badge-gray">' + q.status + '</span></td></tr>';
                 }).join('');
                 html += '</tbody></table>';
             } else html += '<div style="color:var(--slate-400);font-size:13px;">Aucun devis</div>';
