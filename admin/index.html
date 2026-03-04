@@ -1125,7 +1125,7 @@
                 <div class="stat-card-value active" id="statInvPaid">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-card-label">CA total HT</div>
+                <div class="stat-card-label">CA total Net</div>
                 <div class="stat-card-value" id="statInvTotal">0 €</div>
             </div>
         </div>
@@ -1852,7 +1852,7 @@
                         <div style="font-size:28px; font-weight:800; color:var(--navy);">
                             ${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}
                         </div>
-                        <div style="font-size:12px; color:var(--slate-400);">Montant HT</div>
+                        <div style="font-size:12px; color:var(--slate-400);">Montant Net</div>
                     </div>
                 </div>
 
@@ -1916,9 +1916,10 @@
                 <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
                     <div style="min-width:220px; padding:12px 16px; background:var(--slate-50); border-radius:10px;">
                         <div style="display:flex; justify-content:space-between; padding:6px 0;">
-                            <span style="font-size:15px; font-weight:800; color:var(--slate-900);">Total HT</span>
+                            <span style="font-size:15px; font-weight:800; color:var(--slate-900);">Total Net</span>
                             <span style="font-size:15px; font-weight:800; color:var(--navy);">${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
                         </div>
+                        <div style="font-size:11px; color:var(--slate-400); text-align:right; margin-top:4px; font-style:italic;">TVA non applicable — art. 293 B du CGI</div>
                     </div>
                 </div>`;
 
@@ -1945,7 +1946,7 @@
                 html += `
                 <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
                     ${q.admin_total_ht ? `<div style="padding:10px 14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; font-size:13px; color:#1d4ed8; font-weight:600;">
-                        <i class="fas fa-pen" style="margin-right:4px;"></i> Montant admin : ${Number(q.admin_total_ht).toLocaleString('fr-FR', {minimumFractionDigits: 2})} € HT
+                        <i class="fas fa-pen" style="margin-right:4px;"></i> Montant admin : ${Number(q.admin_total_ht).toLocaleString('fr-FR', {minimumFractionDigits: 2})} € Net
                     </div>` : ''}
                     <button onclick="document.getElementById('editAmountWrap').style.display = document.getElementById('editAmountWrap').style.display === 'none' ? 'block' : 'none'" style="background:var(--blue); color:white; border:none; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
                         <i class="fas fa-edit"></i> Modifier le montant
@@ -1955,7 +1956,7 @@
                     </button>
                 </div>
                 <div id="editAmountWrap" style="display:none; padding:16px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; margin-bottom:20px;">
-                    <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:6px;">Nouveau montant HT (€)</label>
+                    <label style="font-size:13px; font-weight:600; color:var(--slate-700); display:block; margin-bottom:6px;">Nouveau montant Net (€)</label>
                     <input type="number" id="editAmountInput" step="0.01" min="0" value="${q.admin_total_ht || q.total_ht || ''}" style="width:200px; padding:10px 14px; border:2px solid var(--blue); border-radius:8px; font-size:15px; font-weight:700; font-family:'DM Sans',sans-serif; outline:none; margin-bottom:10px;">
                     <br>
                     <button onclick="updateQuoteAmount(${q.id})" id="btnUpdateAmount" style="background:var(--blue); color:white; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">
@@ -2284,7 +2285,7 @@
                     </div>
                     <div style="text-align:right;">
                         <div style="font-size:28px; font-weight:800; color:var(--navy);">${inv.total_ht ? inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</div>
-                        <div style="font-size:12px; color:var(--slate-400);">Montant HT</div>
+                        <div style="font-size:12px; color:var(--slate-400);">Montant Net</div>
                     </div>
                 </div>
 
@@ -2323,7 +2324,7 @@
                 <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
                     <div style="min-width:260px; padding:12px 16px; background:var(--slate-50); border-radius:10px;">
                         <div style="display:flex; justify-content:space-between; padding:6px 0;">
-                            <span style="font-size:15px; font-weight:800;">Total HT</span>
+                            <span style="font-size:15px; font-weight:800;">Total Net</span>
                             <span style="font-size:15px; font-weight:800; color:var(--navy);">${inv.total_ht ? inv.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</span>
                         </div>
                         ${inv.discount_type ? (() => {
@@ -2334,6 +2335,7 @@
                                 (inv.discount_reason ? '<div style="font-size:11px; color:var(--slate-400); padding:0 0 4px 0;">' + inv.discount_reason + '</div>' : '') +
                                 '<div style="display:flex; justify-content:space-between; padding:6px 0; border-top:1px dashed var(--slate-200);"><span style="font-size:15px; font-weight:800;">Net après remise</span><span style="font-size:15px; font-weight:800; color:var(--emerald);">' + netAfterDiscount.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €</span></div>';
                         })() : ''}
+                        <div style="font-size:11px; color:var(--slate-400); text-align:right; margin-top:4px; font-style:italic;">TVA non applicable — art. 293 B du CGI</div>
                     </div>
                 </div>
 
@@ -3813,7 +3815,7 @@
             html += `<div class="detail-section">
                 <div class="detail-section-title"><i class="fas fa-file-invoice-dollar"></i> Factures (${invoices.length})</div>`;
             if (invoices.length > 0) {
-                html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>N°</th><th>Montant HT</th><th>Statut</th></tr></thead><tbody>';
+                html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>N°</th><th>Montant Net</th><th>Statut</th></tr></thead><tbody>';
                 html += invoices.map(i => '<tr><td>' + i.invoice_number + '</td><td>' + (i.total_ht ? i.total_ht.toLocaleString('fr-FR',{minimumFractionDigits:2})+'€' : '—') + '</td><td><span class="badge ' + (i.status==='paid'?'badge-green':'badge-orange') + '">' + (i.status==='paid'?'Payée':'Impayée') + '</span></td></tr>').join('');
                 html += '</tbody></table>';
             } else html += '<div style="color:var(--slate-400);font-size:13px;">Aucune facture</div>';
