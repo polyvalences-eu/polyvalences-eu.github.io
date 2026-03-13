@@ -1090,11 +1090,11 @@
             </h2>
             <div style="display:flex; gap:8px;">
                 <select id="quotesFilter" onchange="loadAdminQuotes()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                    <option value="all">Tous</option>
                     <option value="submitted">En attente</option>
                     <option value="validated">Validés</option>
                     <option value="accepted">Acceptés</option>
                     <option value="refused">Refusés</option>
-                    <option value="all">Tous</option>
                 </select>
                 <button class="btn-refresh" onclick="loadAdminQuotes()">
                     <i class="fas fa-sync-alt"></i>
@@ -1138,11 +1138,11 @@
             </h2>
             <div style="display:flex; gap:8px;">
                 <select id="invoicesFilter" onchange="loadAdminInvoices()" style="padding:8px 12px; border:1px solid var(--slate-200); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--slate-600); cursor:pointer;">
+                    <option value="all">Toutes</option>
                     <option value="pending">Impayées</option>
                     <option value="overdue">En retard</option>
                     <option value="paid">Payées</option>
                     <option value="cancelled">Annulées</option>
-                    <option value="all">Toutes</option>
                 </select>
                 <button class="btn-refresh" onclick="loadAdminInvoices()">
                     <i class="fas fa-sync-alt"></i>
