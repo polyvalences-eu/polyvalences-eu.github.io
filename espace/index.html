@@ -3058,6 +3058,7 @@ async function signCharter() {
             const inv = data.invoice;
             const lines = data.lines || [];
             const q = data.quote || {};
+            const pi = data.payment_info || {};
 
             const statusConf = {
                 'pending': { label: 'En attente de paiement', color: '#dc2626', bg: '#dc262610' },
@@ -3204,9 +3205,9 @@ async function signCharter() {
                         <div style="padding:16px 18px; background:var(--slate-50); border-radius:10px; margin-bottom:16px;">
                             <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase; margin-bottom:8px;">Moyen de paiement</div>
                             <div style="font-size:13px; color:var(--slate-600); line-height:1.7;">
-                                Banque : BforB — Tour Europlaza, 20 avenue André Prothin, La Défense 4, 92927 Paris La Défense Cedex<br>
-                                SWIFT/BIC : <strong>BFBKFRP1</strong><br>
-                                IBAN : <strong>FR76 1681 8000 0140 1002 1583 552</strong>
+                                ${pi.bank ? 'Banque : ' + pi.bank + '<br>' : ''}
+                                ${pi.bic ? 'SWIFT/BIC : <strong>' + pi.bic + '</strong><br>' : ''}
+                                ${pi.iban ? 'IBAN : <strong>' + pi.iban + '</strong>' : ''}
                             </div>
                             <div style="font-size:12px; color:var(--slate-500); margin-top:8px;">Conditions de paiement : 30 jours</div>
                         </div>
