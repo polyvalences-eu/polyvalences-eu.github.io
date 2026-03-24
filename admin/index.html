@@ -1952,6 +1952,7 @@
             if (!['accepted', 'cancelled', 'invoiced'].includes(q.status)) {
                 html += `
                 <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+                    ${q.status === 'validated' ? '<button onclick="forceAcceptQuote(' + q.id + ')" id="btnForceAccept" style="background:#059669; color:white; border:none; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:\'DM Sans\',sans-serif; display:flex; align-items:center; gap:6px;"><i class=\\"fas fa-check-double\\"></i> Accepter pour le client</button>' : ''}
                     <button onclick="document.getElementById('editAmountWrap').style.display = document.getElementById('editAmountWrap').style.display === 'none' ? 'block' : 'none'" style="background:var(--blue); color:white; border:none; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
                         <i class="fas fa-edit"></i> Modifier le montant
                     </button>
@@ -2127,6 +2128,34 @@
         }
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-check"></i> Enregistrer';
+    }
+
+    async function forceAcceptQuote(quoteId) {
+        if (!confirm('Accepter ce devis pour le client ? (Le client ne recevra PAS de notification — la facture sera créée silencieusement)')) return;
+        const btn = document.getElementById('btnForceAccept');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Acceptation...';
+        try {
+            const res = await fetch(API + '/api/admin/quotes/' + quoteId + '/force-accept', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({})
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Devis accepté — facture générée !');
+                openAdminQuoteDetail(quoteId);
+                loadAdminQuotes();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-double"></i> Accepter pour le client';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-double"></i> Accepter pour le client';
+        }
     }
 
     async function cancelQuoteAdmin(quoteId) {
