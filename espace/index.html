@@ -4234,7 +4234,7 @@ async function openQuoteDetail(quoteId) {
                             <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--slate-50);">
                                 <div style="width:8px; height:8px; border-radius:50%; background:var(--blue); flex-shrink:0;"></div>
                                 <span style="font-size:13px; font-weight:600; color:var(--slate-700);">${hLabels[h.new_status] || h.new_status}</span>
-                                ${h.note ? '<span style="font-size:12px; color:var(--slate-400);">· ' + h.note + '</span>' : ''}
+                                ${h.reason ? '<span style="font-size:12px; color:var(--slate-400);">· ' + h.reason + '</span>' : ''}
                                 <span style="margin-left:auto; font-size:12px; color:var(--slate-400);">${h.changed_at ? formatDate(h.changed_at.substring(0, 10)) : ''}</span>
                             </div>`;
                         }).join('')}
