@@ -2034,6 +2034,16 @@
                 </div>`;
             }
 
+            // DELETE button for cancelled/refused
+            if (['cancelled', 'refused'].includes(q.status)) {
+                html += `
+                <div style="margin-bottom:20px;">
+                    <button onclick="deleteQuoteAdmin(${q.id}, '${q.quote_number}')" id="btnDeleteQuote" style="background:#dc2626; color:white; border:none; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:6px;">
+                        <i class="fas fa-trash-alt"></i> Supprimer définitivement
+                    </button>
+                </div>`;
+            }
+
             // History
             if (history.length > 0) {
                 const hLabels = {
@@ -2128,6 +2138,32 @@
         }
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-check"></i> Enregistrer';
+    }
+
+    async function deleteQuoteAdmin(quoteId, quoteNumber) {
+        if (!confirm('Supprimer définitivement le devis ' + quoteNumber + ' ? Cette action est irréversible.')) return;
+        const btn = document.getElementById('btnDeleteQuote');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suppression...';
+        try {
+            const res = await fetch(API + '/api/admin/quotes/' + quoteId, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast(data.message || 'Devis supprimé');
+                loadAdminQuotes();
+            } else {
+                showToast(data.error || 'Erreur', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-trash-alt"></i> Supprimer définitivement';
+            }
+        } catch (err) {
+            showToast('Erreur de connexion', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash-alt"></i> Supprimer définitivement';
+        }
     }
 
     async function forceAcceptQuote(quoteId) {
