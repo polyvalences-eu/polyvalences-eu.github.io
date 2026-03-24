@@ -3113,6 +3113,7 @@ async function signCharter() {
                             ${inv.client_email ? '<div style="font-size:13px; color:var(--slate-500);">' + inv.client_email + '</div>' : ''}
                             ${inv.client_siret ? '<div style="font-size:12px; color:var(--slate-400); margin-top:4px;">SIRET : ' + inv.client_siret + '</div>' : ''}
                             ${inv.client_vat ? '<div style="font-size:12px; color:var(--slate-400);">TVA : ' + inv.client_vat + '</div>' : ''}
+                            ${inv.client_ref ? '<div style="font-size:12px; color:var(--blue); margin-top:4px; font-weight:600;"><i class="fas fa-tag" style="margin-right:4px;"></i>Réf. comptable : ' + inv.client_ref + '</div>' : ''}
                         </div>
 
                         <!-- MENTION TVA -->
@@ -3890,7 +3891,7 @@ async function loadQuotes() {
         container.innerHTML = quotesData.map(q => {
             const statusConf = {
                 'submitted': { label: 'En attente', color: '#d97706', bg: '#d9770615', icon: 'clock' },
-                'validated': { label: 'Devis validé', color: '#2563eb', bg: '#2563eb15', icon: 'paper-plane' },
+                'validated': { label: 'À compléter et accepter', color: '#2563eb', bg: '#2563eb15', icon: 'clipboard-check' },
                 'accepted': { label: 'Accepté', color: '#059669', bg: '#05966915', icon: 'check-circle' },
                 'refused': { label: 'Refusé', color: '#dc2626', bg: '#dc262615', icon: 'times-circle' },
                 'invoiced': { label: 'Facturé', color: '#059669', bg: '#05966915', icon: 'file-invoice-dollar' },
@@ -3962,7 +3963,7 @@ async function openQuoteDetail(quoteId) {
 
         const statusConf = {
             'submitted': { label: 'En attente de validation', color: '#d97706', bg: '#d9770610' },
-            'validated': { label: q.completed_at ? 'Devis validé — détails complétés, confirmez pour accepter' : 'Devis validé — complétez les détails pour finaliser', color: '#2563eb', bg: '#2563eb10' },
+            'validated': { label: q.completed_at ? 'Détails complétés — acceptez le devis pour lancer le convoyage' : 'Complétez les détails et acceptez le devis', color: '#2563eb', bg: '#2563eb10' },
             'accepted': { label: 'Accepté', color: '#059669', bg: '#05966910' },
             'refused': { label: 'Refusé', color: '#dc2626', bg: '#dc262610' },
             'invoiced': { label: 'Facturé', color: '#059669', bg: '#05966910' },
@@ -3995,7 +3996,7 @@ async function openQuoteDetail(quoteId) {
                 <div style="padding:14px 18px; border-radius:12px; background:${st.bg}; border:1px solid ${st.color}30; margin-bottom:20px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                     <i class="fas fa-${q.status === 'accepted' || q.status === 'invoiced' ? 'check-circle' : q.status === 'refused' || q.status === 'cancelled' ? 'times-circle' : q.status === 'sent' ? 'paper-plane' : 'clock'}" style="color:${st.color}; font-size:20px;"></i>
                     <span style="font-size:15px; font-weight:700; color:${st.color};">${st.label}</span>
-                    ${q.status === 'validated' ? '<span style="font-size:12px; color:var(--slate-500); margin-left:auto;">Vous pouvez accepter ou refuser ce devis ci-dessous.</span>' : ''}
+                    ${q.status === 'validated' ? '<span style="font-size:12px; color:var(--slate-500); margin-left:auto;">Complétez les informations puis acceptez le devis pour lancer le convoyage.</span>' : ''}
                 </div>
 
                 <!-- DEVIS CARD -->
@@ -4030,6 +4031,7 @@ async function openQuoteDetail(quoteId) {
                         <div style="font-size:14px; font-weight:700; color:var(--slate-900);">${q.client_name || (currentUser.first_name + ' ' + currentUser.last_name)}</div>
                         ${q.client_email || currentUser.email ? '<div style="font-size:13px; color:var(--slate-500);">' + (q.client_email || currentUser.email) + '</div>' : ''}
                         ${q.client_siret ? '<div style="font-size:12px; color:var(--slate-400); margin-top:4px;">SIRET : ' + q.client_siret + '</div>' : ''}
+                        ${q.client_ref ? '<div style="font-size:12px; color:var(--blue); margin-top:4px; font-weight:600;"><i class="fas fa-tag" style="margin-right:4px;"></i>Réf. comptable : ' + q.client_ref + '</div>' : ''}
                     </div>
 
                     <!-- MENTION TVA -->
@@ -4107,8 +4109,8 @@ async function openQuoteDetail(quoteId) {
         if (q.status === 'validated' && !q.completed_at) {
             html += `
                     <div style="padding-top:20px; border-top:2px solid var(--blue); margin-top:20px;">
-                        <div style="font-size:16px; font-weight:800; color:var(--navy); margin-bottom:4px;"><i class="fas fa-clipboard-list" style="margin-right:8px; color:var(--blue);"></i>Complétez les détails de votre mission</div>
-                        <p style="font-size:13px; color:var(--slate-500); margin-bottom:20px;">Renseignez les adresses exactes, le véhicule et les contacts. Le prix sera recalculé automatiquement.</p>
+                        <div style="font-size:16px; font-weight:800; color:var(--navy); margin-bottom:4px;"><i class="fas fa-clipboard-check" style="margin-right:8px; color:var(--emerald);"></i>Compléter et accepter le devis</div>
+                        <p style="font-size:13px; color:var(--slate-500); margin-bottom:20px;">Renseignez les informations ci-dessous puis validez pour lancer le convoyage. Le prix final sera recalculé selon les adresses exactes.</p>
 
                         <div id="completionMsg" style="display:none; padding:12px 14px; border-radius:8px; font-size:13px; margin-bottom:16px;"></div>
 
@@ -4179,6 +4181,13 @@ async function openQuoteDetail(quoteId) {
                             </div>
                         </div>
 
+                        <!-- Référence comptable -->
+                        <div style="margin-bottom:16px;">
+                            <label style="font-size:13px; font-weight:700; color:var(--slate-600); margin-bottom:6px; display:block;"><i class="fas fa-tag" style="margin-right:6px; color:var(--blue);"></i>Référence comptable (optionnel)</label>
+                            <input type="text" id="cmpClientRef" placeholder="Centre de coût, n° bon de commande, code projet..." style="width:100%; padding:10px 14px; border:1px solid var(--slate-200); border-radius:8px; font-family:inherit; font-size:14px;">
+                            <div style="font-size:11px; color:var(--slate-400); margin-top:4px;">Cette référence sera reportée sur la facture pour faciliter le rapprochement comptable.</div>
+                        </div>
+
                         <!-- Notes -->
                         <div style="margin-bottom:20px;">
                             <label style="font-size:13px; font-weight:700; color:var(--slate-600); margin-bottom:6px; display:block;"><i class="fas fa-sticky-note" style="margin-right:6px; color:var(--blue);"></i>Notes (optionnel)</label>
@@ -4188,7 +4197,7 @@ async function openQuoteDetail(quoteId) {
                         <!-- Submit -->
                         <div style="display:flex; gap:12px; flex-wrap:wrap;">
                             <button id="cmpSubmitBtn" onclick="submitQuoteCompletion(${q.id})" class="btn-primary" style="flex:2; justify-content:center; padding:14px; font-size:15px;">
-                                <i class="fas fa-check-double"></i> Valider les détails et accepter le devis
+                                <i class="fas fa-check-double"></i> Compléter et accepter le devis
                             </button>
                             <button onclick="respondQuote(${q.id}, 'refused')" class="btn-primary" style="flex:1; justify-content:center; padding:14px; background:var(--red); font-size:14px;">
                                 <i class="fas fa-times"></i> Refuser
@@ -4215,7 +4224,7 @@ async function openQuoteDetail(quoteId) {
                         ${history.map(h => {
                             const hLabels = {
                                 'submitted': 'Demande créée',
-                                'validated': 'Devis validé par PolyValences',
+                                'validated': 'Devis validé — en attente de complétion et acceptation',
                                 'accepted': 'Accepté par le client',
                                 'refused': 'Refusé par le client',
                                 'invoiced': 'Facturé',
@@ -4394,14 +4403,15 @@ async function submitQuoteCompletion(quoteId) {
                 contact_arrival_name: document.getElementById('cmpArrName').value.trim() || null,
                 contact_arrival_phone: document.getElementById('cmpArrPhone').value.trim() || null,
                 client_notes: document.getElementById('cmpNotes').value.trim() || null,
-                preferred_date: document.getElementById('cmpDate').value || null
+                preferred_date: document.getElementById('cmpDate').value || null,
+                client_ref: document.getElementById('cmpClientRef').value.trim() || null
             })
         });
         const completeData = await completeRes.json();
         if (!completeRes.ok || !completeData.success) {
             msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
             msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>' + (completeData.error || 'Erreur lors de la complétion.');
-            btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Valider les détails et accepter le devis';
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Compléter et accepter le devis';
             return;
         }
 
@@ -4418,12 +4428,12 @@ async function submitQuoteCompletion(quoteId) {
         } else {
             msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
             msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>' + (acceptData.error || 'Erreur lors de l\'acceptation.');
-            btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Valider les détails et accepter le devis';
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Compléter et accepter le devis';
         }
     } catch (err) {
         msg.style.display = 'block'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; msg.style.border = '1px solid #fecaca';
         msg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>Erreur de connexion. Réessayez.';
-        btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Valider les détails et accepter le devis';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-double"></i> Compléter et accepter le devis';
     }
 }
 
@@ -4471,7 +4481,7 @@ async function respondQuote(quoteId, action) {
                     <div style="margin-bottom:24px;">
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                             <i class="fas fa-file-alt" style="color:var(--blue); font-size:14px;"></i>
-                            <span style="font-size:14px; font-weight:700; color:var(--slate-800);">Devis en attente de votre réponse</span>
+                            <span style="font-size:14px; font-weight:700; color:var(--slate-800);">Devis à compléter et accepter</span>
                             <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; background:var(--blue-pale); color:var(--blue);">${pendingQuotes.length}</span>
                         </div>
                         ${pendingQuotes.map(q => `
@@ -4487,7 +4497,7 @@ async function respondQuote(quoteId, action) {
                                 <div style="font-size:16px; font-weight:800; color:var(--blue);">${q.total_ht ? q.total_ht.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €' : '—'}</div>
                             </div>
                             <div style="background:var(--blue); color:white; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:700; flex-shrink:0;">
-                                Répondre <i class="fas fa-arrow-right" style="margin-left:4px; font-size:10px;"></i>
+                                Compléter <i class="fas fa-arrow-right" style="margin-left:4px; font-size:10px;"></i>
                             </div>
                         </div>`).join('')}
                     </div>`;

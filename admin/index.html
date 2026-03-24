@@ -2299,6 +2299,7 @@
                     <div style="font-size:15px; font-weight:700; color:var(--slate-900);">${inv.client_name || '—'}</div>
                     ${inv.client_email ? '<div style="font-size:13px; color:var(--slate-500);">' + inv.client_email + '</div>' : ''}
                     ${inv.client_siret ? '<div style="font-size:12px; color:var(--slate-400); margin-top:4px;">SIRET : ' + inv.client_siret + '</div>' : ''}
+                    ${inv.client_ref ? '<div style="font-size:12px; color:var(--blue); margin-top:4px; font-weight:600;"><i class="fas fa-tag" style="margin-right:4px;"></i>Réf. comptable : ' + inv.client_ref + '</div>' : ''}
                 </div>
 
                 <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
@@ -2556,6 +2557,7 @@
                     ${inv.client_address ? '<div style="font-size:13px; color:#64748b;">' + inv.client_address + '</div>' : ''}
                     ${inv.client_email ? '<div style="font-size:13px; color:#94a3b8;">' + inv.client_email + '</div>' : ''}
                     ${inv.client_siret ? '<div style="font-size:12px; color:#94a3b8; margin-top:4px;">SIRET : ' + inv.client_siret + '</div>' : ''}
+                    ${inv.client_ref ? '<div style="font-size:12px; color:#3b82f6; margin-top:4px; font-weight:600;">Réf. comptable : ' + inv.client_ref + '</div>' : ''}
                 </div>
 
                 <div style="font-size:11px; font-style:italic; color:#94a3b8; margin-bottom:16px; text-align:center;">
