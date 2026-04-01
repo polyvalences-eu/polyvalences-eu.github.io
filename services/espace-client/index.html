@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace client gestion de flotte digitale | polyvalences.eu</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="canonical" href="https://polyvalences.eu/services/espace-client/">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7W30WDQNB"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Z7W30WDQNB');</script>
+    <meta name="description" content="Espace client digital inclus : alertes CT et entretien, états des lieux photo, devis en 30s, facturation auto. Gestion de flotte convoyage.">
+    <meta name="keywords" content="gestion flotte digitale convoyage, espace client convoyage, outil gestion flotte automobile, fleet management digital, vehicle fleet management tool">
+    <meta property="og:title" content="Espace client gestion de flotte digitale | polyvalences.eu">
+    <meta property="og:description" content="Espace client digital inclus : alertes CT et entretien, états des lieux photo, devis en 30s, facturation auto. Gestion de flotte convoyage.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://polyvalences.eu/services/espace-client/">
+
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Service","name":"Espace client gestion de flotte digitale","description":"Espace client digital inclus avec chaque convoyage : alertes contrôle technique et entretien, états des lieux photo, devis en ligne, facturation automatique. Outil de gestion de flotte automobile.","provider":{"@type":"Organization","name":"PolyValences","url":"https://polyvalences.eu","foundingDate":"2009","address":{"@type":"PostalAddress","streetAddress":"1 Place Paul Verlaine","addressLocality":"Boulogne-Billancourt","postalCode":"92100","addressCountry":"FR"}},"areaServed":["France","Espagne","Belgique","Italie","Suisse","Allemagne","Pays-Bas"],"serviceType":"Gestion de flotte digitale convoyage"}
+    </script>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        {"@type":"Question","name":"L'espace client est-il payant ?","acceptedAnswer":{"@type":"Answer","text":"Non, l'espace client est inclus sans surcoût avec chaque convoyage. Vous y accédez gratuitement pour gérer vos véhicules, devis, états des lieux et factures."}},
+        {"@type":"Question","name":"Comment fonctionnent les alertes contrôle technique ?","acceptedAnswer":{"@type":"Answer","text":"L'espace client affiche un indicateur rouge si le contrôle technique d'un véhicule est expiré, et un indicateur orange s'il expire dans moins d'un mois. Les alertes sont automatiques et mises à jour en temps réel."}},
+        {"@type":"Question","name":"Comment fonctionnent les alertes entretien ?","acceptedAnswer":{"@type":"Answer","text":"Le suivi entretien fonctionne par kilométrage et par date. Un indicateur rouge s'affiche si le kilométrage ou la date de révision est dépassé, et un indicateur orange si une révision est à prévoir dans les 30 jours ou 5 000 km."}},
+        {"@type":"Question","name":"Puis-je gérer plusieurs entreprises ?","acceptedAnswer":{"@type":"Answer","text":"Oui, l'espace client permet de gérer un profil multi-société avec SIRET. Vous pouvez centraliser la gestion de flottes de plusieurs entités depuis un seul compte."}},
+        {"@type":"Question","name":"Comment fonctionne l'état des lieux ?","acceptedAnswer":{"@type":"Answer","text":"L'état des lieux couvre 12 zones du véhicule, chacune photographiée par le chauffeur professionnel. Il est signé électroniquement par le chauffeur et le client, puis archivé au format PDF dans votre espace."}},
+        {"@type":"Question","name":"Puis-je contester un état des lieux ?","acceptedAnswer":{"@type":"Answer","text":"Oui, vous disposez d'un délai de 2 heures après réception pour contester un état des lieux directement depuis votre espace client. La contestation est tracée et traitée par notre équipe."}},
+        {"@type":"Question","name":"Comment obtenir un devis ?","acceptedAnswer":{"@type":"Answer","text":"Utilisez notre simulateur en ligne pour obtenir une estimation instantanée en 30 secondes. Renseignez les adresses de départ et d'arrivée, le type de véhicule, et recevez un devis sans engagement."}}
+    ]}
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--navy:#0b1a2e;--navy-light:#132743;--blue:#2563eb;--blue-light:#3b82f6;--blue-pale:#dbeafe;--blue-glow:rgba(37,99,235,0.15);--emerald:#059669;--amber:#d97706;--slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;--slate-300:#cbd5e1;--slate-400:#94a3b8;--slate-500:#64748b;--slate-600:#475569;--slate-700:#334155;--slate-800:#1e293b;--slate-900:#0f172a;--white:#fff;--radius:12px;--radius-lg:20px}
+        html{scroll-behavior:smooth}
+        body{font-family:'DM Sans',sans-serif;color:var(--slate-800);background:var(--slate-50);-webkit-font-smoothing:antialiased;line-height:1.6}
+        h1,h2,h3{font-family:'Playfair Display',serif}
+        .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--slate-200)}
+        .nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:72px;display:flex;align-items:center;justify-content:space-between}
+        .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+        .nav-links{display:flex;align-items:center;gap:32px}
+        .nav-link{text-decoration:none;font-size:14px;font-weight:500;color:var(--slate-600);transition:color 0.2s}
+        .nav-link:hover{color:var(--blue)}
+        .nav-email{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--navy);text-decoration:none}
+        .nav-email i{color:var(--blue);font-size:12px}
+        .nav-email:hover{color:var(--blue)}
+        .nav-cta{background:var(--navy);color:white;padding:10px 22px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s}
+        .nav-cta:hover{background:var(--blue)}
+        .nav-sep{width:1px;height:24px;background:var(--slate-200)}
+        .nav-burger{display:none;width:44px;height:44px;border:1px solid var(--slate-200);border-radius:10px;background:white;cursor:pointer;align-items:center;justify-content:center;font-size:18px;color:var(--slate-700)}
+        .mobile-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(11,26,46,0.6);backdrop-filter:blur(4px)}
+        .mobile-overlay.active{display:block}
+        .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:300px;max-width:85vw;z-index:201;background:white;padding:24px;box-shadow:-8px 0 40px rgba(0,0,0,0.15);transform:translateX(100%);transition:transform 0.3s ease;overflow-y:auto}
+        .mobile-menu.active{transform:translateX(0)}
+        .mobile-menu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+        .mobile-menu-close{width:40px;height:40px;border-radius:10px;border:1px solid var(--slate-200);background:white;cursor:pointer;font-size:16px;color:var(--slate-500);display:flex;align-items:center;justify-content:center}
+        .mobile-menu-links{list-style:none;margin-bottom:32px}
+        .mobile-menu-links li{border-bottom:1px solid var(--slate-100)}
+        .mobile-menu-links a{display:flex;align-items:center;gap:12px;padding:16px 4px;font-size:15px;font-weight:500;color:var(--slate-700);text-decoration:none}
+        .mobile-menu-links a:hover{color:var(--blue)}
+        .mobile-menu-links i{width:20px;text-align:center;color:var(--slate-400);font-size:14px}
+        .mobile-menu-cta{width:100%;padding:14px;margin-top:16px;background:var(--navy);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+        .hero{position:relative;padding:120px 24px 80px;overflow:hidden;min-height:80vh;display:flex;align-items:center}
+        .hero-bg{position:absolute;inset:0;z-index:0}
+        .hero-bg img{width:100%;height:100%;object-fit:cover}
+        .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(11,26,46,0.95) 0%,rgba(19,39,67,0.9) 50%,rgba(37,99,235,0.65) 100%)}
+        .hero-inner{position:relative;z-index:1;max-width:800px;margin:0 auto;width:100%;text-align:center}
+        .hero-content{color:white}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:24px}
+        .hero-badge-dot{width:8px;height:8px;border-radius:50%;background:#60a5fa;animation:pulse-dot 2s infinite}
+        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
+        .hero h1{font-size:clamp(36px,5vw,56px);font-weight:800;line-height:1.1;margin-bottom:20px}
+        .hero h1 em{font-style:normal;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero-sub{font-size:18px;color:#94a3b8;margin-bottom:36px;max-width:600px;margin-inline:auto;line-height:1.7}
+        .hero-ctas{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+        .btn-primary{background:var(--blue);color:white;padding:16px 32px;border-radius:var(--radius);font-size:15px;font-weight:700;border:none;cursor:pointer;transition:all 0.25s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+        .btn-primary:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 8px 30px rgba(37,99,235,0.35)}
+        .btn-outline{background:transparent;color:white;padding:16px 32px;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,0.25);transition:all 0.25s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+        .btn-outline:hover{border-color:white;background:rgba(255,255,255,0.08)}
+        .trust-bar{background:white;border-bottom:1px solid var(--slate-100);padding:32px 24px}
+        .trust-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center}
+        .trust-item{position:relative}
+        .trust-item+.trust-item::before{content:'';position:absolute;left:-16px;top:10%;height:80%;width:1px;background:var(--slate-100)}
+        .trust-number{font-size:36px;font-weight:800;color:var(--navy);font-family:'Playfair Display',serif}
+        .trust-label{font-size:12px;font-weight:700;color:var(--slate-400);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px}
+        .alerts-section{padding:100px 24px;background:white}
+        .alerts-inner{max-width:1000px;margin:0 auto}
+        .alerts-header{text-align:center;margin-bottom:56px}
+        .alerts-header h2{font-size:clamp(28px,3.5vw,40px);font-weight:800;color:var(--slate-900);margin-bottom:12px}
+        .alerts-header p{font-size:17px;color:var(--slate-500);max-width:600px;margin-inline:auto;line-height:1.7}
+        .alerts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+        .alert-card{background:var(--slate-50);border-radius:var(--radius-lg);padding:36px 32px;border:1px solid var(--slate-200);transition:all 0.3s}
+        .alert-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.06);border-color:var(--blue-pale)}
+        .alert-card-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px}
+        .alert-card-icon.blue{background:var(--blue-pale);color:var(--blue)}
+        .alert-card-icon.green{background:#dcfce7;color:#16a34a}
+        .alert-card-icon.amber{background:#fef3c7;color:#d97706}
+        .alert-card-icon.red{background:#fee2e2;color:#dc2626}
+        .alert-card h3{font-size:18px;font-weight:700;color:var(--slate-900);margin-bottom:12px;font-family:'DM Sans',sans-serif}
+        .alert-card p{font-size:14px;color:var(--slate-500);line-height:1.8}
+        .alert-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+        .alert-dot.red{background:#dc2626}
+        .alert-dot.orange{background:#d97706}
+        .alert-dot.green{background:#16a34a}
+        .section-header{text-align:center;margin-bottom:56px}
+        .section-header h2{font-size:clamp(28px,3.5vw,40px);font-weight:800;color:var(--slate-900);margin-bottom:12px}
+        .section-header p{font-size:17px;color:var(--slate-500);max-width:600px;margin-inline:auto}
+        .avantages{padding:100px 24px;background:var(--slate-50)}
+        .avantages-inner{max-width:1200px;margin:0 auto}
+        .avantages-header{text-align:center;margin-bottom:56px}
+        .avantages-header h2{font-size:clamp(28px,3.5vw,40px);font-weight:800;color:var(--slate-900);margin-bottom:12px}
+        .avantages-header p{font-size:17px;color:var(--slate-500)}
+        .avantages-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+        .av-card{background:white;border-radius:var(--radius-lg);padding:32px;border:1px solid var(--slate-100)}
+        .av-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;background:var(--blue-pale);color:var(--blue)}
+        .av-icon.green{background:#dcfce7;color:#16a34a}
+        .av-icon.amber{background:#fef3c7;color:#d97706}
+        .av-card h3{font-size:17px;font-weight:700;color:var(--slate-900);margin-bottom:8px;font-family:'DM Sans',sans-serif}
+        .av-card p{font-size:14px;color:var(--slate-500);line-height:1.7}
+        .devis-section{padding:100px 24px;background:white}
+        .devis-inner{max-width:1000px;margin:0 auto}
+        .devis-header{text-align:center;margin-bottom:64px}
+        .devis-header h2{font-size:clamp(28px,3.5vw,40px);font-weight:800;color:var(--slate-900);margin-bottom:12px}
+        .devis-header p{font-size:17px;color:var(--slate-500)}
+        .steps-grid{display:flex;gap:32px}
+        .step-card{flex:1;text-align:center;padding:32px 24px;position:relative}
+        .step-card+.step-card::before{content:'';position:absolute;left:-16px;top:40px;width:1px;height:60px;background:var(--slate-200)}
+        .step-number{width:56px;height:56px;border-radius:14px;background:var(--blue-pale);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin:0 auto 20px;font-family:'Playfair Display',serif}
+        .step-card h3{font-size:18px;font-weight:700;color:var(--slate-900);margin-bottom:8px;font-family:'DM Sans',sans-serif}
+        .step-card p{font-size:14px;color:var(--slate-500);line-height:1.7}
+        .edl-section{padding:100px 24px;background:var(--slate-50)}
+        .edl-inner{max-width:1000px;margin:0 auto}
+        .edl-header{text-align:center;margin-bottom:56px}
+        .edl-header h2{font-size:clamp(28px,3.5vw,40px);font-weight:800;color:var(--slate-900);margin-bottom:12px}
+        .edl-header p{font-size:17px;color:var(--slate-500);max-width:600px;margin-inline:auto}
+        .edl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+        .edl-card{background:white;border-radius:var(--radius-lg);padding:32px;border:1px solid var(--slate-100);transition:all 0.3s}
+        .edl-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+        .edl-card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;background:var(--blue-pale);color:var(--blue)}
+        .edl-card-icon.green{background:#dcfce7;color:#16a34a}
+        .edl-card-icon.amber{background:#fef3c7;color:#d97706}
+        .edl-card-icon.red{background:#fee2e2;color:#dc2626}
+        .edl-card h3{font-size:17px;font-weight:700;color:var(--slate-900);margin-bottom:8px;font-family:'DM Sans',sans-serif}
+        .edl-card p{font-size:14px;color:var(--slate-500);line-height:1.7}
+        .faq{padding:100px 24px;background:white}
+        .faq-inner{max-width:720px;margin:0 auto}
+        .faq-header{text-align:center;margin-bottom:48px}
+        .faq-header h2{font-size:clamp(28px,3.5vw,40px);font-weight:800;color:var(--slate-900);margin-bottom:12px}
+        .faq-header p{font-size:17px;color:var(--slate-500)}
+        .faq-item{border:1px solid var(--slate-200);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;background:var(--slate-50)}
+        .faq-q{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:15px;font-weight:600;color:var(--slate-800);background:none;border:none;width:100%;font-family:'DM Sans',sans-serif;text-align:left;transition:color 0.2s}
+        .faq-q:hover{color:var(--blue)}
+        .faq-q i{font-size:12px;color:var(--slate-400);transition:transform 0.3s}
+        .faq-q.open i{transform:rotate(180deg)}
+        .faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease}
+        .faq-a-inner{padding:0 24px 20px;font-size:14px;color:var(--slate-500);line-height:1.8}
+        .faq-a-inner a{color:var(--blue);font-weight:600;text-decoration:none}
+        .services-links{padding:80px 24px;background:white}
+        .services-links-inner{max-width:1200px;margin:0 auto}
+        .services-links-header{text-align:center;margin-bottom:40px}
+        .services-links-header h2{font-size:clamp(24px,3vw,32px);font-weight:800;color:var(--slate-900);margin-bottom:8px}
+        .services-links-header p{font-size:15px;color:var(--slate-500)}
+        .services-links-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+        .sl-card{background:var(--slate-50);border-radius:var(--radius);padding:24px;border:1px solid var(--slate-100);text-decoration:none;transition:all 0.3s;display:block}
+        .sl-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:var(--blue)}
+        .sl-card h3{font-size:15px;font-weight:700;color:var(--slate-900);margin-bottom:6px;font-family:'DM Sans',sans-serif}
+        .sl-card p{font-size:13px;color:var(--slate-500);line-height:1.6;margin-bottom:12px}
+        .sl-card .sl-link{font-size:13px;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:6px}
+        .cta-section{padding:80px 24px;text-align:center;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:white}
+        .cta-section h2{font-size:clamp(28px,3.5vw,40px);font-weight:800;margin-bottom:16px}
+        .cta-section p{font-size:17px;color:#94a3b8;margin-bottom:32px;max-width:500px;margin-inline:auto}
+        .cta-section .cta-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+        .footer{background:var(--navy);color:var(--slate-400);padding:64px 24px 32px}
+        .footer-inner{max-width:1200px;margin:0 auto}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;margin-bottom:48px}
+        .footer-desc{font-size:14px;max-width:320px;line-height:1.7}
+        .footer h4{color:white;font-size:14px;font-weight:700;margin-bottom:16px;font-family:'DM Sans',sans-serif}
+        .footer ul{list-style:none}
+        .footer ul li{margin-bottom:8px}
+        .footer ul li a{color:var(--slate-400);font-size:13px;text-decoration:none;transition:color 0.2s}
+        .footer ul li a:hover{color:white}
+        .footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;display:flex;justify-content:space-between;font-size:12px;flex-wrap:wrap;gap:12px}
+        .footer-bottom a{color:var(--slate-400);text-decoration:none;margin-left:16px}
+        .footer-bottom a:hover{color:white}
+        @media(max-width:1024px){.avantages-grid{grid-template-columns:1fr;max-width:500px;margin:0 auto}.alerts-grid{grid-template-columns:1fr;max-width:500px;margin:0 auto}.edl-grid{grid-template-columns:1fr;max-width:500px;margin:0 auto}.services-links-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:768px){.nav-links{display:none!important}.nav-burger{display:flex}.trust-inner{grid-template-columns:repeat(2,1fr)}.trust-item+.trust-item::before{display:none}.steps-grid{flex-direction:column}.step-card+.step-card::before{display:none}.footer-grid{grid-template-columns:1fr}.footer-bottom{flex-direction:column}.services-links-grid{grid-template-columns:1fr}.hero h1{font-size:32px}.hero-sub{font-size:16px}.alerts-section{padding:60px 24px}.avantages{padding:60px 24px}.devis-section{padding:60px 24px}.edl-section{padding:60px 24px}.faq{padding:60px 24px}}
+    </style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:56px;width:auto;"></a>
+    <div class="nav-links">
+        <a href="/" class="nav-link">Accueil</a><a href="/convoyage/" class="nav-link">Convoyage</a><a href="/conciergerie/" class="nav-link">Conciergerie</a><a href="/stockage/" class="nav-link">Stockage</a><a href="/gestion-flotte/" class="nav-link">Gestion de flotte</a>
+        <div class="nav-sep"></div>
+        <a href="mailto:support@polyvalences.eu" class="nav-email"><i class="fas fa-envelope"></i> support@polyvalences.eu</a>
+        <a href="/devis/" class="nav-cta"><i class="fas fa-calculator"></i> Devis en ligne</a>
+    </div>
+    <button class="nav-burger" onclick="openMobileMenu()"><i class="fas fa-bars"></i></button>
+</div></nav>
+
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header"><a href="/"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:40px;width:auto;"></a><button class="mobile-menu-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button></div>
+    <ul class="mobile-menu-links">
+        <li><a href="/"><i class="fas fa-home"></i> Accueil</a></li>
+        <li><a href="/convoyage/"><i class="fas fa-truck"></i> Convoyage</a></li>
+        <li><a href="/conciergerie/"><i class="fas fa-concierge-bell"></i> Conciergerie</a></li>
+        <li><a href="/stockage/"><i class="fas fa-warehouse"></i> Stockage</a></li>
+        <li><a href="/gestion-flotte/"><i class="fas fa-chart-line"></i> Gestion de flotte</a></li>
+        <li><a href="mailto:support@polyvalences.eu"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <a href="/devis/" class="mobile-menu-cta"><i class="fas fa-calculator"></i> Devis en ligne</a>
+</div>
+
+<section class="hero">
+    <div class="hero-bg"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" alt="Tableau de bord gestion de flotte digitale" loading="eager"></div>
+    <div class="hero-inner"><div class="hero-content">
+        <div class="hero-badge"><span class="hero-badge-dot"></span> Inclus avec chaque convoyage — sans surcoût</div>
+        <h1>Votre espace client <em>gestion de flotte</em> digitale</h1>
+        <p class="hero-sub">Alertes CT et entretien, états des lieux photo, devis en 30 secondes, facturation automatique. Tout est inclus.</p>
+        <div class="hero-ctas">
+            <a href="/espace/" class="btn-primary"><i class="fas fa-user-plus"></i> Créer mon espace gratuit</a>
+            <a href="/devis/" class="btn-outline"><i class="fas fa-calculator"></i> Demander un devis</a>
+        </div>
+    </div></div>
+</section>
+
+<div class="trust-bar"><div class="trust-inner">
+    <div class="trust-item"><div class="trust-number">2009</div><div class="trust-label">Année de création</div></div>
+    <div class="trust-item"><div class="trust-number">100%</div><div class="trust-label">Digital</div></div>
+    <div class="trust-item"><div class="trust-number">0€</div><div class="trust-label">Espace client inclus</div></div>
+    <div class="trust-item"><div class="trust-number">24/7</div><div class="trust-label">Accessible en ligne</div></div>
+</div></div>
+
+<section class="alerts-section" id="alertes"><div class="alerts-inner">
+    <div class="alerts-header">
+        <h2>Des alertes qui protègent votre flotte</h2>
+        <p>Votre espace client surveille en permanence l'état de vos véhicules et vous alerte automatiquement. Plus besoin de tableurs ni de rappels manuels.</p>
+    </div>
+    <div class="alerts-grid">
+        <div class="alert-card">
+            <div class="alert-card-icon red"><i class="fas fa-shield-halved"></i></div>
+            <h3>Alerte contrôle technique</h3>
+            <p><span class="alert-dot red"></span> <strong>Rouge</strong> = contrôle technique expiré. Le véhicule n'est plus en règle et ne peut pas circuler légalement.<br><span class="alert-dot orange"></span> <strong>Orange</strong> = le CT expire dans moins d'un mois. Il est temps de prendre rendez-vous pour éviter toute immobilisation.</p>
+        </div>
+        <div class="alert-card">
+            <div class="alert-card-icon amber"><i class="fas fa-oil-can"></i></div>
+            <h3>Alerte révision et entretien</h3>
+            <p><span class="alert-dot red"></span> <strong>Rouge</strong> = kilométrage ou date de révision dépassé. L'entretien est en retard.<br><span class="alert-dot orange"></span> <strong>Orange</strong> = révision à prévoir dans les 30 prochains jours ou les 5 000 prochains km. Anticipez pour éviter les pannes.</p>
+        </div>
+        <div class="alert-card">
+            <div class="alert-card-icon blue"><i class="fas fa-file-signature"></i></div>
+            <h3>Alerte devis en attente</h3>
+            <p>Recevez une notification dès qu'un devis attend votre validation. Consultez le détail du trajet, le montant et acceptez en un clic depuis votre espace. Aucun devis ne passe entre les mailles du filet.</p>
+        </div>
+        <div class="alert-card">
+            <div class="alert-card-icon green"><i class="fas fa-file-invoice-dollar"></i></div>
+            <h3>Alerte factures impayées</h3>
+            <p>Suivez les échéances de paiement de vos factures en temps réel. Identifiez immédiatement les factures en retard et gardez une visibilité complète sur votre comptabilité convoyage.</p>
+        </div>
+    </div>
+</div></section>
+
+<section class="avantages" id="flotte"><div class="avantages-inner">
+    <div class="avantages-header">
+        <h2>Centralisez la gestion de tous vos véhicules</h2>
+        <p>Un outil de gestion de flotte automobile complet, inclus avec votre service de convoyage.</p>
+    </div>
+    <div class="avantages-grid">
+        <div class="av-card"><div class="av-icon"><i class="fas fa-car"></i></div><h3>Fiche véhicule complète</h3><p>Plaque d'immatriculation, marque, modèle, kilométrage, type de carburant et localisation. Toutes les informations de chaque véhicule centralisées dans une fiche claire et à jour.</p></div>
+        <div class="av-card"><div class="av-icon green"><i class="fas fa-circle-check"></i></div><h3>Statuts en temps réel</h3><p>Visualisez instantanément l'état de chaque véhicule : libre, affecté à un collaborateur, en réparation, en stockage ou en transit lors d'un convoyage.</p></div>
+        <div class="av-card"><div class="av-icon amber"><i class="fas fa-wrench"></i></div><h3>Historique maintenance</h3><p>Consultez l'historique complet des entretiens : date, type d'intervention, kilométrage, prestataire et pièces remplacées. Tout est tracé et archivé.</p></div>
+        <div class="av-card"><div class="av-icon"><i class="fas fa-user-tag"></i></div><h3>Affectation conducteurs</h3><p>Associez un conducteur à chaque véhicule avec un statut clair : actif, futur ou historique. Accédez au profil complet du conducteur affecté.</p></div>
+        <div class="av-card"><div class="av-icon green"><i class="fas fa-folder"></i></div><h3>Dossiers par site ou zone</h3><p>Regroupez vos véhicules par zone géographique, département ou site. Organisez votre flotte selon la structure de votre entreprise.</p></div>
+        <div class="av-card"><div class="av-icon amber"><i class="fas fa-building"></i></div><h3>Multi-entreprise</h3><p>Gérez les véhicules de plusieurs entités juridiques depuis un seul compte. Profil entreprise avec SIRET et gestion multi-utilisateurs.</p></div>
+    </div>
+</div></section>
+
+<section class="devis-section" id="devis"><div class="devis-inner">
+    <div class="devis-header">
+        <h2>Du devis à la facture, 100% en ligne</h2>
+        <p>Le processus complet, du simulateur de prix à la facture PDF, sans aucun papier.</p>
+    </div>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Simulateur de prix instantané</h3>
+            <p>Renseignez les adresses de départ et d'arrivée grâce à l'autocomplétion. Obtenez une estimation de prix en 30 secondes, sans engagement.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Suivi du statut en temps réel</h3>
+            <p>Suivez votre devis à chaque étape : soumis, validé par notre équipe, accepté par vous. Ajoutez une référence comptable (centre de coût, bon de commande, code projet).</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Facture PDF automatique</h3>
+            <p>Une fois le convoyage réalisé, la facture PDF est générée automatiquement et disponible dans votre espace. Votre référence comptable y est reportée.</p>
+        </div>
+    </div>
+</div></section>
+
+<section class="edl-section" id="edl"><div class="edl-inner">
+    <div class="edl-header">
+        <h2>États des lieux photo professionnels</h2>
+        <p>Chaque convoyage est encadré par un état des lieux complet au départ et à l'arrivée, pour une transparence totale.</p>
+    </div>
+    <div class="edl-grid">
+        <div class="edl-card">
+            <div class="edl-card-icon"><i class="fas fa-th-large"></i></div>
+            <h3>12 zones du véhicule photographiées</h3>
+            <p>Le chauffeur professionnel photographie 12 zones distinctes du véhicule (avant, arrière, côtés, intérieur, tableau de bord, etc.) pour documenter précisément son état.</p>
+        </div>
+        <div class="edl-card">
+            <div class="edl-card-icon green"><i class="fas fa-signature"></i></div>
+            <h3>Signature électronique</h3>
+            <p>L'état des lieux est signé électroniquement par le chauffeur et par le client (ou son représentant). Les signatures sont horodatées et archivées.</p>
+        </div>
+        <div class="edl-card">
+            <div class="edl-card-icon amber"><i class="fas fa-clock"></i></div>
+            <h3>Contestation sous 2 heures</h3>
+            <p>Vous disposez d'un délai de 2 heures après réception de l'état des lieux pour le contester directement depuis votre espace client. La contestation est tracée et traitée par notre équipe.</p>
+        </div>
+        <div class="edl-card">
+            <div class="edl-card-icon red"><i class="fas fa-file-pdf"></i></div>
+            <h3>PDF professionnel archivé</h3>
+            <p>Chaque état des lieux génère un document PDF professionnel avec les 12 photos, les annotations du chauffeur, les signatures et l'horodatage. Archivé et téléchargeable à tout moment.</p>
+        </div>
+    </div>
+</div></section>
+
+<section class="faq" id="faq"><div class="faq-inner">
+    <div class="faq-header"><h2>Questions fréquentes</h2><p>Tout savoir sur l'espace client et la gestion de flotte digitale.</p></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">L'espace client est-il payant ?<i class="fas fa-chevron-down"></i></button><div class="faq-a"><div class="faq-a-inner">Non, l'espace client est inclus sans surcoût avec chaque convoyage. Vous y accédez gratuitement pour gérer vos véhicules, consulter vos devis, états des lieux et factures. Il n'y a aucun abonnement ni frais caché.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment fonctionnent les alertes contrôle technique ?<i class="fas fa-chevron-down"></i></button><div class="faq-a"><div class="faq-a-inner">L'espace client affiche un indicateur rouge si le contrôle technique d'un véhicule est expiré, et un indicateur orange s'il expire dans moins d'un mois. Les alertes sont automatiques et mises à jour en temps réel, pour que vous n'ayez jamais de véhicule en infraction.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment fonctionnent les alertes entretien ?<i class="fas fa-chevron-down"></i></button><div class="faq-a"><div class="faq-a-inner">Le suivi entretien fonctionne par kilométrage et par date. Un indicateur rouge s'affiche si le kilométrage ou la date de révision est dépassé. Un indicateur orange apparaît si une révision est à prévoir dans les 30 prochains jours ou les 5 000 prochains kilomètres.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Puis-je gérer plusieurs entreprises ?<i class="fas fa-chevron-down"></i></button><div class="faq-a"><div class="faq-a-inner">Oui, l'espace client permet de gérer un profil multi-société avec SIRET. Vous pouvez centraliser la gestion de flottes de plusieurs entités juridiques depuis un seul compte, avec des fiches véhicules séparées par entreprise.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment fonctionne l'état des lieux ?<i class="fas fa-chevron-down"></i></button><div class="faq-a"><div class="faq-a-inner">L'état des lieux couvre 12 zones du véhicule, chacune photographiée par le chauffeur professionnel. Le document est signé électroniquement par le chauffeur et le client, puis archivé au format PDF dans votre espace. Un état des lieux est réalisé au départ et à l'arrivée de chaque convoyage.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Puis-je contester un état des lieux ?<i class="fas fa-chevron-down"></i></button><div class="faq-a"><div class="faq-a-inner">Oui, vous disposez d'un délai de 2 heures après réception pour contester un état des lieux directement depuis votre espace client. La contestation est enregistrée, horodatée et traitée par notre équipe dans les plus brefs délais.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment obtenir un devis ?<i class="fas fa-chevron-down"></i></button><div class="faq-a"><div class="faq-a-inner">Utilisez notre <a href="/devis/">simulateur en ligne</a> pour obtenir une estimation instantanée en 30 secondes. Renseignez les adresses de départ et d'arrivée, le type de véhicule, et recevez un devis sans engagement. Vous pouvez aussi nous contacter à <a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a>.</div></div></div>
+</div></section>
+
+<section class="services-links"><div class="services-links-inner">
+    <div class="services-links-header"><h2>Nos services pour les entreprises</h2><p>Des solutions de convoyage adaptées à chaque besoin professionnel.</p></div>
+    <div class="services-links-grid">
+        <a href="/services/flotte-commerciale/" class="sl-card"><h3>Flottes commerciales</h3><p>Convoyage dédié aux flottes de commerciaux terrain.</p><span class="sl-link">En savoir plus <i class="fas fa-arrow-right"></i></span></a>
+        <a href="/services/visiteurs-medicaux/" class="sl-card"><h3>Visiteurs médicaux</h3><p>Convoyage dédié aux flottes du secteur santé et pharmaceutique.</p><span class="sl-link">En savoir plus <i class="fas fa-arrow-right"></i></span></a>
+        <a href="/services/transfert-inter-sites/" class="sl-card"><h3>Transfert inter-sites</h3><p>Réaffectez vos véhicules entre sites sans mobiliser vos équipes.</p><span class="sl-link">En savoir plus <i class="fas fa-arrow-right"></i></span></a>
+        <a href="/services/convoyage-europe/" class="sl-card"><h3>Convoyage Europe</h3><p>Livraison de véhicules dans 7 pays européens.</p><span class="sl-link">En savoir plus <i class="fas fa-arrow-right"></i></span></a>
+    </div>
+</div></section>
+
+<section class="cta-section">
+    <h2>Découvrez votre espace client polyvalences.eu</h2>
+    <p>Créez votre espace gratuitement et centralisez la gestion de votre flotte.</p>
+    <div class="cta-buttons">
+        <a href="/espace/" class="btn-primary" style="font-size:17px;padding:18px 36px;"><i class="fas fa-user-plus"></i> Créer mon espace</a>
+        <a href="/devis/" class="btn-outline" style="font-size:17px;padding:18px 36px;"><i class="fas fa-calculator"></i> Demander un devis</a>
+    </div>
+</section>
+
+<footer class="footer"><div class="footer-inner">
+    <div class="footer-grid">
+        <div><a href="/"><img src="/images/logo-polyvalences.png" alt="PolyValences" style="height:48px;width:auto;margin-bottom:12px;"></a><p class="footer-desc">Spécialiste du convoyage automobile, de la conciergerie et de la gestion de flotte depuis 2009. France & Europe.</p></div>
+        <div><h4>Services</h4><ul><li><a href="/convoyage/">Convoyage automobile</a></li><li><a href="/conciergerie/">Conciergerie automobile</a></li><li><a href="/stockage/">Stockage de véhicules</a></li><li><a href="/gestion-flotte/">Gestion de flotte</a></li><li><a href="/devis/">Devis en ligne</a></li></ul></div>
+        <div><h4>Contact</h4><ul><li><a href="mailto:support@polyvalences.eu">support@polyvalences.eu</a></li><li><span style="color:var(--slate-400);font-size:13px">1 Place Paul Verlaine</span></li><li><span style="color:var(--slate-400);font-size:13px">92100 Boulogne-Billancourt</span></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>&copy; 2026 PolyValences. Tous droits réservés.</span><div><a href="/mentions-legales/">Mentions légales</a><a href="/cgv/">CGV</a><a href="/confidentialite/">Politique de confidentialité</a></div></div>
+</div></footer>
+
+<script>
+function openMobileMenu(){document.getElementById('mobileOverlay').classList.add('active');document.getElementById('mobileMenu').classList.add('active');document.body.style.overflow='hidden';}
+function closeMobileMenu(){document.getElementById('mobileOverlay').classList.remove('active');document.getElementById('mobileMenu').classList.remove('active');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu();});
+function toggleFaq(btn){const w=btn.classList.contains('open');document.querySelectorAll('.faq-q').forEach(q=>{q.classList.remove('open');q.nextElementSibling.style.maxHeight=null;});if(!w){btn.classList.add('open');btn.nextElementSibling.style.maxHeight=btn.nextElementSibling.scrollHeight+'px';}}
+</script>
+</body>
+</html>
