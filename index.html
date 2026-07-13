@@ -1106,7 +1106,14 @@
 </head>
 <body>
 
-<!-- ===== TICKER BANDEAU NOUVEAUTÉ ===== -->
+<!-- ===== PAUSE ACTIVITÉ 2026 — bannière temporaire. En septembre 2026 : supprimer ce bloc et réactiver le ticker ci-dessous ===== -->
+<div id="pauseBanner2026" style="background:#fef3c7; border-bottom:1px solid #fcd34d; min-height:40px; padding:9px 20px; display:flex; align-items:center; justify-content:center; text-align:center; position:relative; z-index:101;">
+    <span style="font-size:13px; font-weight:600; color:#92400e; line-height:1.5; max-width:1100px;">
+        <i class="fas fa-exclamation-triangle" style="margin-right:8px; color:#d97706;"></i><strong>Information</strong> — En raison d'une régularisation administrative liée à notre changement de siège social, nous ne sommes pas en mesure de traiter de nouvelles demandes de convoyage avant <strong>septembre 2026</strong>. Merci de votre compréhension.
+    </span>
+</div>
+
+<!-- ===== TICKER BANDEAU NOUVEAUTÉ (PAUSE ACTIVITÉ 2026 : mis en pause, réactiver en septembre) =====
 <div id="tickerBanner" style="background:linear-gradient(90deg, var(--navy), #1e3a5f); overflow:hidden; position:relative; height:40px; display:flex; align-items:center; z-index:101;">
     <button onclick="document.getElementById('tickerBanner').style.display='none'; document.querySelector('.nav').style.top='0px'; sessionStorage.setItem('pv_ticker_closed','1');" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:rgba(255,255,255,0.5); font-size:14px; cursor:pointer; z-index:2; padding:4px 8px;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'"><i class="fas fa-times"></i></button>
     <div style="display:flex; animation:ticker-scroll 20s linear infinite; white-space:nowrap; padding-right:50px;">
@@ -1138,6 +1145,7 @@
         </div>
     </div>
 </div>
+===== FIN TICKER (PAUSE ACTIVITÉ 2026) ===== -->
 
 <!-- ===== NAVIGATION ===== -->
 <nav class="nav">
@@ -1744,11 +1752,26 @@
     let authToken = localStorage.getItem('pv_token');
     let currentUser = null;
 
-    // Ticker banner — hide if already closed
-    if (sessionStorage.getItem('pv_ticker_closed') === '1') {
-        const tb = document.getElementById('tickerBanner');
-        if (tb) { tb.style.display = 'none'; document.querySelector('.nav').style.top = '0px'; }
+    // PAUSE ACTIVITÉ 2026 : la bannière peut dépasser 40px sur mobile (texte sur 2-3 lignes) —
+    // on ajuste la nav fixe (top:40px) et le padding du hero (140px) à sa hauteur réelle.
+    // En septembre 2026 : supprimer ce bloc et décommenter le bloc ticker ci-dessous.
+    function adjustPauseBanner2026() {
+        const b = document.getElementById('pauseBanner2026');
+        if (!b) return;
+        const h = b.offsetHeight;
+        document.querySelector('.nav').style.top = h + 'px';
+        const hero = document.querySelector('.hero');
+        if (hero && h > 40) hero.style.paddingTop = (140 + (h - 40)) + 'px';
     }
+    window.addEventListener('resize', adjustPauseBanner2026);
+    window.addEventListener('load', adjustPauseBanner2026);
+    adjustPauseBanner2026();
+
+    // Ticker banner — hide if already closed (PAUSE ACTIVITÉ 2026 : ticker désactivé, décommenter en septembre)
+    // if (sessionStorage.getItem('pv_ticker_closed') === '1') {
+    //     const tb = document.getElementById('tickerBanner');
+    //     if (tb) { tb.style.display = 'none'; document.querySelector('.nav').style.top = '0px'; }
+    // }
 
     // ===== STATE SIMULATEUR =====
     let originData = null;   // { lat, lng, address }

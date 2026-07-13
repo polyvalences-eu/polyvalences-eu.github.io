@@ -678,6 +678,15 @@
         <p>Saisissez vos adresses, obtenez un tarif transparent et détaillé instantanément.</p>
     </div>
 
+    <!-- ===== PAUSE ACTIVITÉ 2026 — bannière temporaire, supprimer ce bloc en septembre 2026 ===== -->
+    <div id="pauseBanner2026" style="background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #f59e0b; border-radius:12px; padding:16px 20px; margin:0 auto 24px; max-width:860px; display:flex; gap:14px; align-items:flex-start;">
+        <i class="fas fa-exclamation-triangle" style="color:#d97706; font-size:18px; margin-top:3px; flex-shrink:0;"></i>
+        <div style="font-size:14px; color:#78350f; line-height:1.6;">
+            <strong>Chère cliente, cher client</strong> — Notre société est en cours de régularisation administrative suite à un changement de siège social. Cette procédure nous a contraints à reporter les demandes en cours, et nous ne pourrons pas traiter de nouvelle demande avant <strong>septembre 2026</strong>. Le simulateur reste disponible à titre indicatif, mais l'envoi de nouvelles demandes est suspendu. Merci de votre compréhension.
+        </div>
+    </div>
+    <!-- ===== FIN PAUSE ACTIVITÉ 2026 ===== -->
+
     <div class="sim-card">
         <div class="sim-panel">
             <div class="sim-header">
@@ -1127,8 +1136,9 @@
                     </div>
                 </div>
 
-                <button class="sim-result-cta" style="margin-top:16px;" onclick="submitQuote()">
-                    <i class="fas fa-paper-plane"></i> Envoyer ma demande de devis
+                <!-- PAUSE ACTIVITÉ 2026 : envoi désactivé — restaurer en septembre 2026 : <button class="sim-result-cta" style="margin-top:16px;" onclick="submitQuote()"><i class="fas fa-paper-plane"></i> Envoyer ma demande de devis</button> -->
+                <button class="sim-result-cta" style="margin-top:16px; opacity:0.45; cursor:not-allowed;" disabled title="Nouvelles demandes suspendues jusqu'en septembre 2026">
+                    <i class="fas fa-paper-plane"></i> Envoi suspendu jusqu'en septembre 2026
                 </button>
                 <button class="sim-result-secondary" onclick="resetSimulator()">
                     <i class="fas fa-redo"></i> Nouveau calcul
@@ -1225,6 +1235,10 @@
     }
 
     async function submitQuote() {
+        // PAUSE ACTIVITÉ 2026 : nouvelles demandes bloquées — supprimer ces 2 lignes en septembre 2026
+        showToast('Les nouvelles demandes sont suspendues jusqu\'en septembre 2026. Merci de votre compréhension.');
+        return;
+
         if (!lastQuoteData || !originData || !destData) return;
 
         const date1 = document.getElementById('prefDate1').value;
