@@ -1544,8 +1544,21 @@
             if (!res.ok) return;
             const d = await res.json();
 
+            // Devis en attente de validation : absents de /api/admin/dashboard, comptés depuis la liste des devis
+            let submittedQuotes = 0;
+            try {
+                const resQ = await fetch(API + '/api/admin/quotes', {
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                if (resQ.ok) {
+                    const dq = await resQ.json();
+                    submittedQuotes = (dq.quotes || []).filter(q => q.status === 'submitted').length;
+                }
+            } catch (e) { console.error('Quotes count failed:', e); }
+
             // Actions requises
             const actions = [];
+            if (submittedQuotes > 0) actions.push({ icon: 'fa-file-alt', color: '#dc2626', bg: '#fee2e2', label: `${submittedQuotes} devis à valider`, count: submittedQuotes, onclick: "document.getElementById('quotesFilter').value='submitted';switchAdminTab('quotes')" });
             if (d.pending_clients > 0) actions.push({ icon: 'fa-user-clock', color: '#dc2626', bg: '#fee2e2', label: `${d.pending_clients} compte(s) client en attente de validation`, count: d.pending_clients, tab: 'clients', filter: 'pending' });
             if (d.draft_missions > 0) actions.push({ icon: 'fa-file-alt', color: '#dc2626', bg: '#fee2e2', label: `${d.draft_missions} fiche(s) mission à remplir`, count: d.draft_missions, tab: 'missions', filter: 'draft' });
             if (d.open_missions_with_candidates > 0) actions.push({ icon: 'fa-users', color: '#d97706', bg: '#fef3c7', label: `${d.open_missions_with_candidates} candidature(s) à valider`, count: d.open_missions_with_candidates, tab: 'missions', filter: 'all' });
@@ -1560,7 +1573,7 @@
                 container.innerHTML = '<div style="padding:24px; text-align:center; color:var(--emerald); font-weight:600;"><i class="fas fa-check-circle" style="font-size:24px; margin-bottom:8px; display:block;"></i>Aucune action requise</div>';
             } else {
                 container.innerHTML = actions.map(a => `
-                    <div class="action-card" onclick="switchAdminTab('${a.tab}')${a.filter ? ";setTimeout(()=>{const b=document.querySelector('#" + a.tab + "FiltersBar .filter-btn[onclick*=\\'" + a.filter + "\\']');if(b)b.click();},100)" : ''}">
+                    <div class="action-card" onclick="${a.onclick ? a.onclick : `switchAdminTab('${a.tab}')`}${a.filter ? ";setTimeout(()=>{const b=document.querySelector('#" + a.tab + "FiltersBar .filter-btn[onclick*=\\'" + a.filter + "\\']');if(b)b.click();},100)" : ''}">
                         <div class="ac-icon" style="background:${a.bg}; color:${a.color};"><i class="fas ${a.icon}"></i></div>
                         <div class="ac-label">${a.label}</div>
                         <div class="ac-count" style="color:${a.color};">${a.count}</div>
@@ -1576,6 +1589,8 @@
             document.getElementById('kpiDrivers').textContent = d.kpis.approved_drivers;
 
             // Badges sur onglets
+            const bQuotes = document.getElementById('tabBadgeQuotes');
+            if (submittedQuotes > 0) { bQuotes.textContent = submittedQuotes; bQuotes.style.display = 'inline'; } else bQuotes.style.display = 'none';
             const bClients = document.getElementById('tabBadgeClients');
             if (d.pending_clients > 0) { bClients.textContent = d.pending_clients; bClients.style.display = 'inline'; } else bClients.style.display = 'none';
             const bEdl = document.getElementById('tabBadgeEdl');
