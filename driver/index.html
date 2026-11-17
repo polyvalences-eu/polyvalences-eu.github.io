@@ -565,6 +565,20 @@
                     <span class="apply-badge">Gratuit</span>
                 </div>
 
+                <!-- CANDIDATURES FERMÉES (affiché quand APPLICATIONS_OPEN = false) -->
+                <div id="applyClosed" style="display:none;text-align:center;padding:12px 4px 4px">
+                    <div style="width:64px;height:64px;border-radius:50%;background:#fef3c7;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+                        <i class="fas fa-user-clock" style="font-size:26px;color:#b45309"></i>
+                    </div>
+                    <p style="font-size:15px;line-height:1.6;color:var(--slate-700);margin-bottom:8px">
+                        Notre quota de chauffeurs partenaires est atteint. Les candidatures sont fermées pour le moment et rouvriront prochainement.
+                    </p>
+                    <p style="font-size:14px;color:var(--slate-500)">Merci de votre intérêt pour PolyValences.</p>
+                    <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--slate-500)">
+                        Déjà inscrit ? <a href="#" onclick="event.preventDefault();toggleApplyLogin()" style="color:var(--blue);font-weight:700;text-decoration:none">Se connecter</a>
+                    </p>
+                </div>
+
                 <form id="applyForm" onsubmit="event.preventDefault(); handleApply()">
                     <div class="apply-error" id="applyError"><i class="fas fa-exclamation-circle"></i><span></span></div>
 
@@ -645,7 +659,7 @@
                     </button>
                     <a href="/reset-password/" style="display:block;text-align:center;margin-top:12px;color:var(--blue);text-decoration:none;font-weight:500;font-size:13px">Mot de passe oublié ?</a>
                     <p style="text-align:center;margin-top:12px;font-size:13px;color:var(--slate-500)">
-                        Pas encore inscrit ? <a href="#" onclick="event.preventDefault();toggleApplyLogin()" style="color:var(--blue);font-weight:700;text-decoration:none">Postuler</a>
+                        <span id="loginBackLabel">Pas encore inscrit ?</span> <a href="#" id="loginBackLink" onclick="event.preventDefault();toggleApplyLogin()" style="color:var(--blue);font-weight:700;text-decoration:none">Postuler</a>
                     </p>
                 </form>
 
@@ -847,6 +861,7 @@
 
     // ===== APPLY =====
     async function handleApply() {
+        if (!APPLICATIONS_OPEN) return;
         const firstName = document.getElementById('applyFirstName').value.trim();
         const lastName = document.getElementById('applyLastName').value.trim();
         const email = document.getElementById('applyEmail').value.trim();
@@ -917,19 +932,42 @@
     }
 
     // ===== TOGGLE LOGIN / APPLY =====
+    // Passer à true pour rouvrir les candidatures chauffeur (les chauffeurs déjà inscrits ne sont pas concernés)
+    const APPLICATIONS_OPEN = false;
+    const APPLY_TITLE = APPLICATIONS_OPEN ? 'Postuler maintenant' : 'Candidatures fermées';
+
     function toggleApplyLogin() {
-        const applyForm = document.getElementById('applyForm');
+        // Panneau « nouvelle candidature » : le formulaire, ou le message de quota si les candidatures sont fermées
+        const applyView = document.getElementById(APPLICATIONS_OPEN ? 'applyForm' : 'applyClosed');
         const loginForm = document.getElementById('loginForm');
         const header = document.querySelector('.apply-header h3');
         if (loginForm.style.display === 'none') {
-            applyForm.style.display = 'none';
+            applyView.style.display = 'none';
             loginForm.style.display = 'block';
             header.textContent = 'Espace chauffeur';
         } else {
-            applyForm.style.display = 'block';
+            applyView.style.display = 'block';
             loginForm.style.display = 'none';
-            header.textContent = 'Postuler maintenant';
+            header.textContent = APPLY_TITLE;
         }
+    }
+
+    if (!APPLICATIONS_OPEN) {
+        document.getElementById('applyForm').style.display = 'none';
+        document.getElementById('applyClosed').style.display = 'block';
+        document.querySelector('.apply-header h3').textContent = APPLY_TITLE;
+        const badge = document.querySelector('.apply-badge');
+        if (badge) badge.style.display = 'none';
+        document.getElementById('loginBackLabel').textContent = '';
+        document.getElementById('loginBackLink').textContent = '← Retour';
+        // Les boutons « Postuler » mènent toujours au même bloc : on les renomme, et on masque l'appel final à s'inscrire
+        document.querySelectorAll('.nav-cta, .mobile-menu-cta').forEach(el => {
+            el.innerHTML = '<i class="fas fa-user"></i> Espace chauffeur';
+        });
+        const heroBadge = document.querySelector('.hero-badge');
+        if (heroBadge) heroBadge.lastChild.textContent = ' Recrutement suspendu — quota atteint ';
+        const finalCta = document.querySelector('.cta-section');
+        if (finalCta) finalCta.style.display = 'none';
     }
 
     // ===== DRIVER LOGIN =====

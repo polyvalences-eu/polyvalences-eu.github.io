@@ -2297,6 +2297,12 @@
 
     // Launch on page load
     checkSession();
+
+    // Arrivée depuis /devis/ sans session : ouvrir directement la fenêtre de connexion / création de compte
+    const authParam = new URLSearchParams(window.location.search).get('auth');
+    if (!authToken && (authParam === 'register' || authParam === 'login')) {
+        openAuth(authParam);
+    }
 </script>
 
 </body>
